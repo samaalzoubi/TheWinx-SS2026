@@ -1,7 +1,4 @@
 # TheWinx-SS2026
-
-The Instant Mobility Platform
-
 Project Overview
 
 The Instant Mobility project represents a modern solution for the growing complexity of urban transportation. By integrating a diverse range of mobility providers into a single, unified interface, this platform empowers users to transition between e-scooters, bicycles, and cars without the need for multiple applications. The primary objective is to create a seamless journey that encompasses everything from initial location-based searching and filtering to the final payment and provider rating.
