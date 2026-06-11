@@ -11,3 +11,8 @@ The technical foundation of Instant Mobility is built upon the principles of Dom
 Implementation and Technology
 
 The proposed technical stack leverages the reliability of the Spring framework, utilizing either Java or Kotlin for the primary development. This choice allows the platform to utilize industry-standard tools for building robust microservices. The solution architecture is designed to map domain concepts directly to specific services, ensuring that the software reflects the real-world business requirements of the mobility sector.
+
+Current Implementation Status
+
+- Identity & Access bounded context is implemented as a dedicated Spring Boot microservice in `bc01-identity-access`.
+- The service currently provides REST endpoints, mock context-map contracts, and a rudimentary Thymeleaf UI for Task 1 demonstration.
