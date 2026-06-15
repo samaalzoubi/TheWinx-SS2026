@@ -86,13 +86,13 @@ You should see `BUILD SUCCESS` at the end.
 
 ## Run
 
-### Standalone — Task 1 (no other services needed)
+### Standalone - Task 1 (no other services needed)
 
 ```bash
 ./mvnw -pl bc05-rating spring-boot:run
 ```
 
-Eureka/Config Server warnings in the log are **normal** when running standalone — the app works fine without them.
+Eureka/Config Server warnings in the log are **normal** when running standalone - the app works fine without them.
 
 ### Full system — Task 2 (all services together)
 
@@ -142,7 +142,7 @@ Expected: `{"status":"UP"}`
 | `GET` | `/api/ratings/vehicle/{vehicleId}/average` | Average vehicle score |
 | `GET` | `/api/ratings/provider/{providerId}` | All ratings for a provider |
 
-**Example curl — submit a rating:**
+**Example curl - submit a rating:**
 ```bash
 curl -X POST http://localhost:8085/api/ratings \
   -H "Content-Type: application/json" \
@@ -157,7 +157,7 @@ curl -X POST http://localhost:8085/api/ratings \
   }'
 ```
 
-**Example curl — get average score for vehicle 10:**
+**Example curl - get average score for vehicle 10:**
 ```bash
 curl http://localhost:8085/api/ratings/vehicle/10/average
 ```
@@ -187,10 +187,10 @@ Run `SELECT * FROM RATINGS;` to see all stored ratings.
 
 ### 6. Circuit Breaker (Task 2)
 
-When bc03-booking is **not running**, submitting a rating still works — the Resilience4j circuit breaker catches the failure and the fallback returns `COMPLETED`. You will see this in the log:
+When bc03-booking is **not running**, submitting a rating still works - the Resilience4j circuit breaker catches the failure and the fallback returns `COMPLETED`. You will see this in the log:
 
 ```
-WARN  bc03-booking unreachable — circuit open. Allowing rating for booking 2001.
+WARN  bc03-booking unreachable - circuit open. Allowing rating for booking 2001.
 ```
 
 When bc03-booking **is running**, the Feign client calls `GET /api/bookings/{id}` for real and rejects the rating if status is not `COMPLETED`.
@@ -200,6 +200,6 @@ Circuit breaker status:
 GET http://localhost:8085/actuator/circuitbreakers
 ```
 
-### 7. Eureka (Task 2 — full system only)
+### 7. Eureka (Task 2 - full system only)
 
-`http://localhost:8761` — bc05-rating should appear as `BC05-RATING` once registered.
+`http://localhost:8761` - bc05-rating should appear as `BC05-RATING` once registered.
