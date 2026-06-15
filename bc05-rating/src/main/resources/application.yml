@@ -6,6 +6,10 @@ spring:
     name: bc05-rating
   config:
     import: "optional:configserver:http://localhost:8888"
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
   datasource:
     url: jdbc:h2:mem:rating;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
     driver-class-name: org.h2.Driver
