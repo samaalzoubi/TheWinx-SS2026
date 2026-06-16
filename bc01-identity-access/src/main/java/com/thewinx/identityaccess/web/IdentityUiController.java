@@ -1,5 +1,9 @@
 package com.thewinx.identityaccess.web;
 
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,20 +13,31 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.thewinx.identityaccess.api.dto.AuthResponse;
 import com.thewinx.identityaccess.api.dto.UserResponse;
+import com.thewinx.identityaccess.application.FleetService;
 import com.thewinx.identityaccess.application.IdentityAccessService;
+import com.thewinx.identityaccess.application.UnauthorizedException;
 
 @Controller
 public class IdentityUiController {
 
     private final IdentityAccessService identityAccessService;
+    private final FleetService fleetService;
 
-    public IdentityUiController(IdentityAccessService identityAccessService) {
+    public IdentityUiController(IdentityAccessService identityAccessService, FleetService fleetService) {
         this.identityAccessService = identityAccessService;
+        this.fleetService = fleetService;
     }
 
     @GetMapping("/")
     public String home(Model model) {
         model.addAttribute("users", identityAccessService.listUsers().stream().map(UserResponse::from).toList());
+        var bookings = fleetService.listBookings();
+        model.addAttribute("vehicles", fleetService.listVehicles());
+        model.addAttribute("fleetBookings", bookings);
+        Map<Long, FleetService.BookingView> activeBookingsByVehicle = bookings.stream()
+            .filter(booking -> "CONFIRMED".equals(booking.getStatus()) || "PENDING".equals(booking.getStatus()))
+            .collect(Collectors.toMap(FleetService.BookingView::getVehicleId, Function.identity(), (left, right) -> left));
+        model.addAttribute("activeBookingsByVehicle", activeBookingsByVehicle);
         return "index";
     }
 
@@ -85,12 +100,25 @@ public class IdentityUiController {
         return "register";
     }
 
+    @GetMapping("/ui/dashboard")
+    public String userDashboard(Model model) {
+        model.addAttribute("defaultUsername", "demo.user");
+        return "user-dashboard";
+    }
+
     @PostMapping("/ui/login")
     public String login(@RequestParam String username,
                         @RequestParam String password,
                         Model model) {
-        AuthResponse response = AuthResponse.from(identityAccessService.authenticate(username, password));
-        model.addAttribute("auth", response);
-        return "login";
+        try {
+            AuthResponse response = AuthResponse.from(identityAccessService.authenticate(username, password));
+            // Admins have USER_MANAGE or ROLE_MANAGE permission; regular users do not
+            boolean isAdmin = response.getPermissions().contains("ROLE_MANAGE")
+                    || response.getPermissions().contains("USER_MANAGE");
+            return isAdmin ? "redirect:/" : "redirect:/ui/dashboard";
+        } catch (UnauthorizedException e) {
+            model.addAttribute("error", "Invalid username or password");
+            return "login";
+        }
     }
 }

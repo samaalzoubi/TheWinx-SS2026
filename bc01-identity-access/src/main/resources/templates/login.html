@@ -16,13 +16,18 @@
 
         <div class="col-12 col-lg-6 auth-form-wrap d-flex align-items-center">
             <div class="auth-form-inner w-100 mx-auto">
-                <h1>Get more things done with Loggin platform.</h1>
-                <p class="auth-sub">Access to the most powerfull tool in the entire design and web industry.</p>
+                <h1>Get more things done with Login platform</h1>
+                <p class="auth-sub">Access to the most powerfull tool in the entire design and web industry</p>
 
                 <nav class="auth-switch d-flex" aria-label="Authentication mode">
                     <a class="active" href="/ui/login">Login</a>
                     <a href="/ui/register">Register</a>
                 </nav>
+
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
 
                 <form class="auth-form" action="/ui/login" method="post">
                     <div class="mb-3">

@@ -1,14 +1,7 @@
 package com.thewinx.identityaccess.api;
 
-import com.thewinx.identityaccess.api.dto.AuthRequest;
-import com.thewinx.identityaccess.api.dto.AuthResponse;
-import com.thewinx.identityaccess.api.dto.PermissionCheckResponse;
-import com.thewinx.identityaccess.api.dto.RegisterUserRequest;
-import com.thewinx.identityaccess.api.dto.RoleAssignmentRequest;
-import com.thewinx.identityaccess.api.dto.UpdateUserRequest;
-import com.thewinx.identityaccess.api.dto.UserResponse;
-import com.thewinx.identityaccess.application.IdentityAccessService;
-import jakarta.validation.Valid;
+import java.util.List;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,16 +12,29 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.thewinx.identityaccess.api.dto.AuthRequest;
+import com.thewinx.identityaccess.api.dto.AuthResponse;
+import com.thewinx.identityaccess.api.dto.PermissionCheckResponse;
+import com.thewinx.identityaccess.api.dto.RegisterUserRequest;
+import com.thewinx.identityaccess.api.dto.RoleAssignmentRequest;
+import com.thewinx.identityaccess.api.dto.UpdateUserRequest;
+import com.thewinx.identityaccess.api.dto.UserResponse;
+import com.thewinx.identityaccess.api.dto.VehicleBookingRequest;
+import com.thewinx.identityaccess.application.FleetService;
+import com.thewinx.identityaccess.application.IdentityAccessService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/identity")
 public class IdentityAccessRestController {
 
     private final IdentityAccessService identityAccessService;
+    private final FleetService fleetService;
 
-    public IdentityAccessRestController(IdentityAccessService identityAccessService) {
+    public IdentityAccessRestController(IdentityAccessService identityAccessService, FleetService fleetService) {
         this.identityAccessService = identityAccessService;
+        this.fleetService = fleetService;
     }
 
     @PostMapping("/users")
@@ -74,5 +80,33 @@ public class IdentityAccessRestController {
     @GetMapping("/permissions/check")
     public PermissionCheckResponse checkPermission(@RequestParam Long userId, @RequestParam String permission) {
         return new PermissionCheckResponse(userId, permission, identityAccessService.hasPermission(userId, permission));
+    }
+
+    @GetMapping("/fleet/vehicles")
+    public List<FleetService.VehicleView> listVehicles() {
+        return fleetService.listVehicles();
+    }
+
+    @GetMapping("/fleet/bookings")
+    public List<FleetService.BookingView> listBookings(@RequestParam(required = false) String username) {
+        if (username == null || username.isBlank()) {
+            return fleetService.listBookings();
+        }
+        return fleetService.listBookingsByUsername(username);
+    }
+
+    @PostMapping("/fleet/bookings")
+    public FleetService.BookingView createBooking(@Valid @RequestBody VehicleBookingRequest request) {
+        return fleetService.createBooking(
+            request.getVehicleId(),
+            request.getUsername(),
+            request.getPickupDate(),
+            request.getReturnDate()
+        );
+    }
+
+    @PostMapping("/fleet/bookings/{bookingId}/cancel")
+    public FleetService.BookingView cancelBooking(@PathVariable Long bookingId) {
+        return fleetService.cancelBooking(bookingId);
     }
 }

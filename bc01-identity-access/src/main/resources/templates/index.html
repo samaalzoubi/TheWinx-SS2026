@@ -58,10 +58,10 @@
                    <td class="actions-cell d-flex align-items-center gap-2 flex-wrap">
 
     <!-- Assign Role -->
-    <form class="inline-form d-flex align-items-center gap-2 mb-0" 
+    <form class="inline-form d-flex align-items-center gap-2 mb-0"
           action="/ui/users/assign-role" method="post">
         <input type="hidden" name="userId" th:value="${user.id}">
-        <input type="text" class="form-control form-control-sm w-auto" 
+        <input type="text" class="form-control form-control-sm w-auto"
                name="roleName" placeholder="USER or ADMIN" required>
         <button type="submit" class="btn btn-success btn-sm">Assign</button>
     </form>
@@ -73,14 +73,49 @@
 </a>
 
     <!-- Deactivate -->
-    <form class="d-flex align-items-center mb-0" 
-          action="/ui/users/deactivate" method="post">
+    <form class="d-flex align-items-center mb-0"
+          action="/ui/users/deactivate" method="post" id="statusForm">
         <input type="hidden" name="userId" th:value="${user.id}">
-        <button class="btn btn-danger btn-sm" type="submit">Deactivate</button>
+        <button id="statusBtn" onclick="toggleStatus(event)" class="btn btn-danger btn-sm" type="button">Deactivate</button>
     </form>
 
 </td>
 
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>Fleet Availability Snapshot</h2>
+        <p class="subtitle">Live status shared with the user booking dashboard.</p>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>Vehicle</th>
+                    <th>Plate</th>
+                    <th>Type</th>
+                    <th>Price/Day (EUR)</th>
+                    <th>Availability</th>
+                    <th>Booked By</th>
+                    <th>Dates</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="vehicle : ${vehicles}">
+                    <td th:text="${vehicle.name}"></td>
+                    <td th:text="${vehicle.plate}"></td>
+                    <td th:text="${vehicle.type}"></td>
+                    <td th:text="${'EUR ' + vehicle.pricePerDay}"></td>
+                    <td>
+                        <span class="status"
+                              th:text="${vehicle.available} ? 'AVAILABLE' : 'BOOKED'"
+                              th:classappend="${vehicle.available} ? ' status-active' : ' status-inactive'"></span>
+                    </td>
+                    <td th:text="${activeBookingsByVehicle[vehicle.id] != null ? activeBookingsByVehicle[vehicle.id].username : '-'}"></td>
+                    <td th:text="${activeBookingsByVehicle[vehicle.id] != null ? activeBookingsByVehicle[vehicle.id].pickupDate + ' to ' + activeBookingsByVehicle[vehicle.id].returnDate : '-'}"></td>
                 </tr>
                 </tbody>
             </table>
@@ -97,4 +132,39 @@
     </section>
 </main>
 </body>
+<script>
+let userStatusMap = {}; // Track status for each user
+
+function toggleStatus(event) {
+  event.preventDefault();
+  const btn = event.target;
+  const form = btn.closest('form');
+  const userId = form.querySelector('input[name="userId"]').value;
+  const row = form.closest('tr');
+  const statusSpan = row.querySelector('.status');
+
+  // Initialize status for this user if not already done
+  if (!(userId in userStatusMap)) {
+    userStatusMap[userId] = true; // true = active
+  }
+
+  // Toggle the status
+  userStatusMap[userId] = !userStatusMap[userId];
+  const isActive = userStatusMap[userId];
+
+  if (isActive) {
+    // Switch to active state
+    btn.textContent = "Deactivate";
+    btn.className = "btn btn-danger btn-sm";
+    statusSpan.textContent = "ACTIVE";
+    statusSpan.className = "status status-active";
+  } else {
+    // Switch to inactive state
+    btn.textContent = "Activate";
+    btn.className = "btn btn-success btn-sm";
+    statusSpan.textContent = "INACTIVE";
+    statusSpan.className = "status status-inactive";
+  }
+}
+</script>
 </html>
