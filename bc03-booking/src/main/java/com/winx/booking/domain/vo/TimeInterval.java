@@ -10,10 +10,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-/**
- * Immutable time span of a booking. {@code endTime} is null while the ride is ACTIVE
- * and is set (replacing the whole value object) when the ride ends.
- */
 @Embeddable
 @Getter
 @EqualsAndHashCode

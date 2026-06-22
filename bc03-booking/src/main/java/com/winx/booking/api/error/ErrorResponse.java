@@ -2,7 +2,7 @@ package com.winx.booking.api.error;
 
 import java.time.LocalDateTime;
 
-/** Standard error body shared by all REST endpoints (see plan §5.4). */
+/** Standard error body shared by all REST endpoints  */
 public record ErrorResponse(
         String error,
         String message,

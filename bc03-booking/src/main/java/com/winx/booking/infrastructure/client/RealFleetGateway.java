@@ -11,14 +11,6 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.List;
 
-/**
- * Real gateway to Fleet Management over Feign, guarded by a circuit breaker.
- * Active in every profile except {@code mock}.
- *
- * <p>Fallback policy: reads that must succeed for a booking ({@code findVehicle}, status flips)
- * fail fast with {@link DependencyUnavailableException}; {@code search} degrades to an empty list
- * so the search UI stays usable when Fleet is down.
- */
 @Component
 @Profile("!mock")
 @RequiredArgsConstructor
@@ -40,17 +32,15 @@ public class RealFleetGateway implements FleetGateway {
 
     @Override
     @CircuitBreaker(name = "fleet", fallbackMethod = "statusUpdateFailed")
-    public VehicleDto markBooked(Long vehicleId) {
-        return client.updateStatus(vehicleId, new StatusUpdate("BOOKED"));
+    public void markBooked(Long vehicleId) {
+        client.updateStatus(vehicleId, new StatusUpdate("BOOKED"));
     }
 
     @Override
     @CircuitBreaker(name = "fleet", fallbackMethod = "statusUpdateFailed")
-    public VehicleDto markAvailable(Long vehicleId) {
-        return client.updateStatus(vehicleId, new StatusUpdate("AVAILABLE"));
+    public void markAvailable(Long vehicleId) {
+        client.updateStatus(vehicleId, new StatusUpdate("AVAILABLE"));
     }
-
-    /* ---------- fallbacks ---------- */
 
     @SuppressWarnings("unused")
     private VehicleDto vehicleUnavailable(Long id, Throwable t) {
@@ -64,7 +54,7 @@ public class RealFleetGateway implements FleetGateway {
     }
 
     @SuppressWarnings("unused")
-    private VehicleDto statusUpdateFailed(Long vehicleId, Throwable t) {
+    private void statusUpdateFailed(Long vehicleId, Throwable t) {
         throw new DependencyUnavailableException("Fleet status update failed", t);
     }
 }

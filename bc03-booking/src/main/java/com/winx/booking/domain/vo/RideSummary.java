@@ -10,10 +10,6 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-/**
- * Immutable result of cost computation, set when a ride is COMPLETED.
- * Null until then. (Cost computation itself is implemented in a later pass.)
- */
 @Embeddable
 @Getter
 @EqualsAndHashCode

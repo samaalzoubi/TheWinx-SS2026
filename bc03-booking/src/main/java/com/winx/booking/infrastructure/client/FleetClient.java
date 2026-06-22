@@ -12,10 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.math.BigDecimal;
 import java.util.List;
 
-/**
- * Declarative REST client for Fleet Management (BC-02). The service id is resolved via Eureka.
- * Only created when not running under the {@code mock} profile.
- */
 @FeignClient(name = "bc02-fleet-management", path = "/vehicles")
 public interface FleetClient {
 

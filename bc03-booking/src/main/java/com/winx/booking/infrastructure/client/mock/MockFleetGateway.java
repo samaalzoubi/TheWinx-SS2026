@@ -8,19 +8,13 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.List;
 
-/**
- * Mock Fleet gateway for solo development/demo ({@code --spring.profiles.active=mock}).
- * Returns hard-coded sample vehicles; status flips just echo the new status back.
- */
 @Component
 @Profile("mock")
 public class MockFleetGateway implements FleetGateway {
 
     private VehicleDto sample(Long id, String status) {
-        return new VehicleDto(
-                id, 100L, "Sample e-scooter " + id, "E_SCOOTER", status,
-                52.5200, 13.4050, new BigDecimal("0.20"), "PER_HOUR",
-                null, null, 18, 1);
+        return new VehicleDto(id, "E_SCOOTER", "Sample e-scooter " + id, status,
+                new BigDecimal("0.20"), "PER_HOUR", 18);
     }
 
     @Override
@@ -34,12 +28,10 @@ public class MockFleetGateway implements FleetGateway {
     }
 
     @Override
-    public VehicleDto markBooked(Long vehicleId) {
-        return sample(vehicleId, "BOOKED");
+    public void markBooked(Long vehicleId) {
     }
 
     @Override
-    public VehicleDto markAvailable(Long vehicleId) {
-        return sample(vehicleId, "AVAILABLE");
+    public void markAvailable(Long vehicleId) {
     }
 }

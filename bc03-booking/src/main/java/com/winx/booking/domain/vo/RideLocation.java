@@ -7,9 +7,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/**
- * Immutable GPS snapshot captured at the start (and later the end) of a ride.
- */
 @Embeddable
 @Getter
 @EqualsAndHashCode

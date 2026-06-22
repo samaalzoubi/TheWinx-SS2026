@@ -3,6 +3,7 @@ package com.winx.booking.api;
 import com.winx.booking.application.BookingService;
 import com.winx.booking.domain.Booking;
 import com.winx.booking.domain.vo.RideLocation;
+import com.winx.booking.domain.vo.RideSummary;
 import com.winx.booking.domain.vo.VehicleSnapshot;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -56,5 +58,20 @@ class BookingControllerTest {
         mvc.perform(post("/bookings/5/cancel"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("CANCELLED"));
+    }
+
+    @Test
+    void endBookingReturnsCompleted() throws Exception {
+        Booking booking = sampleBooking();
+        booking.complete(new RideLocation(52.50, 13.41),
+                new RideSummary(3.2, new BigDecimal("4.50")), LocalDateTime.now());
+        when(service.endBooking(eq(7L), any())).thenReturn(booking);
+
+        mvc.perform(post("/bookings/7/end")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"endLatitude\":52.50,\"endLongitude\":13.41,\"distanceKm\":3.2}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("COMPLETED"))
+                .andExpect(jsonPath("$.vehicleId").value(1));
     }
 }

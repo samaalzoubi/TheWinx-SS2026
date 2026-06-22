@@ -10,10 +10,6 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-/**
- * Immutable snapshot of the vehicle's pricing at booking time. Decouples a Booking from
- * future price changes in Fleet Management and lets Booking compute cost without re-querying.
- */
 @Embeddable
 @Getter
 @EqualsAndHashCode

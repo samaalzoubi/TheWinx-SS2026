@@ -3,6 +3,7 @@ package com.winx.booking.api;
 import com.winx.booking.api.dto.BookingCreateRequest;
 import com.winx.booking.api.dto.BookingDto;
 import com.winx.booking.api.dto.BookingStatusDto;
+import com.winx.booking.api.dto.EndRideRequest;
 import com.winx.booking.api.dto.VehicleDto;
 import com.winx.booking.application.BookingService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,7 +24,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "Booking", description = "Ride booking lifecycle (Core CRUD)")
+@Tag(name = "Booking", description = "Ride booking lifecycle")
 public class BookingController {
 
     private final BookingService service;
@@ -50,12 +51,16 @@ public class BookingController {
         return BookingDto.from(service.cancelBooking(id));
     }
 
+    @PostMapping("/bookings/{id}/end")
+    public BookingDto end(@PathVariable Long id, @Valid @RequestBody EndRideRequest request) {
+        return BookingDto.from(service.endBooking(id, request));
+    }
+
     @GetMapping("/bookings/{id}/status")
     public BookingStatusDto getStatus(@PathVariable Long id) {
         return BookingStatusDto.from(service.findById(id));
     }
 
-    /** Delegates to Fleet Management; kept on Booking so the search UI has a single backend. */
     @GetMapping("/vehicles/search")
     public List<VehicleDto> searchVehicles(@RequestParam double lat,
                                            @RequestParam double lon,

@@ -22,20 +22,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-/**
- * Booking aggregate root. Owns the rental lifecycle and enforces its invariants.
- * State transitions go through the methods here (never by setting the status field
- * directly) so the rules stay in one place and a state-history (Memento) caretaker
- * can be added later without touching callers.
- *
- * <p>Invariants enforced here:
- * <ul>
- *   <li>cancel/complete are only legal from ACTIVE;</li>
- *   <li>a COMPLETED booking can never become CANCELLED;</li>
- *   <li>endTime is set only when the ride completes.</li>
- * </ul>
- * (Cost computation and restriction validation live in services, in a later pass.)
- */
 @Entity
 @Table(name = "bookings")
 @Getter
@@ -84,12 +70,10 @@ public class Booking {
         this.status = BookingStatus.ACTIVE;
     }
 
-    /** Starts a new ACTIVE booking. The vehicle snapshot fixes the price at booking time. */
     public static Booking start(Long userId, VehicleSnapshot vehicleSnapshot, RideLocation startLocation) {
         return new Booking(userId, vehicleSnapshot, startLocation);
     }
 
-    /** Cancels an ACTIVE booking. Illegal once COMPLETED or already CANCELLED. */
     public void cancel() {
         if (status != BookingStatus.ACTIVE) {
             throw new InvalidBookingStateException(
@@ -98,10 +82,6 @@ public class Booking {
         this.status = BookingStatus.CANCELLED;
     }
 
-    /**
-     * Completes an ACTIVE ride. Cost computation that produces the {@link RideSummary}
-     * is wired up in the end-ride pass; this method only guards the transition.
-     */
     public void complete(RideLocation endLocation, RideSummary summary, LocalDateTime endTime) {
         if (status != BookingStatus.ACTIVE) {
             throw new InvalidBookingStateException(

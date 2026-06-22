@@ -9,7 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-/** Translates exceptions thrown by the REST controller into the standard {@link ErrorResponse}. */
+/** Translates exceptions thrown by the REST controller into the standard */
 @RestControllerAdvice(assignableTypes = BookingController.class)
 public class GlobalExceptionHandler {
 

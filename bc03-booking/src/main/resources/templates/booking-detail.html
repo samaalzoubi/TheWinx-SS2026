@@ -35,8 +35,14 @@
         <tr><th>Total cost</th><td th:text="${booking.totalCost()} ?: '—'">—</td></tr>
     </table>
 
+    <form method="post" th:action="@{/ui/bookings/{id}/end(id=${booking.bookingId()})}"
+          th:if="${booking.status() == 'ACTIVE'}" class="mb-2">
+        <button class="btn btn-success" type="submit">End ride</button>
+        <span class="text-muted ms-2 small">End location &amp; distance are captured automatically (simulated device telemetry).</span>
+    </form>
+
     <form method="post" th:action="@{/ui/bookings/{id}/cancel(id=${booking.bookingId()})}"
-          th:if="${booking.status() == 'ACTIVE'}">
+          th:if="${booking.status() == 'ACTIVE'}" class="mb-2">
         <button class="btn btn-danger" type="submit">Cancel booking</button>
     </form>
     <a class="btn btn-link" th:href="@{/ui/bookings(userId=${booking.userId()})}">← Back to my bookings</a>

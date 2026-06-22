@@ -22,25 +22,26 @@
     <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
 
     <form method="get" th:action="@{/ui/search}" class="row g-3 align-items-end mb-4">
-        <div class="col-md-2">
-            <label class="form-label">Latitude</label>
-            <input class="form-control" name="lat" type="number" step="any" th:value="${lat}" placeholder="52.52"/>
+        <div class="col-md-3">
+            <label class="form-label" for="location">Location</label>
+            <select class="form-select" id="location" name="location">
+                <option value="">— choose a location —</option>
+                <option th:each="loc : ${locations}" th:value="${loc.key()}"
+                        th:text="${loc.displayName()}"
+                        th:selected="${loc.key() == selectedLocation}">Place</option>
+            </select>
         </div>
         <div class="col-md-2">
-            <label class="form-label">Longitude</label>
-            <input class="form-control" name="lon" type="number" step="any" th:value="${lon}" placeholder="13.40"/>
+            <label class="form-label" for="radiusKm">Radius (km)</label>
+            <input class="form-control" id="radiusKm" name="radiusKm" type="number" step="any" th:value="${radiusKm}"/>
         </div>
         <div class="col-md-2">
-            <label class="form-label">Radius (km)</label>
-            <input class="form-control" name="radiusKm" type="number" step="any" th:value="${radiusKm}"/>
+            <label class="form-label" for="type">Type</label>
+            <input class="form-control" id="type" name="type" type="text" th:value="${type}" placeholder="E_SCOOTER"/>
         </div>
         <div class="col-md-2">
-            <label class="form-label">Type</label>
-            <input class="form-control" name="type" type="text" th:value="${type}" placeholder="E_SCOOTER"/>
-        </div>
-        <div class="col-md-2">
-            <label class="form-label">Auth token</label>
-            <input class="form-control" name="token" type="text" th:value="${token}" placeholder="X-Auth-Token"/>
+            <label class="form-label" for="token">Auth token</label>
+            <input class="form-control" id="token" name="token" type="text" th:value="${token}" placeholder="X-Auth-Token"/>
         </div>
         <div class="col-md-2">
             <button class="btn btn-primary w-100" type="submit">Search</button>

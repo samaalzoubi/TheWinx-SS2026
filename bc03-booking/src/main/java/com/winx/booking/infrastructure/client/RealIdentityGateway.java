@@ -7,10 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-/**
- * Real gateway to Identity &amp; Access over Feign, guarded by a circuit breaker.
- * Active in every profile except {@code mock}.
- */
 @Component
 @Profile("!mock")
 @RequiredArgsConstructor

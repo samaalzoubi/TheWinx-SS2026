@@ -9,7 +9,6 @@ import com.winx.booking.domain.vo.VehicleSnapshot;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/** Public, flat view of a Booking aggregate. */
 public record BookingDto(
         Long bookingId,
         Long userId,

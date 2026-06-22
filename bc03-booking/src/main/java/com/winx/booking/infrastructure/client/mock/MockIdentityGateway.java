@@ -7,10 +7,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
-/**
- * Mock Identity gateway for solo development/demo ({@code --spring.profiles.active=mock}).
- * Any token resolves to the same sample user.
- */
 @Component
 @Profile("mock")
 public class MockIdentityGateway implements IdentityGateway {

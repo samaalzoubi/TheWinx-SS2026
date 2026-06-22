@@ -2,6 +2,7 @@ package com.winx.booking.api.ui;
 
 import com.winx.booking.api.dto.BookingCreateRequest;
 import com.winx.booking.api.dto.BookingDto;
+import com.winx.booking.api.dto.EndRideRequest;
 import com.winx.booking.application.BookingService;
 import com.winx.booking.domain.Booking;
 import com.winx.booking.exception.DomainException;
@@ -15,11 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-/**
- * Server-rendered Thymeleaf UI for BC-03 (standalone, demo-only). Reuses {@link BookingService};
- * the REST controller's {@code GlobalExceptionHandler} does not apply here, so domain errors are
- * caught and surfaced as flash messages.
- */
 @Controller
 @RequestMapping("/ui")
 @RequiredArgsConstructor
@@ -28,17 +24,19 @@ public class BookingWebController {
     private final BookingService service;
 
     @GetMapping("/search")
-    public String search(@RequestParam(required = false) Double lat,
-                         @RequestParam(required = false) Double lon,
+    public String search(@RequestParam(required = false) String location,
                          @RequestParam(required = false, defaultValue = "2.0") Double radiusKm,
                          @RequestParam(required = false) String type,
                          @RequestParam(required = false) String token,
                          Model model) {
-        if (lat != null && lon != null) {
-            model.addAttribute("results", service.searchVehicles(lat, lon, radiusKm, type, null));
+        DemoLocations.Location loc = DemoLocations.find(location);
+        if (loc != null) {
+            model.addAttribute("results", service.searchVehicles(loc.latitude(), loc.longitude(), radiusKm, type, null));
+            model.addAttribute("lat", loc.latitude());
+            model.addAttribute("lon", loc.longitude());
         }
-        model.addAttribute("lat", lat);
-        model.addAttribute("lon", lon);
+        model.addAttribute("locations", DemoLocations.all());
+        model.addAttribute("selectedLocation", location);
         model.addAttribute("radiusKm", radiusKm);
         model.addAttribute("type", type);
         model.addAttribute("token", token);
@@ -85,5 +83,27 @@ public class BookingWebController {
             ra.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/ui/bookings/" + id;
+    }
+
+    @PostMapping("/bookings/{id}/end")
+    public String end(@PathVariable Long id, RedirectAttributes ra) {
+        try {
+            BookingDto booking = BookingDto.from(service.findById(id));
+            service.endBooking(id, simulateEndTelemetry(booking));
+        } catch (DomainException e) {
+            ra.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/ui/bookings/" + id;
+    }
+
+    private EndRideRequest simulateEndTelemetry(BookingDto booking) {
+        double startLat = booking.startLatitude() != null ? booking.startLatitude() : 51.5178;
+        double startLon = booking.startLongitude() != null ? booking.startLongitude() : 7.4590;
+        double distanceKm = 0.5 + Math.random() * 7.5;
+        double bearing = Math.random() * 2 * Math.PI;
+        double endLat = startLat + (distanceKm * Math.cos(bearing)) / 111.32;
+        double endLon = startLon + (distanceKm * Math.sin(bearing)) / (111.32 * Math.cos(Math.toRadians(startLat)));
+        double roundedDistance = Math.round(distanceKm * 100.0) / 100.0;
+        return new EndRideRequest(endLat, endLon, roundedDistance);
     }
 }
