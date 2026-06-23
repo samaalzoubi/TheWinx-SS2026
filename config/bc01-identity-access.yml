@@ -1,0 +1,3 @@
+# Per-service config served by infra-config-server (Task 2).
+# Move behavioural overrides here as bc01-identity-access grows; the local
+# application.yml keeps only server port + datasource.
