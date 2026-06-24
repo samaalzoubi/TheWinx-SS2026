@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Vehicle</title>
+</head>
+<body>
+
+<h2>Add Vehicle</h2>
+
+<form id="vehicleForm">
+    Provider ID: <input type="number" id="providerId"><br><br>
+    Type: 
+    <select id="type">
+        <option>E_SCOOTER</option>
+        <option>BICYCLE</option>
+        <option>E_BIKE</option>
+        <option>E_CAR</option>
+    </select><br><br>
+
+    Description: <input type="text" id="description"><br><br>
+
+    Status:
+    <select id="status">
+        <option>AVAILABLE</option>
+        <option>BOOKED</option>
+    </select><br><br>
+
+    Latitude: <input type="number" step="0.0001" id="lat"><br><br>
+    Longitude: <input type="number" step="0.0001" id="lon"><br><br>
+
+    Price Per Unit: <input type="number" step="0.01" id="price"><br><br>
+
+    Billing Model:
+    <select id="billing">
+        <option>PER_HOUR</option>
+        <option>PER_KILOMETER</option>
+    </select><br><br>
+
+    Max Duration (min): <input type="number" id="maxDuration"><br><br>
+    Max Kilometers: <input type="number" id="maxKm"><br><br>
+    Min Age: <input type="number" id="minAge"><br><br>
+    Max Persons: <input type="number" id="maxPersons"><br><br>
+
+    <button type="button" onclick="addVehicle()">Add Vehicle</button>
+</form>
+
+<script>
+function addVehicle() {
+    const vehicle = {
+        providerId: document.getElementById("providerId").value,
+        type: document.getElementById("type").value,
+        description: document.getElementById("description").value,
+        status: document.getElementById("status").value,
+        currentLatitude: document.getElementById("lat").value,
+        currentLongitude: document.getElementById("lon").value,
+        pricePerUnit: document.getElementById("price").value,
+        billingModel: document.getElementById("billing").value,
+        maxDurationMinutes: document.getElementById("maxDuration").value,
+        maxKilometers: document.getElementById("maxKm").value,
+        minAge: document.getElementById("minAge").value,
+        maxPersons: document.getElementById("maxPersons").value
+    };
+
+    fetch("http://localhost:8090/vehicles", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(vehicle)
+    }).then(() => alert("Vehicle added!"));
+}
+</script>
+
+</body>
+</html>

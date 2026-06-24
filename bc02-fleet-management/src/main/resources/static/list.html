@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Vehicles</title>
+</head>
+<body>
+<h2>All Vehicles</h2>
+
+<button onclick="loadVehicles()">Refresh</button>
+<table border="1" id="vehicleTable">
+    <tr>
+        <th>ID</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Status</th>
+        <th>Price</th>
+        <th>Billing</th>
+        <th>Actions</th>
+    </tr>
+</table>
+
+<script>
+function loadVehicles() {
+    fetch("http://localhost:8090/vehicles")
+        .then(res => res.json())
+        .then(data => {
+            const table = document.getElementById("vehicleTable");
+            table.innerHTML = `
+                <tr>
+                    <th>ID</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Price</th>
+                    <th>Billing</th>
+                    <th>Actions</th>
+                </tr>
+            `;
+
+            data.forEach(v => {
+                table.innerHTML += `
+                    <tr>
+                        <td>${v.id}</td>
+                        <td>${v.type}</td>
+                        <td>${v.description}</td>
+                        <td>${v.status}</td>
+                        <td>${v.pricePerUnit}</td>
+                        <td>${v.billingModel}</td>
+                        <td>
+                            <button onclick="deleteVehicle(${v.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        });
+}
+
+function deleteVehicle(id) {
+    fetch("http://localhost:8090/vehicles/" + id, { method: "DELETE" })
+        .then(() => loadVehicles());
+}
+
+loadVehicles();
+</script>
+</body>
+</html>

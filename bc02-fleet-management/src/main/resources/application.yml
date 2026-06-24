@@ -1,0 +1,36 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: fleet-service
+
+  datasource:
+    url: jdbc:h2:mem:fleet
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      fleetBreaker:
+        slidingWindowSize: 5
+        failureRateThreshold: 50
