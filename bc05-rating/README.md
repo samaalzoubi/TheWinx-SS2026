@@ -1,6 +1,6 @@
 # BC-05 Rating
 
-**Owner:** Mae (Member E) | **Port:** 8085
+**Owner:** Mae | **Port:** 8085
 
 ---
 
