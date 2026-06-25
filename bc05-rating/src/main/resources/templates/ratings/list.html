@@ -2,78 +2,97 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ratings – Instant Mobility</title>
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-<nav class="navbar navbar-dark bg-primary mb-4">
-    <div class="container-fluid">
-        <a class="navbar-brand" th:href="@{/ratings}">BC-05 Rating</a>
-        <a class="btn btn-light btn-sm" th:href="@{/ratings/submit}">+ Submit Rating</a>
-    </div>
-</nav>
-
 <div class="container">
-    <div th:if="${success}" class="alert alert-success alert-dismissible" role="alert">
-        <span th:text="${success}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
 
-    <h2 class="mb-3"
-        th:text="${filter != null ? 'Ratings for ' + filter : 'All Ratings'}">
-        All Ratings
-    </h2>
-
-    <div th:if="${averageScore != null}" class="alert alert-info mb-3">
-        Average vehicle score:
-        <strong th:text="${#numbers.formatDecimal(averageScore, 1, 2)}"></strong> / 5
-    </div>
-
-    <div class="row row-cols-1 row-cols-md-2 g-3" th:if="${not #lists.isEmpty(ratings)}">
-        <div class="col" th:each="r : ${ratings}">
-            <div class="card h-100 shadow-sm">
-                <div class="card-header d-flex justify-content-between">
-                    <span>Rating #<span th:text="${r.ratingId}"></span></span>
-                    <small class="text-muted">
-                        Booking #<span th:text="${r.bookingId}"></span>
-                    </small>
-                </div>
-                <div class="card-body">
-                    <p class="mb-1">
-                        <strong>Vehicle</strong>
-                        #<a th:href="@{/ratings/vehicle/{id}(id=${r.vehicleId})}"
-                            th:text="${r.vehicleId}"></a>
-                        &nbsp;–&nbsp;
-                        Score: <span class="badge bg-success" th:text="${r.vehicleScore} + '/5'"></span>
-                    </p>
-                    <p class="mb-1">
-                        <strong>Provider</strong>
-                        #<a th:href="@{/ratings/provider/{id}(id=${r.providerId})}"
-                            th:text="${r.providerId}"></a>
-                        &nbsp;–&nbsp;
-                        Score: <span class="badge bg-info text-dark" th:text="${r.providerScore} + '/5'"></span>
-                    </p>
-                    <p class="text-muted fst-italic mb-1"
-                       th:if="${r.comment != null and !r.comment.isEmpty()}"
-                       th:text="'&quot;' + r.comment + '&quot;'"></p>
-                    <small class="text-muted"
-                           th:text="${#temporals.format(r.createdAt, 'yyyy-MM-dd HH:mm')}"></small>
-                </div>
-                <div class="card-footer bg-transparent">
-                    <a th:href="@{/ratings/{id}(id=${r.ratingId})}"
-                       class="btn btn-sm btn-outline-primary">View Detail</a>
-                </div>
-            </div>
+    <div class="panel hero">
+        <div>
+            <p class="eyebrow">BC-05 Rating</p>
+            <h1 th:text="${filter != null ? filter : 'All Ratings'}">All Ratings</h1>
+            <p class="subtitle">Browse and filter ratings left by users after completed bookings.</p>
+        </div>
+        <div class="link-group">
+            <a class="link-button" th:href="@{/ratings/submit}">+ Submit Rating</a>
+            <a class="link-button secondary-button" th:href="@{/ratings}">All Ratings</a>
         </div>
     </div>
 
-    <div th:if="${#lists.isEmpty(ratings)}" class="text-center text-muted py-5">
-        <p class="fs-5">No ratings found.</p>
-        <a th:href="@{/ratings/submit}" class="btn btn-primary">Submit the first rating</a>
-    </div>
-</div>
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <div th:if="${averageScore != null}" class="alert alert-info">
+        Average vehicle score for this filter:
+        <strong th:text="${#numbers.formatDecimal(averageScore, 1, 2)} + ' / 5'"></strong>
+    </div>
+
+    <div class="panel" th:if="${not #lists.isEmpty(ratings)}">
+        <h2>Ratings</h2>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Booking</th>
+                    <th>User</th>
+                    <th>Vehicle</th>
+                    <th>Vehicle Score</th>
+                    <th>Provider</th>
+                    <th>Provider Score</th>
+                    <th>Comment</th>
+                    <th>Date</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="r : ${ratings}">
+                    <td th:text="${r.ratingId}"></td>
+                    <td th:text="'#' + r.bookingId"></td>
+                    <td th:text="${r.userId}"></td>
+                    <td>
+                        <a th:href="@{/ratings/vehicle/{id}(id=${r.vehicleId})}"
+                           th:text="'#' + r.vehicleId"></a>
+                    </td>
+                    <td>
+                        <span class="status"
+                              th:classappend="${r.vehicleScore >= 4} ? 'score-high' : (${r.vehicleScore == 3} ? 'score-mid' : 'score-low')"
+                              th:text="${r.vehicleScore} + '/5'"></span>
+                    </td>
+                    <td>
+                        <a th:href="@{/ratings/provider/{id}(id=${r.providerId})}"
+                           th:text="'#' + r.providerId"></a>
+                    </td>
+                    <td>
+                        <span class="status"
+                              th:classappend="${r.providerScore >= 4} ? 'score-high' : (${r.providerScore == 3} ? 'score-mid' : 'score-low')"
+                              th:text="${r.providerScore} + '/5'"></span>
+                    </td>
+                    <td>
+                        <span th:if="${r.comment != null and !r.comment.isEmpty()}"
+                              th:text="${#strings.abbreviate(r.comment, 40)}"
+                              style="font-style: italic; color: #6b7285;"></span>
+                        <span th:if="${r.comment == null or r.comment.isEmpty()}"
+                              style="color: #aab;">-</span>
+                    </td>
+                    <td th:text="${#temporals.format(r.createdAt, 'yyyy-MM-dd')}"></td>
+                    <td>
+                        <a th:href="@{/ratings/{id}(id=${r.ratingId})}"
+                           class="link-button secondary-button"
+                           style="font-size:0.78rem; padding: 0.3rem 0.6rem;">View</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="panel empty-state" th:if="${#lists.isEmpty(ratings)}">
+        <p>No ratings found.</p>
+        <a th:href="@{/ratings/submit}" class="link-button">Submit the first rating</a>
+    </div>
+
+</div>
 </body>
 </html>

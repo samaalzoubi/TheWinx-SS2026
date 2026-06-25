@@ -2,77 +2,93 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rating Detail – Instant Mobility</title>
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-<nav class="navbar navbar-dark bg-primary mb-4">
-    <div class="container-fluid">
-        <a class="navbar-brand" th:href="@{/ratings}">BC-05 Rating</a>
-    </div>
-</nav>
+<div class="container">
 
-<div class="container" style="max-width: 620px;">
-    <h2 class="mb-4">Rating Detail</h2>
-
-    <div class="card shadow-sm">
-        <div class="card-header">
-            Rating #<span th:text="${rating.ratingId}"></span>
+    <div class="panel hero">
+        <div>
+            <p class="eyebrow">BC-05 Rating</p>
+            <h1>Rating #<span th:text="${rating.ratingId}"></span></h1>
+            <p class="subtitle">
+                Submitted for Booking #<span th:text="${rating.bookingId}"></span>
+                by User #<span th:text="${rating.userId}"></span>
+                on <span th:text="${#temporals.format(rating.createdAt, 'dd MMM yyyy, HH:mm')}"></span>.
+            </p>
         </div>
-        <div class="card-body">
-            <dl class="row mb-0">
-                <dt class="col-sm-5">Rating ID</dt>
-                <dd class="col-sm-7" th:text="${rating.ratingId}"></dd>
-
-                <dt class="col-sm-5">Booking ID</dt>
-                <dd class="col-sm-7" th:text="${rating.bookingId}"></dd>
-
-                <dt class="col-sm-5">User ID</dt>
-                <dd class="col-sm-7" th:text="${rating.userId}"></dd>
-
-                <dt class="col-sm-5">Vehicle ID</dt>
-                <dd class="col-sm-7">
-                    <a th:href="@{/ratings/vehicle/{id}(id=${rating.vehicleId})}"
-                       th:text="'#' + rating.vehicleId"></a>
-                </dd>
-
-                <dt class="col-sm-5">Vehicle Score</dt>
-                <dd class="col-sm-7">
-                    <span class="badge bg-success fs-6"
-                          th:text="${rating.vehicleScore} + ' / 5'"></span>
-                </dd>
-
-                <dt class="col-sm-5">Provider ID</dt>
-                <dd class="col-sm-7">
-                    <a th:href="@{/ratings/provider/{id}(id=${rating.providerId})}"
-                       th:text="'#' + rating.providerId"></a>
-                </dd>
-
-                <dt class="col-sm-5">Provider Score</dt>
-                <dd class="col-sm-7">
-                    <span class="badge bg-info text-dark fs-6"
-                          th:text="${rating.providerScore} + ' / 5'"></span>
-                </dd>
-
-                <dt class="col-sm-5">Comment</dt>
-                <dd class="col-sm-7 fst-italic"
-                    th:text="${rating.comment != null and !rating.comment.isEmpty()} ? rating.comment : '—'">
-                </dd>
-
-                <dt class="col-sm-5">Submitted at</dt>
-                <dd class="col-sm-7"
-                    th:text="${#temporals.format(rating.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></dd>
-            </dl>
-        </div>
-        <div class="card-footer d-flex gap-2">
-            <a th:href="@{/ratings}" class="btn btn-sm btn-outline-secondary">Back to list</a>
-            <a th:href="@{/ratings/vehicle/{id}(id=${rating.vehicleId})}"
-               class="btn btn-sm btn-outline-primary">Vehicle ratings</a>
-            <a th:href="@{/ratings/provider/{id}(id=${rating.providerId})}"
-               class="btn btn-sm btn-outline-info">Provider ratings</a>
+        <div class="link-group">
+            <a class="link-button secondary-button" th:href="@{/ratings}">← All Ratings</a>
+            <a class="link-button secondary-button"
+               th:href="@{/ratings/vehicle/{id}(id=${rating.vehicleId})}">Vehicle Ratings</a>
+            <a class="link-button secondary-button"
+               th:href="@{/ratings/provider/{id}(id=${rating.providerId})}">Provider Ratings</a>
         </div>
     </div>
+
+    <div class="panel">
+        <h2>Scores</h2>
+        <div class="detail-grid">
+            <span class="detail-label">Vehicle</span>
+            <span class="detail-value">
+                #<a th:href="@{/ratings/vehicle/{id}(id=${rating.vehicleId})}"
+                    th:text="${rating.vehicleId}"></a>
+                &nbsp;
+                <span class="status"
+                      th:classappend="${rating.vehicleScore >= 4} ? 'score-high' : (${rating.vehicleScore == 3} ? 'score-mid' : 'score-low')"
+                      th:text="${rating.vehicleScore} + ' / 5'"></span>
+            </span>
+
+            <hr class="detail-divider">
+
+            <span class="detail-label">Provider</span>
+            <span class="detail-value">
+                #<a th:href="@{/ratings/provider/{id}(id=${rating.providerId})}"
+                    th:text="${rating.providerId}"></a>
+                &nbsp;
+                <span class="status"
+                      th:classappend="${rating.providerScore >= 4} ? 'score-high' : (${rating.providerScore == 3} ? 'score-mid' : 'score-low')"
+                      th:text="${rating.providerScore} + ' / 5'"></span>
+            </span>
+
+            <hr class="detail-divider">
+
+            <span class="detail-label">Comment</span>
+            <span class="detail-value"
+                  th:if="${rating.comment != null and !rating.comment.isEmpty()}"
+                  th:text="${rating.comment}"
+                  style="font-style: italic;"></span>
+            <span class="detail-value" style="color: #aab;"
+                  th:if="${rating.comment == null or rating.comment.isEmpty()}">No comment left.</span>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Reference IDs</h2>
+        <div class="detail-grid">
+            <span class="detail-label">Rating ID</span>
+            <span class="detail-value" th:text="${rating.ratingId}"></span>
+
+            <hr class="detail-divider">
+
+            <span class="detail-label">Booking ID</span>
+            <span class="detail-value" th:text="${rating.bookingId}"></span>
+
+            <hr class="detail-divider">
+
+            <span class="detail-label">User ID</span>
+            <span class="detail-value" th:text="${rating.userId}"></span>
+
+            <hr class="detail-divider">
+
+            <span class="detail-label">Submitted at</span>
+            <span class="detail-value"
+                  th:text="${#temporals.format(rating.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></span>
+        </div>
+    </div>
+
 </div>
 </body>
 </html>
