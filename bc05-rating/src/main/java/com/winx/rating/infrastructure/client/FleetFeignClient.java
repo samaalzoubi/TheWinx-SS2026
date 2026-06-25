@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name = "bc02-fleet-management", fallback = FleetFeignFallback.class)
 public interface FleetFeignClient {
 
-    @GetMapping("/api/vehicles/{id}")
+    @GetMapping("/vehicles/{id}")
     VehicleResponse getVehicle(@PathVariable("id") Long vehicleId);
 }

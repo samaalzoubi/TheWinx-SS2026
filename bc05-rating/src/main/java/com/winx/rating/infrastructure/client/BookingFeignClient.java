@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name = "bc03-booking", fallback = BookingFeignFallback.class)
 public interface BookingFeignClient {
 
-    @GetMapping("/api/bookings/{id}")
+    @GetMapping("/bookings/{id}")
     BookingStatusResponse getBooking(@PathVariable("id") Long bookingId);
 }
