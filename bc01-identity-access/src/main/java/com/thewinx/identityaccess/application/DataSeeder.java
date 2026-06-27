@@ -1,17 +1,18 @@
 package com.thewinx.identityaccess.application;
 
-import com.thewinx.identityaccess.domain.Role;
-import com.thewinx.identityaccess.domain.UserAccount;
-import com.thewinx.identityaccess.infrastructure.RoleRepository;
-import com.thewinx.identityaccess.infrastructure.UserAccountRepository;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
-
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
 import java.util.Set;
+
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+
+import com.thewinx.identityaccess.domain.Role;
+import com.thewinx.identityaccess.domain.UserAccount;
+import com.thewinx.identityaccess.infrastructure.RoleRepository;
+import com.thewinx.identityaccess.infrastructure.UserAccountRepository;
 
 @Component
 public class DataSeeder implements CommandLineRunner {

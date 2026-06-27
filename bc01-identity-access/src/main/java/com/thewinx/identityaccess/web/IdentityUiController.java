@@ -16,28 +16,41 @@ import com.thewinx.identityaccess.api.dto.UserResponse;
 import com.thewinx.identityaccess.application.FleetService;
 import com.thewinx.identityaccess.application.IdentityAccessService;
 import com.thewinx.identityaccess.application.UnauthorizedException;
+import com.thewinx.identityaccess.infrastructure.fleet.FleetClient;
+import com.thewinx.identityaccess.infrastructure.fleet.dto.VehicleDto;
+import java.util.List;
 
 @Controller
 public class IdentityUiController {
 
     private final IdentityAccessService identityAccessService;
     private final FleetService fleetService;
+    private final FleetClient fleetClient;
 
-    public IdentityUiController(IdentityAccessService identityAccessService, FleetService fleetService) {
+    public IdentityUiController(IdentityAccessService identityAccessService, FleetService fleetService, FleetClient fleetClient) {
         this.identityAccessService = identityAccessService;
         this.fleetService = fleetService;
+        this.fleetClient = fleetClient;
     }
 
     @GetMapping("/")
     public String home(Model model) {
         model.addAttribute("users", identityAccessService.listUsers().stream().map(UserResponse::from).toList());
         var bookings = fleetService.listBookings();
-        model.addAttribute("vehicles", fleetService.listVehicles());
         model.addAttribute("fleetBookings", bookings);
         Map<Long, FleetService.BookingView> activeBookingsByVehicle = bookings.stream()
             .filter(booking -> "CONFIRMED".equals(booking.getStatus()) || "PENDING".equals(booking.getStatus()))
             .collect(Collectors.toMap(FleetService.BookingView::getVehicleId, Function.identity(), (left, right) -> left));
         model.addAttribute("activeBookingsByVehicle", activeBookingsByVehicle);
+
+        List<VehicleDto> vehicles;
+        try {
+            vehicles = fleetClient.getAllVehicles();
+        } catch (Exception e) {
+            vehicles = List.of();
+        }
+        model.addAttribute("vehicles", vehicles);
+
         return "index";
     }
 
@@ -102,7 +115,33 @@ public class IdentityUiController {
 
     @GetMapping("/ui/dashboard")
     public String userDashboard(Model model) {
-        model.addAttribute("defaultUsername", "demo.user");
+        String username = "demo.user";
+        model.addAttribute("defaultUsername", username);
+
+        List<VehicleDto> vehicles;
+        try {
+            vehicles = fleetClient.getAllVehicles();
+        } catch (Exception e) {
+            vehicles = List.of();
+        }
+        List<FleetService.BookingView> bookings = fleetService.listBookingsByUsername(username);
+
+        long statAvailable = vehicles.stream().filter(VehicleDto::isAvailable).count();
+        long statMyBookings = bookings.size();
+        long statActive = bookings.stream()
+                .filter(b -> "CONFIRMED".equalsIgnoreCase(b.getStatus()) || "PENDING".equalsIgnoreCase(b.getStatus()))
+                .count();
+        long statCompleted = bookings.stream()
+                .filter(b -> "COMPLETED".equalsIgnoreCase(b.getStatus()))
+                .count();
+
+        model.addAttribute("vehicles", vehicles);
+        model.addAttribute("bookings", bookings);
+        model.addAttribute("statAvailable", statAvailable);
+        model.addAttribute("statMyBookings", statMyBookings);
+        model.addAttribute("statActive", statActive);
+        model.addAttribute("statCompleted", statCompleted);
+
         return "user-dashboard";
     }
 

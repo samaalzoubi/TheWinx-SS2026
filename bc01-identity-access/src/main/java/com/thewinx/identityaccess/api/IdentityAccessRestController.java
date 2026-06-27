@@ -22,6 +22,8 @@ import com.thewinx.identityaccess.api.dto.UserResponse;
 import com.thewinx.identityaccess.api.dto.VehicleBookingRequest;
 import com.thewinx.identityaccess.application.FleetService;
 import com.thewinx.identityaccess.application.IdentityAccessService;
+import com.thewinx.identityaccess.infrastructure.fleet.FleetClient;
+import com.thewinx.identityaccess.infrastructure.fleet.dto.VehicleDto;
 
 import jakarta.validation.Valid;
 
@@ -31,10 +33,12 @@ public class IdentityAccessRestController {
 
     private final IdentityAccessService identityAccessService;
     private final FleetService fleetService;
+    private final FleetClient fleetClient;
 
-    public IdentityAccessRestController(IdentityAccessService identityAccessService, FleetService fleetService) {
+    public IdentityAccessRestController(IdentityAccessService identityAccessService, FleetService fleetService, FleetClient fleetClient) {
         this.identityAccessService = identityAccessService;
         this.fleetService = fleetService;
+        this.fleetClient = fleetClient;
     }
 
     @PostMapping("/users")
@@ -83,8 +87,8 @@ public class IdentityAccessRestController {
     }
 
     @GetMapping("/fleet/vehicles")
-    public List<FleetService.VehicleView> listVehicles() {
-        return fleetService.listVehicles();
+    public List<VehicleDto> listVehicles() {
+        return fleetClient.getAllVehicles();
     }
 
     @GetMapping("/fleet/bookings")

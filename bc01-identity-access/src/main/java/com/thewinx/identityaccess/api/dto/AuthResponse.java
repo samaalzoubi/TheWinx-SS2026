@@ -1,8 +1,8 @@
 package com.thewinx.identityaccess.api.dto;
 
-import com.thewinx.identityaccess.application.AuthenticationResult;
-
 import java.util.Set;
+
+import com.thewinx.identityaccess.application.AuthenticationResult;
 
 public class AuthResponse {
 

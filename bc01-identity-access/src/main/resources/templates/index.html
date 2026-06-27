@@ -99,8 +99,6 @@
                     <th>Type</th>
                     <th>Price/Day (EUR)</th>
                     <th>Availability</th>
-                    <th>Booked By</th>
-                    <th>Dates</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -114,8 +112,6 @@
                               th:text="${vehicle.available} ? 'AVAILABLE' : 'BOOKED'"
                               th:classappend="${vehicle.available} ? ' status-active' : ' status-inactive'"></span>
                     </td>
-                    <td th:text="${activeBookingsByVehicle[vehicle.id] != null ? activeBookingsByVehicle[vehicle.id].username : '-'}"></td>
-                    <td th:text="${activeBookingsByVehicle[vehicle.id] != null ? activeBookingsByVehicle[vehicle.id].pickupDate + ' to ' + activeBookingsByVehicle[vehicle.id].returnDate : '-'}"></td>
                 </tr>
                 </tbody>
             </table>

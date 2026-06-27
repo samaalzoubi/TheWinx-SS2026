@@ -6,195 +6,13 @@
     <title>TheWinx – My Dashboard</title>
     <link rel="stylesheet" href="/styles.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <style>
-        /* ── Page layout ─────────────────────────────────────── */
-        .user-shell {
-            width: min(1180px, calc(100% - 2rem));
-            margin: 1.5rem auto 3rem;
-            display: grid;
-            gap: 1rem;
-        }
+        <link rel="stylesheet" href="/dashboard.css">
 
-        /* ── Top-bar ─────────────────────────────────────────── */
-        .topbar {
-            background: #ffffff;
-            border: 1px solid var(--line);
-            border-radius: 16px;
-            padding: 1rem 1.4rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-            box-shadow: 0 4px 14px rgba(17,34,64,.06);
-        }
-        .topbar-brand { display: flex; align-items: center; gap: 0.65rem; }
-        .topbar-brand .badge-bc { font-size: 0.7rem; font-weight: 700;
-            text-transform: uppercase; letter-spacing: .07em;
-            background: #e6f0fb; color: #1a6fc4; border-radius: 6px; padding: 2px 8px; }
-        .topbar-brand h1 { margin: 0; font-size: 1.15rem; font-family: "Space Grotesk", sans-serif; }
-        .topbar-actions { display: flex; align-items: center; gap: 0.6rem; }
-        .btn-logout {
-            background: none; border: 1px solid var(--line);
-            border-radius: 10px; color: var(--muted); font-size: .85rem;
-            padding: .4rem 1rem; cursor: pointer; text-decoration: none;
-        }
-        .btn-logout:hover { background: #f4f6fa; color: var(--ink); }
-
-        /* ── Hero banner ─────────────────────────────────────── */
-        .hero-banner {
-            background: linear-gradient(135deg, #1a6fc4 0%, #0e4f9b 100%);
-            border-radius: 16px;
-            padding: 2rem 2rem;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-        }
-        .hero-banner h2 { margin: 0; font-size: 1.5rem; font-family: "Space Grotesk", sans-serif; }
-        .hero-banner p  { margin: .4rem 0 0; opacity: .85; font-size: .95rem; }
-        .hero-icon { font-size: 3.5rem; opacity: .18; user-select: none; }
-
-        /* ── Stats strip ─────────────────────────────────────── */
-        .stats-strip {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 1rem;
-        }
-        .stat-card {
-            background: #ffffff;
-            border: 1px solid var(--line);
-            border-radius: 14px;
-            padding: 1rem 1.2rem;
-            display: flex;
-            flex-direction: column;
-            gap: .25rem;
-            box-shadow: 0 4px 14px rgba(17,34,64,.05);
-        }
-        .stat-label { font-size: .76rem; text-transform: uppercase; letter-spacing: .06em;
-            color: var(--muted); font-weight: 600; }
-        .stat-value { font-size: 1.7rem; font-weight: 700; font-family: "Space Grotesk", sans-serif; color: var(--ink); }
-        .stat-sub   { font-size: .78rem; color: var(--muted); }
-
-        /* ── Section panel ───────────────────────────────────── */
-        .section-panel {
-            background: #ffffff;
-            border: 1px solid var(--line);
-            border-radius: 16px;
-            padding: 1.4rem;
-            box-shadow: 0 4px 18px rgba(17,34,64,.07);
-        }
-        .section-panel h3 {
-            margin: 0 0 1rem;
-            font-size: 1rem;
-            font-family: "Space Grotesk", sans-serif;
-            display: flex;
-            align-items: center;
-            gap: .45rem;
-        }
-        .section-panel h3 .dot {
-            display: inline-block; width: 8px; height: 8px;
-            border-radius: 50%; background: #1a6fc4;
-        }
-
-        /* ── Filter bar ──────────────────────────────────────── */
-        .filter-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: .6rem;
-            margin-bottom: 1.1rem;
-        }
-        .filter-bar input, .filter-bar select {
-            border: 1px solid var(--line);
-            border-radius: 10px;
-            padding: .42rem .85rem;
-            font-size: .88rem;
-            background: #f8fafc;
-            color: var(--ink);
-            outline: none;
-        }
-        .filter-bar input:focus, .filter-bar select:focus {
-            border-color: #1a6fc4;
-            background: #fff;
-        }
-
-        /* ── Vehicle grid ────────────────────────────────────── */
-        .vehicle-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 1rem;
-        }
-        .vehicle-card {
-            border: 1px solid var(--line);
-            border-radius: 14px;
-            overflow: hidden;
-            background: #ffffff;
-            transition: box-shadow .18s, transform .18s;
-        }
-        .vehicle-card:hover { box-shadow: 0 8px 24px rgba(17,34,64,.13); transform: translateY(-2px); }
-        .vehicle-card-img {
-            width: 100%; height: 140px; object-fit: cover;
-            background: linear-gradient(135deg, #dce9f7 0%, #c5d9f0 100%);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 3rem; color: #a0bcd6; user-select: none;
-        }
-        .vehicle-card-body { padding: .85rem 1rem 1rem; }
-        .vehicle-card-body h4 { margin: 0 0 .2rem; font-size: .97rem; font-weight: 700; }
-        .vehicle-card-meta { font-size: .8rem; color: var(--muted); margin-bottom: .7rem; }
-        .vehicle-card-footer {
-            display: flex; align-items: center;
-            justify-content: space-between; margin-top: .5rem;
-        }
-        .price-tag { font-size: .95rem; font-weight: 700; color: #1a6fc4; }
-        .availability-badge {
-            font-size: .7rem; font-weight: 700; border-radius: 6px;
-            padding: 2px 8px; text-transform: uppercase; letter-spacing: .05em;
-        }
-        .avail-yes { background: #e2f8ec; color: #1e7e4a; }
-        .avail-no  { background: #fce8e8; color: #b93333; }
-
-        .btn-book {
-            margin-top: .75rem;
-            width: 100%;
-            background: #1a6fc4;
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            padding: .48rem 0;
-            font-size: .88rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background .15s;
-        }
-        .btn-book:hover { background: #155fa8; }
-        .btn-book:disabled { background: #b0c4d8; cursor: not-allowed; }
-
-        /* ── Booking modal ───────────────────────────────────── */
-        .modal-body label { font-size: .88rem; font-weight: 600; }
-        .modal-body .form-control { font-size: .9rem; }
-        .modal-footer .btn-primary { background: #1a6fc4; border-color: #1a6fc4; }
-
-        /* ── My bookings table ───────────────────────────────── */
-        .bookings-table th { font-size: .78rem; text-transform: uppercase;
-            letter-spacing: .06em; color: var(--muted); font-weight: 600; border: none; }
-        .bookings-table td { font-size: .88rem; vertical-align: middle; }
-        .status-pill { display: inline-block; border-radius: 20px; padding: 2px 12px;
-            font-size: .73rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
-        .pill-confirmed { background: #e2f8ec; color: #1e7e4a; }
-        .pill-pending   { background: #fff4e0; color: #a0620a; }
-        .pill-cancelled { background: #fce8e8; color: #b93333; }
-        .pill-completed { background: #eff1f5; color: #4a5568; }
-
-        @media (max-width: 640px) {
-            .hero-banner { flex-direction: column; text-align: center; }
-            .hero-icon { display: none; }
-        }
-    </style>
 </head>
 <body>
 <div class="user-shell">
 
-    <!-- ── Top-bar ─────────────────────────────────────────── -->
+  
     <nav class="topbar">
         <div class="topbar-brand">
             <span class="badge-bc">User Portal</span>
@@ -205,7 +23,7 @@
         </div>
     </nav>
 
-    <!-- ── Hero ────────────────────────────────────────────── -->
+  
     <div class="hero-banner">
         <div>
             <h2>Browse &amp; Book Vehicles</h2>
@@ -214,31 +32,31 @@
         <div class="hero-icon" aria-hidden="true">🚗</div>
     </div>
 
-    <!-- ── Quick stats ──────────────────────────────────────── -->
+
     <div class="stats-strip">
         <div class="stat-card">
             <span class="stat-label">Available Now</span>
-            <span class="stat-value" id="stat-available">–</span>
+            <span class="stat-value" id="stat-available" th:text="${statAvailable}">–</span>
             <span class="stat-sub">vehicles ready to book</span>
         </div>
         <div class="stat-card">
             <span class="stat-label">My Bookings</span>
-            <span class="stat-value" id="stat-my-bookings">–</span>
+            <span class="stat-value" id="stat-my-bookings" th:text="${statMyBookings}">–</span>
             <span class="stat-sub">total reservations</span>
         </div>
         <div class="stat-card">
             <span class="stat-label">Active Trips</span>
-            <span class="stat-value" id="stat-active">–</span>
+            <span class="stat-value" id="stat-active" th:text="${statActive}">–</span>
             <span class="stat-sub">currently in use</span>
         </div>
         <div class="stat-card">
             <span class="stat-label">Completed</span>
-            <span class="stat-value" id="stat-completed">–</span>
+            <span class="stat-value" id="stat-completed" th:text="${statCompleted}">–</span>
             <span class="stat-sub">past trips</span>
         </div>
     </div>
 
-    <!-- ── Vehicle catalogue ────────────────────────────────── -->
+
     <div class="section-panel">
         <h3><span class="dot"></span> Available Vehicles</h3>
 
@@ -259,15 +77,26 @@
         </div>
 
         <div class="vehicle-grid" id="vehicleGrid">
-            <!-- Cards are injected by JS from mock data -->
+            <div th:each="v : ${vehicles}" class="vehicle-card" th:data-id="${v.id}">
+                <div class="vehicle-card-img" th:text="${v.icon}">🚗</div>
+                <div class="vehicle-card-body">
+                    <h4 th:text="${v.name}">Vehicle Name</h4>
+                    <div class="vehicle-card-meta" th:text="${v.type} + ' · ' + ${v.seats} + ' seats · ' + ${v.plate}">Type · Seats · Plate</div>
+                    <div class="vehicle-card-footer">
+                        <span class="price-tag" th:text="'EUR ' + ${v.pricePerDay} + '/day'">EUR 0.0/day</span>
+                        <span class="availability-badge" th:classappend="${v.available} ? 'avail-yes' : 'avail-no'" th:text="${v.available} ? 'Available' : 'Booked'">Available</span>
+                    </div>
+                    <button class="btn-book" th:disabled="${!v.available}" th:onclick="'openBookModal(' + ${v.id} + ')'" th:text="${v.available} ? 'Book Now' : 'Unavailable'">Book Now</button>
+                </div>
+            </div>
         </div>
 
-        <p class="text-muted mt-3 mb-0" id="noResults" style="display:none; font-size:.9rem;">
+        <p class="text-muted mt-3 mb-0" id="noResults" th:style="${#lists.isEmpty(vehicles)} ? 'display:block; font-size:.9rem;' : 'display:none; font-size:.9rem;'">
             No vehicles match your filters.
         </p>
     </div>
 
-    <!-- ── My bookings ──────────────────────────────────────── -->
+
     <div class="section-panel">
         <h3><span class="dot"></span> My Bookings</h3>
         <div class="table-responsive">
@@ -283,10 +112,29 @@
                 </tr>
                 </thead>
                 <tbody id="bookingsTbody">
-                <!-- Rows injected by JS -->
+                <tr th:each="b : ${bookings}">
+                    <td th:text="${b.id}">#</td>
+                    <td><strong th:text="${b.vehicleName}">Vehicle Name</strong><br><small class="text-muted" th:text="${b.plate}">Plate</small></td>
+                    <td th:text="${b.pickupDate}">Pick-up Date</td>
+                    <td th:text="${b.returnDate}">Return Date</td>
+                    <td>
+                        <span class="status-pill"
+                              th:classappend="${b.status != null} ? 
+                                              (${#strings.toUpperCase(b.status) == 'CONFIRMED'} ? 'pill-confirmed' : 
+                                               (${#strings.toUpperCase(b.status) == 'PENDING'} ? 'pill-pending' : 
+                                                (${#strings.toUpperCase(b.status) == 'CANCELLED'} ? 'pill-cancelled' : 
+                                                 (${#strings.toUpperCase(b.status) == 'COMPLETED'} ? 'pill-completed' : 'pill-pending')))) : 'pill-pending'"
+                              th:text="${b.status != null ? #strings.toUpperCase(b.status) : 'PENDING'}">PENDING</span>
+                    </td>
+                    <td>
+                        <button th:if="${b.status != null and (#strings.toUpperCase(b.status) == 'CONFIRMED' or #strings.toUpperCase(b.status) == 'PENDING')}"
+                                class="btn btn-outline-danger btn-sm" th:onclick="'cancelBooking(' + ${b.id} + ')'">Cancel</button>
+                        <span th:unless="${b.status != null and (#strings.toUpperCase(b.status) == 'CONFIRMED' or #strings.toUpperCase(b.status) == 'PENDING')}">–</span>
+                    </td>
+                </tr>
                 </tbody>
             </table>
-            <p class="text-muted" id="noBookings" style="font-size:.9rem;">
+            <p class="text-muted" id="noBookings" th:style="${#lists.isEmpty(bookings)} ? 'font-size:.9rem;' : 'display:none; font-size:.9rem;'">
                 You have no bookings yet. Browse the vehicles above and make your first reservation!
             </p>
         </div>
@@ -294,7 +142,7 @@
 
 </div><!-- /user-shell -->
 
-<!-- ── Booking modal ────────────────────────────────────────── -->
+
 <div class="modal fade" id="bookModal" tabindex="-1" aria-labelledby="bookModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -339,176 +187,7 @@
 <script th:inline="javascript">
 const API_BASE = "/api/v1/identity/fleet";
 const currentUsername = /*[[${defaultUsername}]]*/ "demo.user";
-let vehicles = [];
-let myBookings = [];
-let selectedVehicleId = null;
-
-document.addEventListener("DOMContentLoaded", async () => {
-    const today = new Date().toISOString().split("T")[0];
-    document.getElementById("pickupDate").min = today;
-    document.getElementById("returnDate").min = today;
-    await refreshData();
-});
-
-async function refreshData() {
-    const [vehicleRes, bookingRes] = await Promise.all([
-        fetch(`${API_BASE}/vehicles`),
-        fetch(`${API_BASE}/bookings?username=${encodeURIComponent(currentUsername)}`)
-    ]);
-
-    vehicles = await vehicleRes.json();
-    myBookings = await bookingRes.json();
-
-    filterVehicles();
-    updateStats();
-    renderBookings();
-}
-
-// ── Render vehicle cards ────────────────────────────────────────
-function renderVehicles(list) {
-    const grid = document.getElementById("vehicleGrid");
-    const noResults = document.getElementById("noResults");
-    grid.innerHTML = "";
-    if (list.length === 0) { noResults.style.display = "block"; return; }
-    noResults.style.display = "none";
-    list.forEach(v => {
-        const card = document.createElement("div");
-        card.className = "vehicle-card";
-        card.dataset.id = v.id;
-        card.innerHTML = `
-            <div class="vehicle-card-img">${v.icon}</div>
-            <div class="vehicle-card-body">
-                <h4>${v.name}</h4>
-                <div class="vehicle-card-meta">${v.type} · ${v.seats} seats · ${v.plate}</div>
-                <div class="vehicle-card-footer">
-                    <span class="price-tag">EUR ${v.pricePerDay}/day</span>
-                    <span class="availability-badge ${v.available ? "avail-yes" : "avail-no"}">
-                        ${v.available ? "Available" : "Booked"}
-                    </span>
-                </div>
-                <button class="btn-book" ${v.available ? "" : "disabled"}
-                    onclick="openBookModal(${v.id})">
-                    ${v.available ? "Book Now" : "Unavailable"}
-                </button>
-            </div>`;
-        grid.appendChild(card);
-    });
-}
-
-// ── Filter ─────────────────────────────────────────────────────
-function filterVehicles() {
-    const q     = document.getElementById("searchInput").value.toLowerCase();
-    const type  = document.getElementById("typeFilter").value;
-    const avail = document.getElementById("availFilter").value;
-    const filtered = vehicles.filter(v => {
-        const matchQ = !q || v.name.toLowerCase().includes(q) || v.plate.toLowerCase().includes(q);
-        const matchT = !type  || v.type === type;
-        const matchA = avail === "" || String(v.available) === avail;
-        return matchQ && matchT && matchA;
-    });
-    renderVehicles(filtered);
-}
-
-// ── Booking modal ──────────────────────────────────────────────
-function openBookModal(vehicleId) {
-    selectedVehicleId = vehicleId;
-    const v = vehicles.find(x => x.id === vehicleId);
-    document.getElementById("bookVehicleInfo").textContent = `${v.name} (${v.plate}) — EUR ${v.pricePerDay}/day`;
-    document.getElementById("pickupDate").value = "";
-    document.getElementById("returnDate").value = "";
-    document.getElementById("bookNotes").value = "";
-    new bootstrap.Modal(document.getElementById("bookModal")).show();
-}
-
-async function confirmBooking() {
-    const pickup = document.getElementById("pickupDate").value;
-    const ret    = document.getElementById("returnDate").value;
-    if (!pickup || !ret) { alert("Please select both pick-up and return dates."); return; }
-    if (ret <= pickup)   { alert("Return date must be after pick-up date."); return; }
-
-    const response = await fetch(`${API_BASE}/bookings`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            vehicleId: selectedVehicleId,
-            username: currentUsername,
-            pickupDate: pickup,
-            returnDate: ret
-        })
-    });
-
-    if (!response.ok) {
-        alert("Unable to complete booking. Please try another vehicle.");
-        return;
-    }
-
-    const booking = await response.json();
-    await refreshData();
-
-    const v = vehicles.find(x => x.id === booking.vehicleId);
-
-    bootstrap.Modal.getInstance(document.getElementById("bookModal")).hide();
-    showToast(`${v ? v.name : "Vehicle"} booked from ${pickup} to ${ret}!`);
-}
-
-// ── Cancel booking ─────────────────────────────────────────────
-async function cancelBooking(bookingId) {
-    if (!confirm("Cancel this booking?")) return;
-
-    const response = await fetch(`${API_BASE}/bookings/${bookingId}/cancel`, { method: "POST" });
-    if (!response.ok) {
-        alert("Unable to cancel booking right now.");
-        return;
-    }
-
-    await refreshData();
-    showToast("Booking cancelled.", false);
-}
-
-// ── Render bookings table ───────────────────────────────────────
-function renderBookings() {
-    const tbody = document.getElementById("bookingsTbody");
-    const noMsg = document.getElementById("noBookings");
-    tbody.innerHTML = "";
-    if (myBookings.length === 0) { noMsg.style.display = "block"; return; }
-    noMsg.style.display = "none";
-    myBookings.forEach((b) => {
-        const status = (b.status || "").toUpperCase();
-        const pillClass = { CONFIRMED: "pill-confirmed", PENDING: "pill-pending",
-            CANCELLED: "pill-cancelled", COMPLETED: "pill-completed" }[status] || "pill-pending";
-        const canCancel = status === "CONFIRMED" || status === "PENDING";
-        const row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${b.id}</td>
-            <td><strong>${b.vehicleName}</strong><br><small class="text-muted">${b.plate}</small></td>
-            <td>${b.pickupDate}</td>
-            <td>${b.returnDate}</td>
-            <td><span class="status-pill ${pillClass}">${status || "PENDING"}</span></td>
-            <td>${canCancel
-                ? `<button class="btn btn-outline-danger btn-sm" onclick="cancelBooking(${b.id})">Cancel</button>`
-                : "–"}</td>`;
-        tbody.appendChild(row);
-    });
-}
-
-// ── Stats ───────────────────────────────────────────────────────
-function updateStats() {
-    const available  = vehicles.filter(v => v.available).length;
-    const active     = myBookings.filter(b => ["CONFIRMED", "PENDING"].includes((b.status || "").toUpperCase())).length;
-    const completed  = myBookings.filter(b => (b.status || "").toUpperCase() === "COMPLETED").length;
-    document.getElementById("stat-available").textContent   = available;
-    document.getElementById("stat-my-bookings").textContent = myBookings.length;
-    document.getElementById("stat-active").textContent      = active;
-    document.getElementById("stat-completed").textContent   = completed;
-}
-
-// ── Toast helper ───────────────────────────────────────────────
-function showToast(msg, success = true) {
-    const toastEl = document.getElementById("bookToast");
-    document.getElementById("toastMsg").textContent = msg;
-    toastEl.className = `toast align-items-center text-bg-${success ? "success" : "secondary"} border-0`;
-    bootstrap.Toast.getOrCreateInstance(toastEl, { delay: 3500 }).show();
-}
 </script>
+<script th:src="@{/dashboard.js}" src="/dashboard.js"></script>
 </body>
 </html>

@@ -13,7 +13,7 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 @Service
 public class AdjacentContextMockService {
 
-    // ------------------------------------------------------------------ BC-03 Booking
+    // BC-03 Booking
 
     @CircuitBreaker(name = "bc03-booking", fallbackMethod = "verifyIdentityForBookingFallback")
     public BookingIdentityCheckResponse verifyIdentityForBooking(String username) {
@@ -25,7 +25,7 @@ public class AdjacentContextMockService {
         return new BookingIdentityCheckResponse(false, "Booking service unavailable – circuit open");
     }
 
-    // ------------------------------------------------------------------ BC-04 Payment
+    //  BC-04 Payment
 
     @CircuitBreaker(name = "bc04-payment", fallbackMethod = "checkPaymentEligibilityFallback")
     public PaymentEligibilityResponse checkPaymentEligibility(Long userId) {
@@ -37,7 +37,7 @@ public class AdjacentContextMockService {
         return new PaymentEligibilityResponse(userId, false, "Payment service unavailable – circuit open");
     }
 
-    // ------------------------------------------------------------------ BC-02 Fleet / Provider
+    // BC-02 Fleet / Provider
 
     @CircuitBreaker(name = "bc02-fleet", fallbackMethod = "checkProviderPortalAccessFallback")
     public ProviderAccessResponse checkProviderPortalAccess(Long userId) {

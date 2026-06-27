@@ -42,25 +42,19 @@ public class FleetService {
     }
 
     public synchronized BookingView createBooking(Long vehicleId, String username, LocalDate pickupDate, LocalDate returnDate) {
-        VehicleView vehicle = vehicles.get(vehicleId);
-        if (vehicle == null) {
-            throw new NotFoundException("Vehicle not found");
-        }
-        if (!vehicle.isAvailable()) {
-            throw new DuplicateResourceException("Vehicle is already booked");
-        }
         if (!returnDate.isAfter(pickupDate)) {
             throw new IllegalArgumentException("Return date must be after pick-up date");
         }
-
-        vehicle.setAvailable(false);
+        if (hasActiveBookingForVehicle(vehicleId)) {
+            throw new DuplicateResourceException("Vehicle is already booked");
+        }
 
         long bookingId = bookingIdSequence.getAndIncrement();
         BookingView booking = new BookingView(
             bookingId,
-            vehicle.getId(),
-            vehicle.getName(),
-            vehicle.getPlate(),
+            vehicleId,
+            "Vehicle #" + vehicleId,  // name resolved by JS from the vehicles list
+            "VEH-" + String.format("%03d", vehicleId),
             username,
             pickupDate,
             returnDate,

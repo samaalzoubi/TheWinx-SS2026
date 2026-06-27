@@ -28,7 +28,6 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
     register-with-eureka: true
     fetch-registry: true
-
 resilience4j:
   circuitbreaker:
     instances:
@@ -44,9 +43,19 @@ resilience4j:
         sliding-window-size: 5
         failure-rate-threshold: 50
         wait-duration-in-open-state: 10s
-
+        
 management:
   endpoints:
     web:
       exposure:
         include: health,info,metrics,circuitbreakers
+
+# Feign client configuration
+feign:
+  circuitbreaker:
+    enabled: true
+
+# Direct URL for bc02-fleet-management (used when Eureka is not running)
+fleet:
+  service:
+    url: http://localhost:8090
