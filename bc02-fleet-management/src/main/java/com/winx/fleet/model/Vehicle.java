@@ -13,6 +13,8 @@ public class Vehicle {
 
     private Long providerId;
 
+    private String name;
+
     @Enumerated(EnumType.STRING)
     private VehicleType type;
 
@@ -48,6 +50,14 @@ public class Vehicle {
 
     public void setProviderId(Long providerId) {
         this.providerId = providerId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public VehicleType getType() {

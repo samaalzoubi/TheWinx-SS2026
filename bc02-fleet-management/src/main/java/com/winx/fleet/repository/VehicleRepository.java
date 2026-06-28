@@ -10,9 +10,13 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 
     List<Vehicle> findByProviderId(Long providerId);
 
+    boolean existsByProviderIdAndNameIgnoreCase(Long providerId, String name);
+
     @Query("""
             SELECT v FROM Vehicle v
             WHERE
+                v.status = 'AVAILABLE'
+                AND
                 (6371 * acos(
                     cos(radians(:lat)) * cos(radians(v.currentLatitude)) *
                     cos(radians(v.currentLongitude) - radians(:lon)) +

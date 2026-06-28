@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 public class CreateVehicleRequest {
 
     public Long providerId;
+    public String name;
     public VehicleType type;
     public String description;
     public BigDecimal pricePerUnit;

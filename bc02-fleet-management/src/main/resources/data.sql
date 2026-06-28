@@ -1,5 +1,6 @@
 INSERT INTO vehicles (
     provider_id,
+    name,
     type,
     description,
     status,
@@ -13,11 +14,11 @@ INSERT INTO vehicles (
     max_persons
 )
 VALUES
-(1, 'E_SCOOTER', 'Tier E-Scooter - Dortmund City', 'AVAILABLE', 51.5136, 7.4653, 0.25, 'PER_KILOMETER', 120, 30, 18, 1),
-(1, 'BICYCLE', 'Nextbike City Bicycle', 'AVAILABLE', 51.5142, 7.4628, 2.00, 'PER_HOUR', 240, 50, 16, 1),
-(1, 'E_BIKE', 'Lime E-Bike', 'BOOKED', 51.5150, 7.4680, 3.50, 'PER_HOUR', 180, 60, 18, 1),
-(2, 'E_CAR', 'ShareNow Electric Car', 'AVAILABLE', 51.5105, 7.4701, 12.00, 'PER_HOUR', 480, 250, 21, 4),
-(2, 'E_SCOOTER', 'Voi E-Scooter', 'AVAILABLE', 51.5161, 7.4599, 0.30, 'PER_KILOMETER', 120, 25, 18, 1),
-(2, 'BICYCLE', 'Swapfiets Bicycle', 'BOOKED', 51.5180, 7.4665, 1.50, 'PER_HOUR', 300, 70, 16, 1),
-(3, 'E_BIKE', 'Bolt E-Bike', 'AVAILABLE', 51.5122, 7.4720, 3.00, 'PER_HOUR', 180, 50, 18, 1),
-(3, 'E_CAR', 'Sixt Electric Car', 'AVAILABLE', 51.5098, 7.4612, 15.00, 'PER_HOUR', 720, 300, 21, 5);
+(1, 'Tier E-Scooter', 'E_SCOOTER', 'Dortmund City vehicle', 'AVAILABLE', 51.5136, 7.4653, 8.00, 'PER_DAY', 120, 30, 18, 1),
+(1, 'Nextbike Bicycle', 'BICYCLE', 'City bicycle near Dortmund Hbf', 'AVAILABLE', 51.5142, 7.4628, 6.00, 'PER_DAY', 240, 50, 16, 1),
+(1, 'Lime E-Bike', 'E_BIKE', 'Electric bike for city travel', 'BOOKED', 51.5150, 7.4680, 12.00, 'PER_DAY', 180, 60, 18, 1),
+(2, 'ShareNow E-Car', 'E_CAR', 'Electric car for short trips', 'AVAILABLE', 51.5105, 7.4701, 45.00, 'PER_DAY', 480, 250, 21, 4),
+(2, 'Voi E-Scooter', 'E_SCOOTER', 'Compact e-scooter', 'AVAILABLE', 51.5161, 7.4599, 9.00, 'PER_DAY', 120, 25, 18, 1),
+(2, 'Swapfiets Bicycle', 'BICYCLE', 'Comfort city bicycle', 'BOOKED', 51.5180, 7.4665, 7.00, 'PER_DAY', 300, 70, 16, 1),
+(3, 'Bolt E-Bike', 'E_BIKE', 'E-bike with removable battery', 'AVAILABLE', 51.5122, 7.4720, 13.00, 'PER_DAY', 180, 50, 18, 1),
+(3, 'Sixt E-Car', 'E_CAR', 'Electric car for up to five persons', 'AVAILABLE', 51.5098, 7.4612, 50.00, 'PER_DAY', 720, 300, 21, 5);
