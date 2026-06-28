@@ -6,15 +6,22 @@ spring:
     name: fleet-service
 
   datasource:
-    url: jdbc:h2:mem:fleet
+    url: jdbc:h2:mem:fleet;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     driver-class-name: org.h2.Driver
     username: sa
     password:
 
   jpa:
+    defer-datasource-initialization: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
     show-sql: true
+
+  sql:
+    init:
+      mode: always
 
   h2:
     console:
@@ -23,14 +30,4 @@ spring:
 
 eureka:
   client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
-    register-with-eureka: true
-    fetch-registry: true
-
-resilience4j:
-  circuitbreaker:
-    instances:
-      fleetBreaker:
-        slidingWindowSize: 5
-        failureRateThreshold: 50
+    enabled: false
