@@ -71,4 +71,10 @@ public class FleetController {
             @RequestParam Double radius) {
         return availabilityService.findAvailableNear(lat, lon, radius);
     }
+
+    // DELETE VEHICLE
+    @DeleteMapping("/vehicles/{id}")
+    public void deleteVehicle(@PathVariable Long id) {
+        registrationService.deleteVehicle(id);
+    }
 }

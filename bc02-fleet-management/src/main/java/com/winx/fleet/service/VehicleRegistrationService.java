@@ -72,4 +72,13 @@ public class VehicleRegistrationService {
 
         return vehicleRepository.save(vehicle);
     }
+
+    // DELETE VEHICLE
+    public void deleteVehicle(Long id) {
+
+        Vehicle vehicle = vehicleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+
+        vehicleRepository.delete(vehicle);
+    }
 }

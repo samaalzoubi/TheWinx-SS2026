@@ -25,7 +25,7 @@
             <h2>Provider Fleet Dashboard</h2>
             <p>View vehicles, prices, availability, restrictions, and daily billing data.</p>
         </div>
-        <div class="hero-icon">🚗</div>
+        <div class="hero-icon">Fleet</div>
     </section>
 
     <section class="stats-strip">
@@ -151,8 +151,9 @@ function renderVehicles() {
 
     filtered.forEach(v => {
         const row = document.createElement("tr");
-
         const statusClass = v.status === "AVAILABLE" ? "status-available" : "status-booked";
+        const nextStatus = v.status === "AVAILABLE" ? "BOOKED" : "AVAILABLE";
+        const buttonText = v.status === "AVAILABLE" ? "Mark Booked" : "Mark Available";
 
         row.innerHTML = `
             <td>${v.id}</td>
@@ -169,13 +170,31 @@ function renderVehicles() {
                 ${v.maxPersons || "-"} persons
             </td>
             <td>
-                <button class="secondary-btn" onclick="toggleStatus(${v.id}, '${v.status}')">
-                    ${v.status === "AVAILABLE" ? "Mark Booked" : "Mark Available"}
+                <button class="secondary-btn" data-id="${v.id}" data-status="${nextStatus}">
+                    ${buttonText}
+                </button>
+                <button style="margin-left: .4rem; background: #b93333;" data-delete-id="${v.id}">
+                    Delete
                 </button>
             </td>
         `;
 
         tbody.appendChild(row);
+    });
+
+    document.querySelectorAll("[data-id]").forEach(button => {
+        button.addEventListener("click", () => {
+            const id = button.getAttribute("data-id");
+            const status = button.getAttribute("data-status");
+            updateStatus(id, status);
+        });
+    });
+
+    document.querySelectorAll("[data-delete-id]").forEach(button => {
+        button.addEventListener("click", () => {
+            const id = button.getAttribute("data-delete-id");
+            deleteVehicle(id);
+        });
     });
 
     updateStats();
@@ -189,8 +208,8 @@ function updateStats() {
         vehicles.filter(v => v.status === "BOOKED").length;
 }
 
-async function toggleStatus(id, currentStatus) {
-    const newStatus = currentStatus === "AVAILABLE" ? "BOOKED" : "AVAILABLE";
+async function updateStatus(id, newStatus) {
+    const message = document.getElementById("message");
 
     try {
         const response = await fetch(`http://localhost:8090/providers/vehicles/${id}/status`, {
@@ -204,9 +223,35 @@ async function toggleStatus(id, currentStatus) {
         }
 
         await loadVehicles();
+        message.textContent = "Vehicle status updated successfully.";
+        message.className = "message success";
     } catch (error) {
-        const message = document.getElementById("message");
         message.textContent = "Could not update vehicle status.";
+        message.className = "message error";
+    }
+}
+
+async function deleteVehicle(id) {
+    const message = document.getElementById("message");
+
+    if (!confirm("Delete this vehicle?")) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://localhost:8090/providers/vehicles/${id}`, {
+            method: "DELETE"
+        });
+
+        if (!response.ok) {
+            throw new Error("Delete failed");
+        }
+
+        await loadVehicles();
+        message.textContent = "Vehicle deleted successfully.";
+        message.className = "message success";
+    } catch (error) {
+        message.textContent = "Could not delete vehicle.";
         message.className = "message error";
     }
 }
