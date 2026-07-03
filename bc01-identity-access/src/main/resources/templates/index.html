@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Identity & Access Service</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+<main class="container">
+    <header class="panel hero">
+        <div>
+            <p class="eyebrow">Identity & Access</p>
+            <h1>Microservice Console</h1>
+            <p class="subtitle">Access the redesigned authentication screens and manage users, roles, and contracts.</p>
+        </div>
+        <div class="link-group">
+            <a class="link-button" href="/ui/login">Open Login</a>
+            <a class="link-button secondary-button" href="/ui/register">Open Register</a>
+        </div>
+    </header>
+
+    <section class="panel">
+        <h2>Create User</h2>
+        <form class="create-user-form" action="/ui/users" method="post">
+            <label>Username <input type="text" name="username" required></label>
+            <label>Email <input type="email" name="email" required></label>
+            <label>Password <input type="password" name="password" minlength="6" required></label>
+            <input type="hidden" name="redirectTo" value="/">
+            <button type="submit">Create User</button>
+        </form>
+    </section>
+
+    <section class="panel">
+        <h2>User List</h2>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Roles</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="user : ${users}">
+                    <td th:text="${user.id}"></td>
+                    <td th:text="${user.username}"></td>
+                    <td th:text="${user.email}"></td>
+                    <td>
+                        <span class="status" th:text="${user.status}" th:classappend="${user.status.name() == 'ACTIVE'} ? ' status-active' : ' status-inactive'"></span>
+                    </td>
+                    <td th:text="${user.roles}"></td>
+                   <td class="actions-cell d-flex align-items-center gap-2 flex-wrap">
+
+    <!-- Assign Role -->
+    <form class="inline-form d-flex align-items-center gap-2 mb-0"
+          action="/ui/users/assign-role" method="post">
+        <input type="hidden" name="userId" th:value="${user.id}">
+        <input type="text" class="form-control form-control-sm w-auto"
+               name="roleName" placeholder="USER or ADMIN" required>
+        <button type="submit" class="btn btn-success btn-sm">Assign</button>
+    </form>
+
+    <!-- Edit Button -->
+    <a class="btn btn-primary btn-sm mt-1"
+   th:href="@{/ui/users/{id}/edit(id=${user.id})}">
+   Edit
+</a>
+
+    <!-- Deactivate -->
+    <form class="d-flex align-items-center mb-0"
+          action="/ui/users/deactivate" method="post" id="statusForm">
+        <input type="hidden" name="userId" th:value="${user.id}">
+        <button id="statusBtn" onclick="toggleStatus(event)" class="btn btn-danger btn-sm" type="button">Deactivate</button>
+    </form>
+
+</td>
+
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>Fleet Availability Snapshot</h2>
+        <p class="subtitle">Live status shared with the user booking dashboard.</p>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>Vehicle</th>
+                    <th>Plate</th>
+                    <th>Type</th>
+                    <th>Price/Day (EUR)</th>
+                    <th>Availability</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="vehicle : ${vehicles}">
+                    <td th:text="${vehicle.name}"></td>
+                    <td th:text="${vehicle.plate}"></td>
+                    <td th:text="${vehicle.type}"></td>
+                    <td th:text="${'EUR ' + vehicle.pricePerDay}"></td>
+                    <td>
+                        <span class="status"
+                              th:text="${vehicle.available} ? 'AVAILABLE' : 'BOOKED'"
+                              th:classappend="${vehicle.available} ? ' status-active' : ' status-inactive'"></span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>Mock Contracts</h2>
+        <div class="contracts-grid">
+            <a class="contract-link" href="/api/contracts/v1/booking/identity-check?username=demo.user">Booking identity check</a>
+            <a class="contract-link" href="/api/contracts/v1/payment/eligibility?userId=1">Payment eligibility</a>
+            <a class="contract-link" href="/api/contracts/v1/provider/access?userId=2">Provider portal access</a>
+        </div>
+    </section>
+</main>
+</body>
+<script>
+let userStatusMap = {}; // Track status for each user
+
+function toggleStatus(event) {
+  event.preventDefault();
+  const btn = event.target;
+  const form = btn.closest('form');
+  const userId = form.querySelector('input[name="userId"]').value;
+  const row = form.closest('tr');
+  const statusSpan = row.querySelector('.status');
+
+  // Initialize status for this user if not already done
+  if (!(userId in userStatusMap)) {
+    userStatusMap[userId] = true; // true = active
+  }
+
+  // Toggle the status
+  userStatusMap[userId] = !userStatusMap[userId];
+  const isActive = userStatusMap[userId];
+
+  if (isActive) {
+    // Switch to active state
+    btn.textContent = "Deactivate";
+    btn.className = "btn btn-danger btn-sm";
+    statusSpan.textContent = "ACTIVE";
+    statusSpan.className = "status status-active";
+  } else {
+    // Switch to inactive state
+    btn.textContent = "Activate";
+    btn.className = "btn btn-success btn-sm";
+    statusSpan.textContent = "INACTIVE";
+    statusSpan.className = "status status-inactive";
+  }
+}
+</script>
+</html>
