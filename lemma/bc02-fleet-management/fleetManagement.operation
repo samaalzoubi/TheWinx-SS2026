@@ -1,0 +1,25 @@
+import microservices from "fleetManagement.services" as fleetManagementServices
+
+// Operation model for BC-02 Fleet Management.
+// Technology details such as Docker, REST and Eureka are documented as comments
+// because the final technology folder will be shared by the team.
+
+container FleetManagementContainer {
+
+    deploys fleetManagementServices::FleetManagementService
+
+    // Spring Boot service
+    // Port: 8090
+    // Service name: fleet-service
+    // Database: H2 in-memory database
+    // Main JAR: bc02-fleet-management-0.0.1-SNAPSHOT.jar
+
+    // Basic endpoints:
+    // POST   /providers/{providerId}/vehicles
+    // GET    /providers/{providerId}/vehicles
+    // PUT    /providers/vehicles/{id}
+    // PATCH  /providers/vehicles/{id}/location
+    // PATCH  /providers/vehicles/{id}/status
+    // GET    /providers/vehicles/near
+    // DELETE /providers/vehicles/{id}
+}

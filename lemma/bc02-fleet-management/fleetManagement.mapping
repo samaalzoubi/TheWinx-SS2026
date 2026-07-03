@@ -1,0 +1,31 @@
+import datatypes from "fleetManagement.data" as fleetManagement
+
+// Mapping model for BC-02 Fleet Management.
+// This file documents how the LEMMA domain model maps to the Java/Spring backend.
+// The technology folder is shared by the team, so detailed mapping technologies
+// can be added later if required.
+
+mapping FleetManagementMapping {
+
+    // Java package:
+    // com.winx.fleet
+
+    // Domain entity mapping:
+    // fleetManagement.Vehicle -> com.winx.fleet.model.Vehicle
+
+    // Enum mappings:
+    // fleetManagement.VehicleType -> com.winx.fleet.model.VehicleType
+    // fleetManagement.VehicleStatus -> com.winx.fleet.model.VehicleStatus
+    // fleetManagement.BillingModel -> com.winx.fleet.model.BillingModel
+
+    // Service mappings:
+    // fleetManagement.VehicleRegistrationService -> com.winx.fleet.service.VehicleRegistrationService
+    // fleetManagement.FleetStatusService -> com.winx.fleet.service.FleetStatusService
+    // fleetManagement.VehicleAvailabilityService -> com.winx.fleet.service.VehicleAvailabilityService
+
+    // Repository mapping:
+    // Vehicles collection -> com.winx.fleet.repository.VehicleRepository
+
+    // Controller mapping:
+    // REST API -> com.winx.fleet.controller.FleetController
+}

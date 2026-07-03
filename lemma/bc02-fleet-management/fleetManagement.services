@@ -1,0 +1,42 @@
+import datatypes from "fleetManagement.data" as fleetManagement
+
+functional microservice FleetManagementService {
+
+    interface FleetManagementApi {
+
+        createVehicle(
+            sync in long providerId,
+            sync in fleetManagement.Vehicle vehicle
+        ) : fleetManagement.Vehicle
+
+        getVehicles(
+            sync in long providerId
+        ) : fleetManagement.Vehicles
+
+        updateVehicle(
+            sync in long id,
+            sync in fleetManagement.Vehicle vehicle
+        ) : fleetManagement.Vehicle
+
+        updateLocation(
+            sync in long id,
+            sync in double latitude,
+            sync in double longitude
+        ) : fleetManagement.Vehicle
+
+        updateStatus(
+            sync in long id,
+            sync in fleetManagement.VehicleStatus status
+        ) : fleetManagement.Vehicle
+
+        findAvailableNear(
+            sync in double lat,
+            sync in double lon,
+            sync in double radius
+        ) : fleetManagement.Vehicles
+
+        deleteVehicle(
+            sync in long id
+        )
+    }
+}
