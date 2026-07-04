@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Payments</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+
+        h1 {
+            color: #1f497d;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 25px;
+        }
+
+        th, td {
+            border: 1px solid #cccccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #1f497d;
+            color: white;
+        }
+
+        .PAID {
+            color: green;
+            font-weight: bold;
+        }
+
+        .FAILED {
+            color: red;
+            font-weight: bold;
+        }
+
+        .PENDING {
+            color: orange;
+            font-weight: bold;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            padding: 8px 14px;
+            background-color: #1f497d;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>BC-04 Payment Microservice</h1>
+
+<p>
+    This UI demonstrates the Payment bounded context as an independent microservice.
+</p>
+
+<a href="/payments/new">Create New Payment</a>
+
+<table>
+    <thead>
+    <tr>
+        <th>Payment ID</th>
+        <th>Booking ID</th>
+        <th>User ID</th>
+        <th>Amount</th>
+        <th>Currency</th>
+        <th>Method</th>
+        <th>Status</th>
+        <th>Paid At</th>
+        <th>Failure Reason</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="payment : ${payments}">
+        <td th:text="${payment.paymentId}"></td>
+        <td th:text="${payment.bookingId}"></td>
+        <td th:text="${payment.userId}"></td>
+        <td th:text="${payment.amount}"></td>
+        <td th:text="${payment.currency}"></td>
+        <td th:text="${payment.paymentMethod}"></td>
+        <td th:text="${payment.status}" th:class="${payment.status}"></td>
+        <td th:text="${payment.paidAt}"></td>
+        <td th:text="${payment.failureReason}"></td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
