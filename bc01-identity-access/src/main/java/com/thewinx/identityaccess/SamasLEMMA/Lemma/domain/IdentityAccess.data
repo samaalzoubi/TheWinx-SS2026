@@ -1,0 +1,188 @@
+context IdentityAccess {
+
+    enum AccountStatus {
+        ACTIVE,
+        INACTIVE,
+        LOCKED
+    }
+
+    collection Permissions { string }
+    collection RoleNames { string }
+
+    // @Table(name = "roles")
+    structure Role<entity> {
+        // @GeneratedValue(strategy = GenerationType.IDENTITY)
+        long id<identifier>,
+        // @Column(nullable = false, unique = true, length = 50)
+        string name,
+        // @ElementCollection(fetch = FetchType.EAGER)
+        // @CollectionTable(name = "role_permissions", joinColumns = @JoinColumn(name = "role_id"))
+        Permissions permissions<part>
+    }
+
+    collection Roles { Role r }
+
+    // @Table(name = "user_accounts")
+    structure UserAccount<aggregate, entity> {
+        // @GeneratedValue(strategy = GenerationType.IDENTITY)
+        long id<identifier>,
+        // @Column(nullable = false, unique = true, length = 60)
+        string username,
+        // @Column(nullable = false, unique = true, length = 120)
+        string email,
+        // @Column(nullable = false)
+        string passwordHash,
+        // @Enumerated(EnumType.STRING) @Column(nullable = false, length = 20)
+        AccountStatus status,
+        // @ManyToMany(fetch = FetchType.EAGER)
+        // @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"),
+        //            inverseJoinColumns = @JoinColumn(name = "role_id"))
+        Roles roles,
+
+        procedure updateProfile(string username, string email),
+        procedure assignRole(Role role),
+        procedure revokeRole(Role role)
+    }
+
+    structure UserAccountRepository<repository> {
+        UserAccount userAccount,
+        function UserAccount findByUsername(string username),
+        function UserAccount findByEmail(string email)
+    }
+
+    structure RoleRepository<repository> {
+        Role role,
+        function Role findByName(string name)
+    }
+
+    structure IdentityAccessService<applicationService> {
+        hide immutable UserAccountRepository userAccountRepository,
+        hide immutable RoleRepository roleRepository,
+        function UserAccount register(string username, string email, string plainPassword),
+        function UserAccount updateUser(long userId, string username, string email),
+        function UserAccount deactivateUser(long userId),
+        function UserAccount assignRole(long userId, string roleName),
+        function UserAccount revokeRole(long userId, string roleName),
+        function AuthResponse authenticate(string username, string plainPassword),
+        function boolean hasPermission(long userId, string permission)
+    }
+
+    // ----------------------------------------------------------------
+    // Domain concepts for microservice interaction (request/response
+    // shapes used by the IdentityAccessRestController API), mirroring
+    // the classes in the api.dto package
+    // ----------------------------------------------------------------
+
+    structure RegisterUserRequest<valueObject> {
+        immutable string username<neverEmpty>,
+        immutable string email<neverEmpty>,
+        immutable string password<neverEmpty>
+    }
+
+    structure UpdateUserRequest<valueObject> {
+        immutable string username<neverEmpty>,
+        immutable string email<neverEmpty>
+    }
+
+    structure RoleAssignmentRequest<valueObject> {
+        immutable string roleName<neverEmpty>
+    }
+
+    structure AuthRequest<valueObject> {
+        immutable string username<neverEmpty>,
+        immutable string password<neverEmpty>
+    }
+
+    structure AuthResponse<valueObject> {
+        immutable long userId,
+        immutable string username,
+        immutable Permissions permissions,
+        immutable string tokenType
+    }
+
+    structure UserResponse<valueObject> {
+        immutable long id,
+        immutable string username,
+        immutable string email,
+        immutable AccountStatus status,
+        immutable RoleNames roles
+    }
+
+    collection UserResponses { UserResponse u }
+
+    structure PermissionCheckResponse<valueObject> {
+        immutable long userId,
+        immutable string permission,
+        immutable boolean granted
+    }
+
+    structure ApiErrorResponse<valueObject> {
+        immutable string message,
+        immutable date timestamp
+    }
+
+    // ----------------------------------------------------------------
+    // Contract concepts mocking responses from adjacent bounded
+    // contexts (BC-02 Fleet, BC-03 Booking, BC-04 Payment), mirroring
+    // the contracts package's AdjacentContextMockService
+    // ----------------------------------------------------------------
+
+    structure BookingIdentityCheckResponse<valueObject> {
+        immutable boolean verified,
+        immutable string reason
+    }
+
+    structure PaymentEligibilityResponse<valueObject> {
+        immutable long userId,
+        immutable boolean eligible,
+        immutable string status
+    }
+
+    structure ProviderAccessResponse<valueObject> {
+        immutable long userId,
+        immutable boolean canAccess,
+        immutable string status
+    }
+
+    // ----------------------------------------------------------------
+    // Fleet/Booking pass-through concepts (anti-corruption layer):
+    // local, simplified representations of data fetched live from
+    // BC-02 Fleet (via FleetClient / VehicleDto) and tracked locally
+    // for bookings (via FleetService). These are NOT authoritative
+    // domain concepts of IdentityAccess; they mirror a subset of what
+    // those bounded contexts publish, translated for local use on
+    // this service's own dashboard.
+    // ----------------------------------------------------------------
+
+    structure VehicleInfo<valueObject> {
+        immutable long id,
+        immutable string type,
+        immutable string description,
+        immutable string status,
+        immutable double pricePerUnit,
+        immutable string billingModel,
+        immutable int maxPersons
+    }
+
+    collection VehicleInfos { VehicleInfo v }
+
+    structure BookingInfo<valueObject> {
+        immutable long id,
+        immutable long vehicleId,
+        immutable string vehicleName,
+        immutable string plate,
+        immutable string username,
+        immutable date pickupDate,
+        immutable date returnDate,
+        immutable string status
+    }
+
+    collection BookingInfos { BookingInfo b }
+
+    structure VehicleBookingRequest<valueObject> {
+        immutable long vehicleId,
+        immutable string username<neverEmpty>,
+        immutable date pickupDate,
+        immutable date returnDate
+    }
+}
