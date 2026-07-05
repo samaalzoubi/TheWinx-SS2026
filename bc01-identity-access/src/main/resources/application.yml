@@ -44,6 +44,12 @@ resilience4j:
         failure-rate-threshold: 50
         wait-duration-in-open-state: 10s
         
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
 management:
   endpoints:
     web:
@@ -58,4 +64,4 @@ feign:
 # Direct URL for bc02-fleet-management (used when Eureka is not running)
 fleet:
   service:
-    url: http://localhost:8090
+    url: http://localhost:8082
