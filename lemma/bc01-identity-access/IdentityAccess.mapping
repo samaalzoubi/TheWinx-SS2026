@@ -37,7 +37,6 @@ IdentityAccessServices::com.thewinx.identityaccess.IdentityAccess {
     }
 
     operation identityManagement.listUsers {
-        endpoints { java::_protocols.rest: "/users"; }
         aspects { java::_aspects.GetMapping; }
     }
 
@@ -50,7 +49,6 @@ IdentityAccessServices::com.thewinx.identityaccess.IdentityAccess {
     }
 
     operation identityManagement.updateUser {
-        endpoints { java::_protocols.rest: "/users/{userId}"; }
         aspects { java::_aspects.PutMapping; }
         parameters {
             primitive userId { aspects { java::_aspects.PathVariable; } }
@@ -60,7 +58,6 @@ IdentityAccessServices::com.thewinx.identityaccess.IdentityAccess {
     }
 
     operation identityManagement.deactivateUser {
-        endpoints { java::_protocols.rest: "/users/{userId}"; }
         aspects { java::_aspects.DeleteMapping; }
         parameters {
             primitive userId { aspects { java::_aspects.PathVariable; } }
@@ -79,7 +76,6 @@ IdentityAccessServices::com.thewinx.identityaccess.IdentityAccess {
     }
 
     operation identityManagement.revokeRole {
-        endpoints { java::_protocols.rest: "/users/{userId}/roles"; }
         aspects { java::_aspects.DeleteMapping; }
         parameters {
             primitive userId { aspects { java::_aspects.PathVariable; } }
@@ -120,7 +116,6 @@ IdentityAccessServices::com.thewinx.identityaccess.IdentityAccess {
     }
 
     operation fleetGateway.createBooking {
-        endpoints { java::_protocols.rest: "/bookings"; }
         aspects { java::_aspects.PostMapping; }
         parameters {
             complex request { aspects { java::_aspects.Valid; java::_aspects.RequestBody; } }

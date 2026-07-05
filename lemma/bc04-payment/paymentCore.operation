@@ -36,6 +36,8 @@ container PaymentCoreContainer deployment technology deploymentBase::_deployment
 
         basic endpoints {
             protocolTechnology::_protocols.rest: "http://localhost:8084";
+            protocolTechnology::_protocols.soap: "http://localhost:8084";
+            protocolTechnology::_protocols.amqp: "amqp://localhost:5672";
         }
     }
 }
