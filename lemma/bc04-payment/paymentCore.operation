@@ -9,14 +9,14 @@ container PaymentCoreContainer deployment technology deploymentBase::_deployment
     deploys paymentCoreServices::com.winx.payment.PaymentCore
     depends on nodes eureka::ServiceDiscovery {
     paymentCoreServices::com.winx.payment.PaymentCore {
-        Dockerfile('
+        Dockerfile = '
             FROM eclipse-temurin:17-jre
             COPY target/bc04-payment.jar app.jar
             EXPOSE 8084
             ENTRYPOINT ["java", "-jar", "app.jar"]
-        ')
+'
 
-        ComposePart('
+        ComposePart = '
             bc04-payment:
                 build: ./bc04-payment
                 image: thewinx/bc04-payment
@@ -28,7 +28,7 @@ container PaymentCoreContainer deployment technology deploymentBase::_deployment
                   - "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka"
                 ports:
                   - "8084:8084"
-        ')
+'
 
         springApplicationName = "bc04-payment"
         serverPort = 8084

@@ -1,25 +1,23 @@
-technology docker {
+technology Docker {
     deployment technologies {
         Docker {
-            operation environments = "maven:3.6.1-jdk-8-alpine" default;
+            operation environments = "eclipse-temurin:21-jre-alpine" default;
 
             service properties {
-                string apiKeyHeader <singleval>;
-                string apiKeyValidKey;
-                string apiKeyValue <singleval>;
-                string ComposePart<singleval>;
-                string Dockerfile<mandatory, singleval>;
-                int rateLimitPerMinute;
+                string springApplicationName;
+                int serverPort;
+                string springDatasourceUrl;
+                string eurekaUri;
             }
         }
     }
 
     operation aspects {
-        aspect ComposePart for infrastructure {
+        aspect Dockerfile<singleval> for containers, infrastructure {
             string content<mandatory>;
         }
 
-        aspect Dockerfile for infrastructure {
+        aspect ComposePart<singleval> for containers, infrastructure {
             string content<mandatory>;
         }
     }

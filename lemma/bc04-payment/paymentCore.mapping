@@ -41,11 +41,6 @@ type paymentCoreServices::domain::paymentCore.PaymentRepository {
 
 @technology(java)
 type paymentCoreServices::domain::paymentCore.PaymentService {
-    paymentRepository {
-        aspects {
-            java::_aspects.Autowired;
-        }
-    }
 }
 
 @technology(java)
@@ -100,10 +95,6 @@ paymentCoreServices::com.winx.payment.PaymentCore {
     operation paymentInformationHolder.getPayments {
         aspects {
             java::_aspects.GetMapping;
-        }
-
-        parameters {
-            complex responseDto : java::_types.ResponseEntity;
         }
     }
 
