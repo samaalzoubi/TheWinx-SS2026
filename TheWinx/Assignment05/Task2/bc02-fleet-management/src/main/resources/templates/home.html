@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Instant Mobility · Fleet Management</title>
+    <link rel="stylesheet" href="/css/theme.css"/>
+</head>
+<body>
+<div th:replace="~{fragments/header :: topbar}"></div>
+<main class="container">
+    <h1>BC-02 · Fleet Management</h1>
+    <p class="subtitle">Own, price and track the e-scooters, bikes, e-bikes and cars that make up the Instant Mobility fleet.</p>
+
+    <div class="stat-grid">
+        <div class="stat-tile">
+            <span class="icon">🚘</span>
+            <div class="value" th:text="${stats.total}">0</div>
+            <div class="label">Total vehicles</div>
+        </div>
+        <div class="stat-tile">
+            <span class="icon">✅</span>
+            <div class="value" th:text="${stats.available}">0</div>
+            <div class="label">Available</div>
+        </div>
+        <div class="stat-tile">
+            <span class="icon">🔒</span>
+            <div class="value" th:text="${stats.booked}">0</div>
+            <div class="label">Booked</div>
+        </div>
+        <div class="stat-tile">
+            <span class="icon">💶</span>
+            <div class="value">€<span th:text="${stats.averagePrice}">0.00</span></div>
+            <div class="label">Average price / unit</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Explore the fleet</h2>
+        <p class="muted">Jump straight into the full REST API surface through these pages.</p>
+        <ul>
+            <li><a th:href="@{/ui/browse}">Browse all vehicles</a> - the entire fleet across every provider, with filters and a status toggle for quick manual testing.</li>
+            <li><a th:href="@{/ui/provider/1/fleet}">Provider fleet dashboard (provider 1)</a> - register, edit and retire vehicles.</li>
+            <li><a th:href="@{/ui/provider/2/fleet}">Provider fleet dashboard (provider 2)</a></li>
+            <li><a th:href="@{/ui/search}">Search available vehicles near a point</a> - the same nearby-availability query bc03-booking relies on.</li>
+            <li><a th:href="@{/swagger-ui.html}">API documentation (Swagger UI)</a></li>
+        </ul>
+    </div>
+</main>
+</body>
+</html>

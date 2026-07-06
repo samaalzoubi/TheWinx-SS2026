@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(title='Fleet dashboard')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: nav}"></div>
+
+<p th:if="${error}" class="error" th:text="${error}"></p>
+<p th:if="${param.error}" class="error" th:text="${param.error[0]}"></p>
+
+<div class="stat-grid">
+    <div class="stat-tile"><span class="icon">🚗</span><span class="value" th:text="${totalVehicles}">0</span><span class="label">Vehicles</span></div>
+    <div class="stat-tile"><span class="icon">✅</span><span class="value" th:text="${availableCount}">0</span><span class="label">Available</span></div>
+    <div class="stat-tile"><span class="icon">⏳</span><span class="value" th:text="${bookedCount}">0</span><span class="label">Booked now</span></div>
+    <a class="stat-tile" href="/provider/ratings"><span class="icon">⭐</span><span class="value" th:text="${overallRatingCount}">0</span><span class="label">Ratings received &rarr;</span></a>
+    <a class="stat-tile" href="/provider/earnings"><span class="icon">💶</span><span class="value">&rarr;</span><span class="label">View earnings</span></a>
+</div>
+
+<div class="card">
+    <h2>My fleet</h2>
+    <p><a class="button-like" href="/provider/vehicles/new">+ Add vehicle</a></p>
+
+    <p class="muted" th:if="${#lists.isEmpty(vehicles)}">No vehicles yet - add your first one above.</p>
+
+    <table th:unless="${#lists.isEmpty(vehicles)}">
+        <thead>
+        <tr><th>Type</th><th>Description</th><th>Status</th><th>Price</th><th>Restrictions</th><th>Rating</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="v : ${vehicles}">
+            <td th:text="${v.type()}">TYPE</td>
+            <td th:text="${v.description()}">desc</td>
+            <td>
+                <span class="badge" th:classappend="${v.status() == 'AVAILABLE'} ? 'badge-completed' : 'badge-active'" th:text="${v.status()}">STATUS</span>
+            </td>
+            <td th:text="${v.pricePerUnit()} + ' EUR / ' + (${v.billingModel() == 'PER_HOUR'} ? 'hour' : 'km')">price</td>
+            <td class="muted">
+                <span th:if="${v.minAge() != null}" th:text="'min age ' + ${v.minAge()} + ' '">age</span>
+                <span th:if="${v.maxPersons() != null}" th:text="'max ' + ${v.maxPersons()} + ' persons '">persons</span>
+                <span th:if="${v.maxDurationMinutes() != null}" th:text="${v.maxDurationMinutes()} + ' min max'">duration</span>
+            </td>
+            <td>
+                <span th:with="avg=${averages.get(v.id())}"
+                      th:text="${avg != null and avg.averageScore() != null} ? (${avg.averageScore()} + '/5 (' + ${avg.count()} + ')') : '-'">rating</span>
+            </td>
+            <td>
+                <a class="button-like" th:href="@{/provider/vehicles/{id}/edit(id=${v.id()})}">Edit</a>
+                <form class="inline" method="post" th:action="@{/provider/vehicles/{id}/delete(id=${v.id()})}"
+                      onsubmit="return confirm('Delete this vehicle?');">
+                    <button type="submit" class="danger">Delete</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

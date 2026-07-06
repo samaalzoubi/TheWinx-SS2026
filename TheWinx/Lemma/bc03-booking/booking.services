@@ -1,0 +1,95 @@
+import datatypes from "booking.data" as domain
+
+public functional microservice com.winx.booking.BookingCore {
+
+    interface bookingLifecycle {
+        ---
+        Start a new booking for the authenticated user. Validates the user via
+        BC-01 (identity), checks vehicle availability via BC-02 (fleet), and
+        marks the vehicle as BOOKED on success.
+
+        @required authToken the username identifying the requesting user (from cookie or header)
+        @required requestDto the booking request containing vehicleId, start location, and payment method
+        ---
+        createBooking(
+            sync authToken : string,
+            sync requestDto : domain::booking.BookingCreateRequest,
+            sync out responseDto : domain::booking.BookingDto,
+            sync out fault vehicleNotAvailable : string,
+            sync out fault activeBookingExists : string,
+            sync out fault dependencyUnavailable : string
+        );
+
+        ---
+        Cancel an active booking and release the vehicle back to AVAILABLE.
+
+        @required bookingId the unique identifier of the booking to cancel
+        ---
+        cancelBooking(
+            sync bookingId : long,
+            sync out responseDto : domain::booking.BookingDto,
+            sync out fault notFound : string,
+            sync out fault invalidState : string
+        );
+
+        ---
+        Complete a ride: record end location, distance, and compute the total cost.
+
+        @required bookingId the unique identifier of the booking to end
+        @required requestDto the end-ride data including end location and distance
+        ---
+        endBooking(
+            sync bookingId : long,
+            sync requestDto : domain::booking.EndRideRequest,
+            sync out responseDto : domain::booking.BookingDto,
+            sync out fault notFound : string,
+            sync out fault invalidState : string
+        );
+    }
+
+    interface bookingQuery {
+        ---
+        Retrieve a booking by its ID.
+
+        @required bookingId the unique identifier of the booking
+        ---
+        getBookingById(
+            sync bookingId : long,
+            sync out responseDto : domain::booking.BookingDto,
+            sync out fault notFound : string
+        );
+
+        ---
+        Retrieve all bookings for a given user.
+
+        @required userId the unique identifier of the user whose bookings to retrieve
+        ---
+        getBookingsByUser(
+            sync userId : long,
+            sync out bookings : domain::booking.BookingDtos
+        );
+    }
+
+    interface vehicleSearch {
+        ---
+        Proxy endpoint that searches available vehicles from BC-02 Fleet Management
+        and returns filtered results to the booking UI.
+
+        @required lat latitude of the search center point
+        @required lon longitude of the search center point
+        @required radiusKm search radius in kilometers
+        @param vehicleType optional vehicle type filter
+        @param maxPrice optional maximum price per unit in EUR
+        @param minPersons optional minimum passenger capacity
+        ---
+        searchVehicles(
+            sync lat : double,
+            sync lon : double,
+            sync radiusKm : double,
+            sync vehicleType? : string,
+            sync maxPrice? : double,
+            sync minPersons? : int,
+            sync out vehicles : domain::booking.VehicleDtos
+        );
+    }
+}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(title='Add vehicle')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: nav}"></div>
+<div class="card">
+    <h2>Add a vehicle</h2>
+    <p th:if="${error}" class="error" th:text="${error}"></p>
+    <form method="post" action="/provider/vehicles">
+        <label>Type
+            <select name="type" required="required">
+                <option value="E_SCOOTER">E-Scooter</option>
+                <option value="BICYCLE">Bicycle</option>
+                <option value="E_BIKE">E-Bike</option>
+                <option value="E_CAR">Car</option>
+            </select>
+        </label>
+        <label>Description<input type="text" name="description" required="required"/></label>
+        <label>Price per unit (EUR)<input type="number" step="0.01" name="pricePerUnit" required="required"/></label>
+        <label>Billing model
+            <select name="billingModel" required="required">
+                <option value="PER_HOUR">Per hour</option>
+                <option value="PER_KILOMETER">Per kilometer</option>
+            </select>
+        </label>
+        <label>Max duration, minutes (optional)<input type="number" name="maxDurationMinutes"/></label>
+        <label>Max distance, km (optional)<input type="number" name="maxKilometers"/></label>
+        <label>Minimum rider age (optional)<input type="number" name="minAge"/></label>
+        <label>Max persons (optional)<input type="number" name="maxPersons"/></label>
+        <label>Latitude<input type="number" step="any" name="latitude" value="51.5136" required="required"/></label>
+        <label>Longitude<input type="number" step="any" name="longitude" value="7.4653" required="required"/></label>
+        <button type="submit">Add vehicle</button>
+    </form>
+</div>
+</body>
+</html>

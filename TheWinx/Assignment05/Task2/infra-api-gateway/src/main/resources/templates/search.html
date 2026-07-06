@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(title='Search vehicles')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: nav}"></div>
+
+<div class="card">
+    <h2>Search available vehicles</h2>
+    <p th:if="${param.error}" class="error" th:text="${param.error[0]}"></p>
+    <p th:if="${error}" class="error" th:text="${error}"></p>
+    <form method="get" action="/search">
+        <label>Latitude<input type="number" step="any" name="lat" th:value="${lat}"/></label>
+        <label>Longitude<input type="number" step="any" name="lon" th:value="${lon}"/></label>
+        <label>Radius (km)<input type="number" step="any" name="radiusKm" th:value="${radiusKm}"/></label>
+        <label>Vehicle type (optional)
+            <select name="type">
+                <option value="">Any</option>
+                <option value="E_SCOOTER" th:selected="${type == 'E_SCOOTER'}">E-Scooter</option>
+                <option value="BICYCLE" th:selected="${type == 'BICYCLE'}">Bicycle</option>
+                <option value="E_BIKE" th:selected="${type == 'E_BIKE'}">E-Bike</option>
+                <option value="E_CAR" th:selected="${type == 'E_CAR'}">Car</option>
+            </select>
+        </label>
+        <label>Max price per unit (optional)<input type="number" step="any" name="maxPrice" th:value="${maxPrice}"/></label>
+        <button type="submit">Search</button>
+    </form>
+</div>
+
+<div class="card" th:if="${results != null}">
+    <h2>Results</h2>
+    <p class="muted" th:if="${#lists.isEmpty(results)}">No available vehicles matched your search.</p>
+    <table th:unless="${#lists.isEmpty(results)}">
+        <thead>
+        <tr><th>Type</th><th>Description</th><th>Price</th><th>Restrictions</th><th></th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="v : ${results}">
+            <td th:text="${v.type()}">TYPE</td>
+            <td th:text="${v.description()}">desc</td>
+            <td th:text="${v.pricePerUnit()} + ' EUR / ' + (${v.billingModel() == 'PER_HOUR'} ? 'hour' : 'km')">price</td>
+            <td class="muted">
+                <span th:if="${v.minAge() != null}" th:text="'min age ' + ${v.minAge()} + ' '">age</span>
+                <span th:if="${v.maxPersons() != null}" th:text="'max ' + ${v.maxPersons()} + ' persons'">persons</span>
+            </td>
+            <td>
+                <form method="post" action="/bookings">
+                    <input type="hidden" name="vehicleId" th:value="${v.id()}"/>
+                    <button type="submit">Book</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

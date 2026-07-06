@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>BC-05 Rating</title>
+    <link rel="stylesheet" href="/css/theme.css"/>
+</head>
+<body>
+<header th:replace="~{ui/fragments/nav :: header}"></header>
+<main class="container">
+    <h1>Rating Service</h1>
+    <p class="subtitle">Collects vehicle &amp; provider feedback after a completed ride.</p>
+
+    <div class="card">
+        <h2>What would you like to do?</h2>
+        <p><a class="btn" th:href="@{/ui/rate}">Submit a rating</a></p>
+        <p><a class="btn secondary" th:href="@{/ui/all}">Browse all ratings</a></p>
+        <p><a class="btn ghost" th:href="@{/ui/lookup}">Look up by vehicle / provider</a></p>
+        <p><a class="btn ghost" th:href="@{/ui/vehicle/{id}/ratings(id=1)}">Example: ratings for vehicle 1</a></p>
+    </div>
+
+    <div class="card">
+        <h2>REST API surface</h2>
+        <p class="muted">This UI is a thin layer over the same REST API used by other services and the gateway:</p>
+        <ul>
+            <li><code>POST /api/ratings</code></li>
+            <li><code>GET /api/ratings/{id}</code></li>
+            <li><code>GET /api/ratings/booking/{bookingId}</code></li>
+            <li><code>GET /api/ratings/vehicle/{vehicleId}</code></li>
+            <li><code>GET /api/ratings/provider/{providerId}</code></li>
+            <li><code>GET /api/ratings/vehicle/{vehicleId}/average</code></li>
+        </ul>
+        <p class="help">Example bookings available in the mock BookingClient: 5001 &amp; 5002 (COMPLETED &ndash; rating allowed), 5003 (ACTIVE &ndash; rejected with 409). These are also used as the standalone circuit-breaker fallback when bc03-booking is unavailable.</p>
+    </div>
+</main>
+</body>
+</html>

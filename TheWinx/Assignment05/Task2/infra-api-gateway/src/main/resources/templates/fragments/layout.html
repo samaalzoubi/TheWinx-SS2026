@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8"/>
+    <title th:text="${title} + ' - Instant Mobility'">Instant Mobility</title>
+    <link rel="stylesheet" th:href="@{/css/theme.css}"/>
+    <script th:src="@{/js/end-ride.js}"></script>
+</head>
+<body>
+<header th:fragment="nav">
+    <h1><a href="/" style="color:inherit;text-decoration:none;">Instant Mobility</a></h1>
+    <nav>
+        <span th:if="${session.principalName}" class="muted" th:text="'Hi, ' + ${session.principalName}">Hi, User</span>
+        <a th:if="${session.role == 'USER'}" href="/dashboard">Dashboard</a>
+        <a th:if="${session.role == 'USER'}" href="/search">Search &amp; Book</a>
+        <a th:if="${session.role == 'PROVIDER'}" href="/provider/dashboard">My fleet</a>
+        <a th:if="${session.role == 'PROVIDER'}" href="/provider/ratings">Ratings</a>
+        <a th:if="${session.role == 'PROVIDER'}" href="/provider/earnings">Earnings</a>
+        <form th:if="${session.role != null}" class="inline" method="post" action="/logout">
+            <button type="submit" class="secondary">Log out</button>
+        </form>
+        <a th:if="${session.role == null}" href="/login">Log in</a>
+        <a th:if="${session.role == null}" href="/register">Register</a>
+    </nav>
+</header>
+</body>
+</html>

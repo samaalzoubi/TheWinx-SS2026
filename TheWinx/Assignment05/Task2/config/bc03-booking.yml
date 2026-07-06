@@ -1,0 +1,32 @@
+# Centrally-managed overrides for bc03-booking.
+# Booking calls out to Identity (age check), Fleet (availability/status) and
+# Payment (charge) — each guarded by its own Resilience4j circuit breaker.
+resilience4j:
+  circuitbreaker:
+    instances:
+      identityClient:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+      fleetClient:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+      paymentClient:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 15s
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+  timelimiter:
+    instances:
+      identityClient:
+        timeout-duration: 3s
+      fleetClient:
+        timeout-duration: 3s
+      paymentClient:
+        timeout-duration: 5s

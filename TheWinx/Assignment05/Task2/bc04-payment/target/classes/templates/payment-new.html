@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Create Test Payment - BC-04 Payment</title>
+    <link rel="stylesheet" href="/css/theme.css"/>
+</head>
+<body>
+<header class="topbar">
+    <div class="brand">
+        <a th:href="@{/ui}">Instant Mobility</a>
+        <span class="tag">BC-04 · Payment</span>
+    </div>
+    <nav>
+        <a th:href="@{/ui}">Home</a>
+        <a th:href="@{/ui}">All Payments</a>
+        <a th:href="@{/ui/payments/new}">Create Test Payment</a>
+    </nav>
+</header>
+
+<main class="narrow">
+    <p><a th:href="@{/ui}">&larr; back to all payments</a></p>
+    <h1>Create Test Payment</h1>
+    <p class="subtitle">
+        This runs through the exact same business logic as <code>POST /api/payments</code> (the endpoint
+        bc03-booking calls automatically) - so you can exercise bc04 completely standalone, without ever
+        creating a booking first.
+    </p>
+
+    <div class="card">
+        <form th:action="@{/ui/payments/new}" method="post">
+            <div class="field-row">
+                <label>Booking ID
+                    <input type="number" name="bookingId" required="required" placeholder="1001"/>
+                </label>
+                <label>User ID
+                    <input type="number" name="userId" required="required" placeholder="1"/>
+                </label>
+            </div>
+            <div class="field-row">
+                <label>Amount
+                    <input type="number" step="0.01" min="0.01" name="amount" required="required" placeholder="25.00"/>
+                </label>
+                <label>Currency
+                    <input type="text" name="currency" value="EUR" required="required"/>
+                </label>
+            </div>
+            <label>Payment Method
+                <select name="paymentMethod">
+                    <option th:each="method : ${paymentMethods}" th:value="${method}" th:text="${method}"></option>
+                </select>
+            </label>
+            <label>Masked Reference
+                <input type="text" name="maskedReference" placeholder="****4242"/>
+                <div class="help">
+                    Optional (defaults to <code>****</code>). The mock gateway inspects this value: include
+                    <code>fail</code> anywhere in it (e.g. <code>FAIL-TEST</code>) to simulate a
+                    <strong>declined card</strong> → status FAILED. Include <code>gateway-down</code> to
+                    simulate the gateway being unreachable (triggers the circuit breaker fallback) → also
+                    FAILED. Anything else results in a <strong>PAID</strong> payment.
+                </div>
+            </label>
+            <button type="submit" class="btn accent">Create Payment</button>
+        </form>
+    </div>
+</main>
+</body>
+</html>

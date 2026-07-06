@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Directory - Identity &amp; Access</title>
+  <link rel="stylesheet" th:href="@{/css/theme.css}"/>
+</head>
+<body>
+<th:block th:replace="~{fragments/header :: header}"></th:block>
+<main>
+  <h1>Directory</h1>
+  <p class="subtitle">Read-only view of every account currently stored in the H2 database, queried directly from the JPA repositories.</p>
+
+  <div class="card">
+    <h2>&#128100; Users <span class="badge badge-info" th:text="${#lists.size(users)} + ' total'">0 total</span></h2>
+    <table th:if="${not #lists.isEmpty(users)}">
+      <thead>
+        <tr><th>Id</th><th>Name</th><th>Email</th><th>Phone</th><th>Registered at</th><th></th></tr>
+      </thead>
+      <tbody>
+        <tr th:each="u : ${users}">
+          <td th:text="${u.id}"></td>
+          <td th:text="${u.name}"></td>
+          <td th:text="${u.email}"></td>
+          <td th:text="${u.phoneNumber} ?: '-'"></td>
+          <td th:text="${u.registeredAt}"></td>
+          <td><a class="btn small ghost" th:href="@{/ui/users/{id}(id=${u.id})}">View</a></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="empty-state" th:if="${#lists.isEmpty(users)}">
+      <span class="icon">&#128100;</span>
+      No users registered yet.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>&#127970; Providers <span class="badge badge-info" th:text="${#lists.size(providers)} + ' total'">0 total</span></h2>
+    <table th:if="${not #lists.isEmpty(providers)}">
+      <thead>
+        <tr><th>Id</th><th>Company</th><th>Contact</th><th>Email</th><th>Registered at</th><th></th></tr>
+      </thead>
+      <tbody>
+        <tr th:each="p : ${providers}">
+          <td th:text="${p.id}"></td>
+          <td th:text="${p.companyName}"></td>
+          <td th:text="${p.contactName}"></td>
+          <td th:text="${p.email}"></td>
+          <td th:text="${p.registeredAt}"></td>
+          <td><a class="btn small ghost" th:href="@{/ui/providers/{id}(id=${p.id})}">View</a></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="empty-state" th:if="${#lists.isEmpty(providers)}">
+      <span class="icon">&#127970;</span>
+      No providers registered yet.
+    </div>
+  </div>
+</main>
+</body>
+</html>

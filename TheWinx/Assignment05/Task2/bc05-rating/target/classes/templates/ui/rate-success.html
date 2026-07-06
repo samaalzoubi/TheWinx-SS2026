@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Rating submitted</title>
+    <link rel="stylesheet" href="/css/theme.css"/>
+</head>
+<body>
+<header th:replace="~{ui/fragments/nav :: header}"></header>
+<main class="narrow">
+    <div class="alert alert-success">Thanks! Your rating was submitted.</div>
+
+    <div class="card">
+        <h2>Rating #<span th:text="${rating.id}"></span></h2>
+        <dl class="kv">
+            <dt>Booking ID</dt>
+            <dd th:text="${rating.ratingTarget.bookingId}"></dd>
+            <dt>Vehicle ID</dt>
+            <dd th:text="${rating.ratingTarget.vehicleId}"></dd>
+            <dt>Provider ID</dt>
+            <dd th:text="${rating.ratingTarget.providerId}"></dd>
+            <dt>Vehicle score</dt>
+            <dd><span class="stars" th:text="${T(com.winx.rating.api.ui.support.Stars).render(rating.review.vehicleScore)}"></span></dd>
+            <dt>Provider score</dt>
+            <dd><span class="stars" th:text="${T(com.winx.rating.api.ui.support.Stars).render(rating.review.providerScore)}"></span></dd>
+            <dt>Comment</dt>
+            <dd th:text="${rating.review.comment ?: '-'}"></dd>
+        </dl>
+    </div>
+
+    <p>
+        <a class="btn" th:href="@{/ui/vehicle/{id}/ratings(id=${rating.ratingTarget.vehicleId})}">See this vehicle's ratings</a>
+        <a class="btn ghost" th:href="@{/ui}">Back home</a>
+    </p>
+</main>
+</body>
+</html>

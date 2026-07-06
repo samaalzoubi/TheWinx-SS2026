@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Token Inspector - Identity &amp; Access</title>
+  <link rel="stylesheet" th:href="@{/css/theme.css}"/>
+</head>
+<body>
+<th:block th:replace="~{fragments/header :: header}"></th:block>
+<main class="narrow">
+  <h1>&#128273; Token Inspector</h1>
+  <p class="subtitle">Paste a bearer token issued by <code>/ui/login</code> (or <code>/api/users/login</code> / <code>/api/providers/login</code>) to check whether it is currently valid - this calls the very same <code>AuthenticationService.validateToken(...)</code> logic used by <code>GET /api/auth/validate</code>.</p>
+
+  <div class="card">
+    <form th:action="@{/token-inspector}" method="get">
+      <label for="token">Bearer token</label>
+      <input type="text" id="token" name="token" th:value="${token}" placeholder="paste a token value here" />
+      <button type="submit">Inspect token</button>
+    </form>
+  </div>
+
+  <div class="card" th:if="${checked}">
+    <h2>Result</h2>
+    <div th:if="${valid}" class="alert alert-success">
+      &#9989; Token is <strong>valid</strong>.
+    </div>
+    <dl class="kv" th:if="${valid}">
+      <dt>Principal type</dt>
+      <dd><span class="badge" th:classappend="${principalType == 'PROVIDER'} ? 'badge-info' : 'badge-success'" th:text="${principalType}"></span></dd>
+      <dt>Principal id</dt>
+      <dd th:text="${principalId}"></dd>
+      <dt>Profile</dt>
+      <dd>
+        <a th:if="${principalType == 'PROVIDER'}" th:href="@{/ui/providers/{id}(id=${principalId})}">View provider profile &rarr;</a>
+        <a th:if="${principalType == 'USER'}" th:href="@{/ui/users/{id}(id=${principalId})}">View user profile &rarr;</a>
+      </dd>
+    </dl>
+    <div th:unless="${valid}" class="alert alert-error">
+      &#10060; Token is <strong>invalid, unknown or expired</strong>.
+    </div>
+  </div>
+</main>
+</body>
+</html>

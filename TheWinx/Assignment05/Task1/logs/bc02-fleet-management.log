@@ -1,0 +1,50 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.2.5)
+
+2026-07-06T22:52:35.462+02:00  INFO 93473 --- [bc02-fleet-management] [           main] c.winx.fleet.FleetManagementApplication  : Starting FleetManagementApplication using Java 21.0.11 with PID 93473 (/Users/maede/Library/CloudStorage/OneDrive-FHDortmund/UNI/DMSA/Project/TheWinx/Assignment05/Task1/bc02-fleet-management/target/classes started by maede in /Users/maede/Library/CloudStorage/OneDrive-FHDortmund/UNI/DMSA/Project/TheWinx/Assignment05/Task1/bc02-fleet-management)
+2026-07-06T22:52:35.463+02:00  INFO 93473 --- [bc02-fleet-management] [           main] c.winx.fleet.FleetManagementApplication  : No active profile set, falling back to 1 default profile: "default"
+2026-07-06T22:52:36.188+02:00  INFO 93473 --- [bc02-fleet-management] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-07-06T22:52:36.231+02:00  INFO 93473 --- [bc02-fleet-management] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 34 ms. Found 1 JPA repository interface.
+2026-07-06T22:52:36.646+02:00  INFO 93473 --- [bc02-fleet-management] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8082 (http)
+2026-07-06T22:52:36.651+02:00  INFO 93473 --- [bc02-fleet-management] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-07-06T22:52:36.651+02:00  INFO 93473 --- [bc02-fleet-management] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.20]
+2026-07-06T22:52:36.681+02:00  INFO 93473 --- [bc02-fleet-management] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-07-06T22:52:36.681+02:00  INFO 93473 --- [bc02-fleet-management] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1190 ms
+2026-07-06T22:52:36.775+02:00  INFO 93473 --- [bc02-fleet-management] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-07-06T22:52:36.883+02:00  INFO 93473 --- [bc02-fleet-management] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:fleetdb user=SA
+2026-07-06T22:52:36.884+02:00  INFO 93473 --- [bc02-fleet-management] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-07-06T22:52:36.888+02:00  INFO 93473 --- [bc02-fleet-management] [           main] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:fleetdb'
+2026-07-06T22:52:36.999+02:00  INFO 93473 --- [bc02-fleet-management] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-07-06T22:52:37.027+02:00  INFO 93473 --- [bc02-fleet-management] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.4.Final
+2026-07-06T22:52:37.047+02:00  INFO 93473 --- [bc02-fleet-management] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-07-06T22:52:37.192+02:00  INFO 93473 --- [bc02-fleet-management] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-07-06T22:52:37.673+02:00  INFO 93473 --- [bc02-fleet-management] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-07-06T22:52:37.710+02:00  INFO 93473 --- [bc02-fleet-management] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-07-06T22:52:38.464+02:00  INFO 93473 --- [bc02-fleet-management] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 2 endpoint(s) beneath base path '/actuator'
+2026-07-06T22:52:38.512+02:00  INFO 93473 --- [bc02-fleet-management] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8082 (http) with context path ''
+2026-07-06T22:52:38.524+02:00  INFO 93473 --- [bc02-fleet-management] [           main] c.winx.fleet.FleetManagementApplication  : Started FleetManagementApplication in 3.322 seconds (process running for 3.571)
+2026-07-06T22:52:38.577+02:00  INFO 93473 --- [bc02-fleet-management] [           main] c.w.f.d.s.VehicleRegistrationService     : Domain event raised: VehicleCreated[vehicleId=1, providerId=1]
+2026-07-06T22:52:38.582+02:00  INFO 93473 --- [bc02-fleet-management] [           main] c.w.f.d.s.VehicleRegistrationService     : Domain event raised: VehicleCreated[vehicleId=2, providerId=1]
+2026-07-06T22:52:38.583+02:00  INFO 93473 --- [bc02-fleet-management] [           main] c.w.f.d.s.VehicleRegistrationService     : Domain event raised: VehicleCreated[vehicleId=3, providerId=1]
+2026-07-06T22:52:38.584+02:00  INFO 93473 --- [bc02-fleet-management] [           main] c.w.f.d.s.VehicleRegistrationService     : Domain event raised: VehicleCreated[vehicleId=4, providerId=2]
+2026-07-06T22:52:38.585+02:00  INFO 93473 --- [bc02-fleet-management] [           main] c.w.f.d.s.VehicleRegistrationService     : Domain event raised: VehicleCreated[vehicleId=5, providerId=2]
+2026-07-06T22:52:38.586+02:00  INFO 93473 --- [bc02-fleet-management] [           main] c.winx.fleet.config.FleetSeedDataLoader  : Seeded fleet vehicles with ids: 1, 2, 3, 4, 5
+2026-07-06T22:52:41.170+02:00  INFO 93473 --- [bc02-fleet-management] [nio-8082-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-07-06T22:52:41.171+02:00  INFO 93473 --- [bc02-fleet-management] [nio-8082-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-07-06T22:52:41.171+02:00  INFO 93473 --- [bc02-fleet-management] [nio-8082-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
+2026-07-06T22:53:13.684+02:00  INFO 93473 --- [bc02-fleet-management] [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-06T22:53:13.685+02:00  INFO 93473 --- [bc02-fleet-management] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-07-06T22:53:13.686+02:00  INFO 93473 --- [bc02-fleet-management] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:3.2.5:run (default-cli) on project bc02-fleet-management: Process terminated with exit code: 143 -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException

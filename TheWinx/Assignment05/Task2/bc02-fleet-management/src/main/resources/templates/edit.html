@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Edit Vehicle · Fleet Management</title>
+    <link rel="stylesheet" href="/css/theme.css"/>
+</head>
+<body>
+<div th:replace="~{fragments/header :: topbar}"></div>
+<main class="narrow">
+    <p><a th:href="@{/ui/provider/{id}/fleet(id=${vehicle.providerId})}">&larr; Back to fleet</a></p>
+
+    <div class="card">
+        <h1>Edit vehicle #<span th:text="${vehicle.id}"></span></h1>
+        <p class="subtitle">
+            <span th:insert="~{fragments/header :: vehicleIcon(type=${vehicle.type})}"></span>
+            <span th:text="${vehicle.type}"></span> &middot; provider #<span th:text="${vehicle.providerId}"></span>
+        </p>
+
+        <form th:action="@{/ui/vehicles/{id}/edit(id=${vehicle.id})}" method="post">
+            <label>Description
+                <input type="text" name="description" th:value="${vehicle.description}"/>
+            </label>
+
+            <div class="field-row">
+                <div>
+                    <label>Price per unit
+                        <input type="number" step="0.01" name="pricePerUnit" th:value="${vehicle.pricingPolicy.pricePerUnit}"/>
+                    </label>
+                </div>
+                <div>
+                    <label>Billing model
+                        <select name="billingModel">
+                            <option th:each="b : ${billingModels}" th:value="${b}" th:text="${b}"
+                                    th:selected="${b == vehicle.pricingPolicy.billingModel}"></option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <div><label>Max duration minutes <input type="number" name="maxDurationMinutes" th:value="${vehicle.usageRestrictions.maxDurationMinutes}"/></label></div>
+                <div><label>Max kilometers <input type="number" name="maxKilometers" th:value="${vehicle.usageRestrictions.maxKilometers}"/></label></div>
+            </div>
+            <div class="field-row">
+                <div><label>Min age <input type="number" name="minAge" th:value="${vehicle.usageRestrictions.minAge}"/></label></div>
+                <div><label>Max persons <input type="number" name="maxPersons" th:value="${vehicle.usageRestrictions.maxPersons}"/></label></div>
+            </div>
+
+            <button type="submit" class="btn accent">Save changes</button>
+            <a th:href="@{/ui/provider/{id}/fleet(id=${vehicle.providerId})}" class="btn ghost">Cancel</a>
+        </form>
+    </div>
+</main>
+</body>
+</html>

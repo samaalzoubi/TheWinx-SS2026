@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Register User - Identity &amp; Access</title>
+  <link rel="stylesheet" th:href="@{/css/theme.css}"/>
+</head>
+<body>
+<th:block th:replace="~{fragments/header :: header}"></th:block>
+<main class="narrow">
+  <h1>&#128100; Register as a User</h1>
+  <p class="subtitle">Create a rider account to browse and book rides across the platform.</p>
+
+  <div class="card">
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+    <form th:action="@{/ui/register/user}" method="post">
+      <label for="name">Name</label>
+      <input type="text" id="name" name="name" th:value="${name}" required/>
+
+      <div class="field-row">
+        <div>
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" th:value="${email}" required/>
+        </div>
+        <div>
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required/>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div>
+          <label for="phoneNumber">Phone number</label>
+          <input type="text" id="phoneNumber" name="phoneNumber" th:value="${phoneNumber}"/>
+          <div class="help">Optional</div>
+        </div>
+        <div>
+          <label for="dateOfBirth">Date of birth</label>
+          <input type="date" id="dateOfBirth" name="dateOfBirth" th:value="${dateOfBirth}" required/>
+        </div>
+      </div>
+
+      <button type="submit">Register</button>
+    </form>
+  </div>
+
+  <p class="muted"><a th:href="@{/ui}">&larr; Back to home</a></p>
+</main>
+</body>
+</html>

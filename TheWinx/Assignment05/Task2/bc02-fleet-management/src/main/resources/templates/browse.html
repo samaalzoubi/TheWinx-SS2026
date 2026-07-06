@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Browse Vehicles · Fleet Management</title>
+    <link rel="stylesheet" href="/css/theme.css"/>
+</head>
+<body>
+<div th:replace="~{fragments/header :: topbar}"></div>
+<main class="container">
+    <h1>Browse all vehicles</h1>
+    <p class="subtitle">Every vehicle across every provider in the fleet - the full inventory, for exploring and testing the API surface end to end.</p>
+
+    <div th:replace="~{fragments/header :: tabs(active='browse')}"></div>
+
+    <div class="stat-grid">
+        <div class="stat-tile">
+            <span class="icon">🚘</span>
+            <div class="value" th:text="${stats.total}">0</div>
+            <div class="label">Total vehicles</div>
+        </div>
+        <div class="stat-tile">
+            <span class="icon">✅</span>
+            <div class="value" th:text="${stats.available}">0</div>
+            <div class="label">Available</div>
+        </div>
+        <div class="stat-tile">
+            <span class="icon">🔒</span>
+            <div class="value" th:text="${stats.booked}">0</div>
+            <div class="label">Booked</div>
+        </div>
+        <div class="stat-tile">
+            <span class="icon">💶</span>
+            <div class="value">€<span th:text="${stats.averagePrice}">0.00</span></div>
+            <div class="label">Average price / unit</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Filters</h2>
+        <form th:action="@{/ui/browse}" method="get">
+            <div class="field-row">
+                <div>
+                    <label>Type
+                        <select name="type">
+                            <option value="">Any type</option>
+                            <option th:each="t : ${types}" th:value="${t}" th:text="${t}" th:selected="${t == selectedType}"></option>
+                        </select>
+                    </label>
+                </div>
+                <div>
+                    <label>Status
+                        <select name="status">
+                            <option value="">Any status</option>
+                            <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}" th:selected="${s == selectedStatus}"></option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+            <button type="submit" class="btn">Apply filters</button>
+            <a th:href="@{/ui/browse}" class="btn ghost">Reset</a>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>Fleet inventory (<span th:text="${#lists.size(vehicles)}">0</span> shown)</h2>
+
+        <table th:if="${not #lists.isEmpty(vehicles)}">
+            <thead>
+            <tr>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Provider</th>
+                <th>Status</th>
+                <th>Price</th>
+                <th>Restrictions</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="v : ${vehicles}">
+                <td>
+                    <span th:insert="~{fragments/header :: vehicleIcon(type=${v.type})}"></span>
+                    <span th:text="${v.type}"></span>
+                </td>
+                <td th:text="${v.description} ?: '-'"></td>
+                <td th:text="'#' + ${v.providerId}"></td>
+                <td><span th:class="'badge badge-' + ${v.status.name().toLowerCase()}" th:text="${v.status}"></span></td>
+                <td th:text="${v.pricingPolicy.pricePerUnit} + ' / ' + ${v.pricingPolicy.billingModel}"></td>
+                <td class="muted" th:insert="~{fragments/header :: restrictions(r=${v.usageRestrictions})}"></td>
+                <td>
+                    <a th:href="@{/ui/vehicles/{id}/edit(id=${v.id})}" class="btn ghost small">Edit</a>
+                    <form th:action="@{/ui/vehicles/{id}/toggle-status(id=${v.id})}" method="post" class="inline">
+                        <input type="hidden" name="type" th:if="${selectedType != null}" th:value="${selectedType}"/>
+                        <input type="hidden" name="status" th:if="${selectedStatus != null}" th:value="${selectedStatus}"/>
+                        <button type="submit" class="btn small secondary">Toggle status</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="empty-state" th:if="${#lists.isEmpty(vehicles)}">
+            <span class="icon">🔍</span>
+            No vehicles match these filters.
+        </div>
+
+        <p class="muted">"Toggle status" is a manual testing affordance - it flips a vehicle between AVAILABLE and BOOKED via the same status endpoint bc03-booking uses in real integrations.</p>
+    </div>
+</main>
+</body>
+</html>

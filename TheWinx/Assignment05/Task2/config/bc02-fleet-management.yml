@@ -1,0 +1,3 @@
+# Centrally-managed overrides for bc02-fleet-management.
+# No circuit breakers here: Fleet Management makes no outbound calls to other
+# bounded contexts (it is only ever a callee for Booking and Rating).

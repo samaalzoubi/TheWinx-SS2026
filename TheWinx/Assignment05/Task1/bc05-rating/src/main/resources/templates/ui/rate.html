@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Submit a rating</title>
+    <link rel="stylesheet" href="/css/theme.css"/>
+</head>
+<body>
+<header th:replace="~{ui/fragments/nav :: header}"></header>
+<main class="narrow">
+    <h1>Submit a rating</h1>
+    <p class="subtitle">Rate the vehicle and provider for a completed booking.</p>
+
+    <div class="alert alert-error" th:if="${error}">
+        Could not submit rating: <span th:text="${error}"></span>
+    </div>
+
+    <div class="card">
+        <form th:action="@{/ui/rate}" method="post">
+            <div class="field-row">
+                <div>
+                    <label for="bookingId">Booking ID</label>
+                    <input type="number" id="bookingId" name="bookingId" th:value="${bookingId}" required="required"/>
+                    <p class="help">Try 5001 or 5002 (COMPLETED), or 5003 (ACTIVE &rarr; rejected with 409).</p>
+                </div>
+                <div>
+                    <label for="userId">User ID</label>
+                    <input type="number" id="userId" name="userId" th:value="${userId}" required="required"/>
+                </div>
+            </div>
+            <div class="field-row">
+                <div>
+                    <label for="vehicleScore">Vehicle score</label>
+                    <select id="vehicleScore" name="vehicleScore" required="required">
+                        <option th:each="s : ${#numbers.sequence(1, 5)}"
+                                th:value="${s}"
+                                th:selected="${s == vehicleScore}"
+                                th:text="|${T(com.winx.rating.api.ui.support.Stars).render(s)} (${s})|"></option>
+                    </select>
+                </div>
+                <div>
+                    <label for="providerScore">Provider score</label>
+                    <select id="providerScore" name="providerScore" required="required">
+                        <option th:each="s : ${#numbers.sequence(1, 5)}"
+                                th:value="${s}"
+                                th:selected="${s == providerScore}"
+                                th:text="|${T(com.winx.rating.api.ui.support.Stars).render(s)} (${s})|"></option>
+                    </select>
+                </div>
+            </div>
+            <label for="comment">Comment (optional)</label>
+            <textarea id="comment" name="comment" rows="3" th:text="${comment}"></textarea>
+            <button type="submit">Submit rating</button>
+        </form>
+    </div>
+
+    <p><a th:href="@{/ui}">&larr; Back home</a></p>
+</main>
+</body>
+</html>

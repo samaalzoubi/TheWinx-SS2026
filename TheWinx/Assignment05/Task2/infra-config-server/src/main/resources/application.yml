@@ -1,0 +1,27 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: infra-config-server
+  profiles:
+    active: native
+  cloud:
+    config:
+      server:
+        native:
+          # searches both locations so the server works whether it's launched
+          # from the Task2 repo root (../mvnw -pl infra-config-server ...) or
+          # from within its own module directory
+          search-locations: file:./config,file:../config
+
+management:
+  # Config Server's own /{application}/{profile} route matches "/actuator/health"
+  # (application=actuator, profile=health) and shadows the real actuator endpoint
+  # on the main port, so actuator gets its own management port instead.
+  server:
+    port: 8889
+  endpoints:
+    web:
+      exposure:
+        include: health,info

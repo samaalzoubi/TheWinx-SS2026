@@ -1,0 +1,3 @@
+# Centrally-managed overrides for bc01-identity-access.
+# No circuit breakers here: Identity & Access makes no outbound calls to other
+# bounded contexts (it is the global upstream, per the Assignment 03 context map).

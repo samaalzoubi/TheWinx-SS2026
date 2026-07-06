@@ -1,0 +1,15 @@
+# Shared defaults served by the Config Server to every bounded-context service
+# that imports it (spring.config.import: optional:configserver:...). Applies
+# before the per-service file below is layered on top.
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+
+info:
+  team: The Winx
+  scenario: Instant Mobility Platform
