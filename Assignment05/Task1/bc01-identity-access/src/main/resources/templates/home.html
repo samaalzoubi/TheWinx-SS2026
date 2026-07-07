@@ -13,46 +13,44 @@
 
   <div class="stat-grid">
     <div class="stat-tile">
-      <span class="icon">&#128100;</span>
       <div class="value" th:text="${totalUsers}">0</div>
-      <div class="label">Total users</div>
+      <div class="label">Total Users</div>
     </div>
     <div class="stat-tile">
-      <span class="icon">&#127970;</span>
       <div class="value" th:text="${totalProviders}">0</div>
-      <div class="label">Total providers</div>
+      <div class="label">Total Providers</div>
     </div>
   </div>
 
-  <div class="stat-grid">
+  <div class="card-grid">
     <div class="card">
-      <h2>&#128100; Register as a User</h2>
-      <p class="muted">Create a rider account with name, email, password and date of birth.</p>
-      <a class="btn" th:href="@{/ui/register/user}">Register a User</a>
+      <div class="card-header">Register as a User</div>
+      <p class="card-description">Create a rider account with name, email, password and date of birth.</p>
+      <a class="btn primary" th:href="@{/ui/register/user}">Register a User</a>
     </div>
     <div class="card">
-      <h2>&#127970; Register as a Provider</h2>
-      <p class="muted">Onboard a fleet-owning company with a contact person and credentials.</p>
+      <div class="card-header">Register as a Provider</div>
+      <p class="card-description">Onboard a fleet-owning company with a contact person and credentials.</p>
       <a class="btn accent" th:href="@{/ui/register/provider}">Register a Provider</a>
     </div>
     <div class="card">
-      <h2>&#128273; Log in</h2>
-      <p class="muted">Authenticate as either a User or a Provider and receive a bearer token.</p>
-      <a class="btn" th:href="@{/ui/login}">Go to login</a>
+      <div class="card-header">Log In</div>
+      <p class="card-description">Authenticate as either a User or a Provider and receive a bearer token.</p>
+      <a class="btn primary" th:href="@{/ui/login}">Go to Login</a>
     </div>
     <div class="card">
-      <h2>&#128203; Directory</h2>
-      <p class="muted">Browse every registered user and provider currently stored in the database.</p>
-      <a class="btn ghost" th:href="@{/directory}">Open directory</a>
+      <div class="card-header">Directory</div>
+      <p class="card-description">Browse every registered user and provider currently stored in the database.</p>
+      <a class="btn secondary" th:href="@{/directory}">Open Directory</a>
     </div>
     <div class="card">
-      <h2>&#128273; Token Inspector</h2>
-      <p class="muted">Paste a bearer token and check whether it is valid, expired or unknown.</p>
-      <a class="btn ghost" th:href="@{/token-inspector}">Inspect a token</a>
+      <div class="card-header">Token Inspector</div>
+      <p class="card-description">Paste a bearer token and check whether it is valid, expired or unknown.</p>
+      <a class="btn secondary" th:href="@{/token-inspector}">Inspect a Token</a>
     </div>
     <div class="card">
-      <h2>&#128218; API documentation</h2>
-      <p class="muted">Browse the raw REST contracts via Swagger UI.</p>
+      <div class="card-header">API Documentation</div>
+      <p class="card-description">Browse the raw REST contracts via Swagger UI.</p>
       <a class="btn secondary" th:href="@{/swagger-ui.html}">Open Swagger UI</a>
     </div>
   </div>
