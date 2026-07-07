@@ -13,7 +13,7 @@ public class PaymentMethod {
     private String maskedReference;
 
     protected PaymentMethod() {
-        // we keep this no-arg ctor around only because JPA needs one to instantiate the entity via reflection
+        // we keep this no-arg only because JPA needs one to instantiate the entity via reflection
     }
 
     public PaymentMethod(String type, String maskedReference) {

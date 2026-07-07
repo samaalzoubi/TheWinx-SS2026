@@ -21,7 +21,7 @@ public class PaymentResult {
     private String failureReason;
 
     protected PaymentResult() {
-        // we keep this no-arg ctor around only because JPA needs one to instantiate the entity via reflection
+        // we keep this around only because JPA needs one to instantiate the entity via reflection
     }
 
     public PaymentResult(PaymentStatus status, LocalDateTime paidAt, String failureReason) {
