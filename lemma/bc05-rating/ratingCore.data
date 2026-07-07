@@ -1,0 +1,109 @@
+context ratingCore {
+
+    // ── Value Objects ──────────────────────────────────────────────────────────
+
+    // @Embeddable
+    structure Review<valueObject> {
+        // @Column(name = "vehicle_score", nullable = false)
+        immutable int vehicleScore,
+        // @Column(name = "provider_score", nullable = false)
+        immutable int providerScore,
+        // @Column(name = "comment")
+        immutable string comment
+    }
+
+    // @Embeddable
+    structure RatingTarget<valueObject> {
+        // @Column(name = "vehicle_id", nullable = false)
+        immutable long vehicleId,
+        // @Column(name = "provider_id", nullable = false)
+        immutable long providerId,
+        // @Column(name = "booking_id", nullable = false, unique = true)
+        immutable long bookingId
+    }
+
+    // ── Aggregate Root ─────────────────────────────────────────────────────────
+
+    // @Entity
+    // @Table(name = "ratings", uniqueConstraints = @UniqueConstraint(columnNames = "booking_id"))
+    // Immutable once created - no update path.
+    structure Rating<entity, aggregate> {
+        // @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+        long id<identifier>,
+        // @Column(name = "user_id", nullable = false)
+        immutable long userId,
+        // @Column(name = "created_at", nullable = false)
+        immutable string createdAt,
+        // @Embedded
+        immutable RatingTarget ratingTarget<part>,
+        // @Embedded
+        immutable Review review<part>
+    }
+
+    collection Ratings { Rating r }
+
+    // ── DTOs ───────────────────────────────────────────────────────────────────
+
+    // vehicleId and providerId are resolved server-side from the referenced
+    // booking (via BC-03/BC-02), not supplied by the client.
+    structure CreateRatingRequest<valueObject> {
+        immutable long bookingId,
+        immutable long userId,
+        // @Min(1) @Max(5)
+        immutable int vehicleScore,
+        // @Min(1) @Max(5)
+        immutable int providerScore,
+        immutable string comment
+    }
+
+    structure RatingDto<valueObject> {
+        immutable long id,
+        immutable long userId,
+        immutable long bookingId,
+        immutable long vehicleId,
+        immutable long providerId,
+        immutable int vehicleScore,
+        immutable int providerScore,
+        immutable string comment,
+        immutable string createdAt
+    }
+
+    collection RatingDtos { RatingDto r }
+
+    structure AverageScoreResponse<valueObject> {
+        immutable long vehicleId,
+        immutable double averageScore,
+        immutable int count
+    }
+
+    // ── Repository ─────────────────────────────────────────────────────────────
+
+    // @Repository
+    structure RatingRepository<repository> {
+        function Rating findByRatingTarget_BookingId(long bookingId),
+        function Ratings findByRatingTarget_VehicleId(long vehicleId),
+        function Ratings findByRatingTarget_ProviderId(long providerId),
+        function boolean existsByRatingTarget_BookingId(long bookingId),
+        function Rating save(Rating rating)
+    }
+
+    // ── Application Services ───────────────────────────────────────────────────
+
+    // @Service
+    // Looks up the referenced booking via BC-03 (Feign, circuit-breaker
+    // guarded) to resolve vehicleId/providerId and to confirm it is COMPLETED.
+    structure RatingSubmissionService<applicationService> {
+        function Rating submitRating(long bookingId, long userId,
+            int vehicleScore, int providerScore, string comment)
+    }
+
+    // @Service
+    // Only vehicle scores are averaged - there is no provider-level average.
+    structure RatingQueryService<applicationService> {
+        function Rating getById(long id),
+        function Ratings getVehicleRatings(long vehicleId),
+        function Ratings getProviderRatings(long providerId),
+        function Rating getRatingForBooking(long bookingId),
+        function double getAverageScore(long vehicleId)
+    }
+}

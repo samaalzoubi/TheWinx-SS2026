@@ -1,0 +1,174 @@
+context IdentityAccess {
+
+    enum AccountStatus {
+        PENDING,
+        ACTIVE,
+        DEACTIVATED
+    }
+
+    // @Embeddable
+    structure PersonalInfo<valueObject> {
+        // @Column(name = "name", nullable = false)
+        immutable string name,
+        // @Column(name = "date_of_birth")
+        immutable date dateOfBirth,
+        // @Column(name = "phone_number")
+        immutable string phoneNumber
+    }
+
+    // @Embeddable
+    structure CompanyInfo<valueObject> {
+        // @Column(name = "company_name", nullable = false)
+        immutable string companyName,
+        // @Column(name = "contact_name")
+        immutable string contactName
+    }
+
+    // @Entity
+    // @Table(name = "user_accounts")
+    structure UserAccount<aggregate, entity> {
+        // @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+        long id<identifier>,
+        // @Embedded
+        PersonalInfo personalInfo<part>,
+        // @Column(name = "email", unique = true, nullable = false)
+        string email,
+        // @Column(name = "password_hash", nullable = false)
+        string passwordHash,
+        // @Column(name = "registered_at", nullable = false)
+        string registeredAt,
+        // @Enumerated(EnumType.STRING) @Column(name = "status", nullable = false)
+        AccountStatus status,
+
+        procedure deactivate()
+    }
+
+    // @Entity
+    // @Table(name = "provider_accounts")
+    structure ProviderAccount<aggregate, entity> {
+        // @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+        long id<identifier>,
+        // @Embedded
+        CompanyInfo companyInfo<part>,
+        // @Column(name = "email", unique = true, nullable = false)
+        string email,
+        // @Column(name = "password_hash", nullable = false)
+        string passwordHash,
+        // @Column(name = "phone_number")
+        string phoneNumber,
+        // @Column(name = "registered_at", nullable = false)
+        string registeredAt,
+        // @Enumerated(EnumType.STRING) @Column(name = "status", nullable = false)
+        AccountStatus status,
+
+        procedure deactivate()
+    }
+
+    // Opaque bearer token issued on successful authentication. Not a JPA
+    // entity - active tokens are kept in an in-memory store for the
+    // lifetime of the AuthenticationService (see comment there).
+    structure AuthToken<valueObject> {
+        immutable string value,
+        immutable string expiresAt,
+
+        function boolean isExpired()
+    }
+
+    // Identifies which account (USER or PROVIDER) a validated token belongs to.
+    structure PrincipalRef<valueObject> {
+        immutable long id,
+        immutable string type
+    }
+
+    structure UserAccountRepository<repository> {
+        function UserAccount findByEmail(string email),
+        function boolean existsByEmail(string email)
+    }
+
+    structure ProviderAccountRepository<repository> {
+        function ProviderAccount findByEmail(string email),
+        function boolean existsByEmail(string email)
+    }
+
+    // @Service
+    structure RegistrationService<applicationService> {
+        function UserAccount registerUser(string name, string email, string plainPassword,
+            string phoneNumber, date dateOfBirth),
+        function ProviderAccount registerProvider(string companyName, string contactName,
+            string email, string plainPassword, string phoneNumber)
+    }
+
+    // @Service
+    // authenticateUser/authenticateProvider each also issue and return a new
+    // AuthToken alongside the account (see AuthenticatedUser/AuthenticatedProvider
+    // in the Java source) - simplified here to the account each call resolves.
+    structure AuthenticationService<applicationService> {
+        function UserAccount authenticateUser(string email, string plainPassword),
+        function ProviderAccount authenticateProvider(string email, string plainPassword),
+        function PrincipalRef validateToken(string token)
+    }
+
+    structure UserRegisterRequest<valueObject> {
+        immutable string name,
+        immutable string email,
+        immutable string password,
+        immutable string phoneNumber,
+        immutable date dateOfBirth
+    }
+
+    structure ProviderRegisterRequest<valueObject> {
+        immutable string companyName,
+        immutable string contactName,
+        immutable string email,
+        immutable string password,
+        immutable string phoneNumber
+    }
+
+    // Shared login request shape for both Users and Providers.
+    structure LoginRequest<valueObject> {
+        immutable string email,
+        immutable string password
+    }
+
+    structure UserResponse<valueObject> {
+        immutable long id,
+        immutable string name,
+        immutable string email,
+        immutable string phoneNumber,
+        immutable date dateOfBirth,
+        immutable string registeredAt
+    }
+
+    structure ProviderResponse<valueObject> {
+        immutable long id,
+        immutable string companyName,
+        immutable string contactName,
+        immutable string email,
+        immutable string phoneNumber,
+        immutable string registeredAt
+    }
+
+    structure UserLoginResponse<valueObject> {
+        immutable string token,
+        immutable string expiresAt,
+        immutable long userId,
+        immutable string name,
+        immutable string email
+    }
+
+    structure ProviderLoginResponse<valueObject> {
+        immutable string token,
+        immutable string expiresAt,
+        immutable long providerId,
+        immutable string companyName,
+        immutable string email
+    }
+
+    // Returned by GET /api/auth/validate - used by other bounded contexts
+    // (e.g. the API gateway) to resolve the principal behind a bearer token.
+    structure ValidateTokenResponse<valueObject> {
+        immutable boolean valid,
+        immutable long principalId,
+        immutable string principalType
+    }
+}

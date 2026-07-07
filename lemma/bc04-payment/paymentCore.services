@@ -1,0 +1,50 @@
+import datatypes from "paymentCore.data" as domain
+
+public functional microservice com.winx.payment.PaymentCore {
+    interface paymentInformationHolder {
+        ---
+        Create and process a payment after a booking has been completed.
+        Runs against a mock payment gateway that decides PAID or FAILED.
+
+        @required requestDto the payment request sent by the Booking microservice
+        ---
+        createPayment(
+            sync requestDto : domain::paymentCore.CreatePaymentRequest,
+            sync out responseDto : domain::paymentCore.PaymentResponse
+        );
+
+        ---
+        Get a payment by its payment id.
+
+        @required paymentId the unique id of the payment
+        ---
+        getPaymentById(
+            sync paymentId : long,
+            sync out responseDto : domain::paymentCore.PaymentResponse,
+            sync out fault paymentNotFound : string
+        );
+
+        ---
+        Get a payment by its related booking id.
+
+        @required bookingId the booking reference from the Booking bounded context
+        ---
+        getPaymentByBookingId(
+            sync bookingId : long,
+            sync out responseDto : domain::paymentCore.PaymentResponse,
+            sync out fault paymentNotFound : string
+        );
+
+        ---
+        Retry a FAILED payment by re-invoking the payment gateway.
+
+        @required paymentId the unique id of the payment to retry
+        ---
+        retryPayment(
+            sync paymentId : long,
+            sync out responseDto : domain::paymentCore.PaymentResponse,
+            sync out fault paymentNotFound : string,
+            sync out fault invalidState : string
+        );
+    }
+}

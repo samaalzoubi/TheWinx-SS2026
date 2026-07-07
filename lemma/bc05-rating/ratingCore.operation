@@ -1,0 +1,124 @@
+import microservices from "ratingCore.services" as ratingCoreServices
+import technology from "../technology/javaWithSpring.technology" as java
+import technology from "../technology/map.technology" as map
+
+@technology(java)
+@technology(map)
+ratingCoreServices::com.winx.rating.RatingCore {
+    aspects {
+        java::_aspects.ApplicationName("bc05-rating");
+
+        java::_aspects.DatasourceConfiguration(
+            url="jdbc:h2:mem:ratingdb;DB_CLOSE_DELAY=-1",
+            username="sa",
+            password="",
+            driverClassName="org.h2.Driver"
+        );
+
+        java::_aspects.HibernateConfiguration("update");
+
+        java::_aspects.Port(8085);
+    }
+
+    interface ratingSubmission {
+        endpoints { java::_protocols.rest: "/api/ratings"; }
+        aspects { map::_aspects.InformationHolderResource; }
+    }
+
+    interface ratingQuery {
+        endpoints { java::_protocols.rest: "/api/ratings"; }
+        aspects { map::_aspects.InformationHolderResource; }
+    }
+
+    operation ratingSubmission.submitRating {
+        aspects { java::_aspects.PostMapping; }
+
+        parameters {
+            complex requestDto {
+                aspects {
+                    java::_aspects.Valid;
+                    java::_aspects.RequestBody;
+                }
+            }
+            complex responseDto : java::_types.ResponseEntity;
+            primitive invalidScore {
+                aspects { java::_aspects.ResponseStatus("BAD_REQUEST"); }
+            }
+            primitive bookingNotFound {
+                aspects { java::_aspects.ResponseStatus("NOT_FOUND"); }
+            }
+            primitive bookingNotCompleted {
+                aspects { java::_aspects.ResponseStatus("CONFLICT"); }
+            }
+            primitive duplicateRating {
+                aspects { java::_aspects.ResponseStatus("CONFLICT"); }
+            }
+        }
+    }
+
+    operation ratingQuery.getRatingById {
+        endpoints { java::_protocols.rest: "/{ratingId}"; }
+        aspects { java::_aspects.GetMapping; }
+
+        parameters {
+            primitive ratingId {
+                aspects { java::_aspects.PathVariable; }
+            }
+            complex responseDto : java::_types.ResponseEntity;
+            primitive notFound {
+                aspects { java::_aspects.ResponseStatus("NOT_FOUND"); }
+            }
+        }
+    }
+
+    operation ratingQuery.getRatingByBookingId {
+        endpoints { java::_protocols.rest: "/booking/{bookingId}"; }
+        aspects { java::_aspects.GetMapping; }
+
+        parameters {
+            primitive bookingId {
+                aspects { java::_aspects.PathVariable; }
+            }
+            complex responseDto : java::_types.ResponseEntity;
+            primitive notFound {
+                aspects { java::_aspects.ResponseStatus("NOT_FOUND"); }
+            }
+        }
+    }
+
+    operation ratingQuery.getVehicleRatings {
+        endpoints { java::_protocols.rest: "/vehicle/{vehicleId}"; }
+        aspects { java::_aspects.GetMapping; }
+
+        parameters {
+            primitive vehicleId {
+                aspects { java::_aspects.PathVariable; }
+            }
+            complex ratings : java::_types.ResponseEntity;
+        }
+    }
+
+    operation ratingQuery.getProviderRatings {
+        endpoints { java::_protocols.rest: "/provider/{providerId}"; }
+        aspects { java::_aspects.GetMapping; }
+
+        parameters {
+            primitive providerId {
+                aspects { java::_aspects.PathVariable; }
+            }
+            complex ratings : java::_types.ResponseEntity;
+        }
+    }
+
+    operation ratingQuery.getAverageVehicleScore {
+        endpoints { java::_protocols.rest: "/vehicle/{vehicleId}/average"; }
+        aspects { java::_aspects.GetMapping; }
+
+        parameters {
+            primitive vehicleId {
+                aspects { java::_aspects.PathVariable; }
+            }
+            complex response : java::_types.ResponseEntity;
+        }
+    }
+}

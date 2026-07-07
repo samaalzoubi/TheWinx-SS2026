@@ -1,0 +1,36 @@
+import microservices from "paymentCore.services" as paymentCoreServices
+import technology from "../technology/docker.technology" as Docker
+import technology from "../technology/javaWithSpring.technology" as java
+import nodes from "../eureka-server/eurekaServer.operation" as eurekaOps
+import nodes from "../infra-config-server/configServer.operation" as configOps
+
+@technology(Docker)
+@technology(java)
+container PaymentCoreContainer deployment technology Docker::_deployment.Docker
+    deploys paymentCoreServices::com.winx.payment.PaymentCore
+    depends on nodes eurekaOps::ServiceDiscovery, configOps::ConfigServer {
+
+    aspects {
+        Docker::_aspects.Dockerfile('FROM eclipse-temurin:21-jre COPY bc04-payment-0.0.1-SNAPSHOT.jar app.jar EXPOSE 8084 ENTRYPOINT ["java", "-jar", "app.jar"]');
+
+        Docker::_aspects.ComposePart('bc04-payment:
+    build: ./bc04-payment
+    image: thewinx/bc04-payment
+    depends_on:
+      - infra-eureka-server
+      - infra-config-server
+    environment:
+      - "SPRING_APPLICATION_NAME=bc04-payment"
+      - "SERVER_PORT=8084"
+      - "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://infra-eureka-server:8761/eureka"
+      - "SPRING_CONFIG_IMPORT=optional:configserver:http://infra-config-server:8888"
+    ports:
+      - "8084:8084"');
+    }
+
+    paymentCoreServices::com.winx.payment.PaymentCore {
+        basic endpoints {
+            java::_protocols.rest: "http://localhost:8084";
+        }
+    }
+}

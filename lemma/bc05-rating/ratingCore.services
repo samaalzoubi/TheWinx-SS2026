@@ -1,0 +1,74 @@
+import datatypes from "ratingCore.data" as domain
+
+public functional microservice com.winx.rating.RatingCore {
+    interface ratingSubmission {
+        ---
+        Submit a rating for a completed booking. Each booking can only be rated
+        once. vehicleId/providerId are resolved server-side via BC-03 Booking.
+
+        @required requestDto the rating data: bookingId, userId, scores and optional comment
+        ---
+        submitRating(
+            sync requestDto : domain::ratingCore.CreateRatingRequest,
+            sync out responseDto : domain::ratingCore.RatingDto,
+            sync out fault invalidScore : string,
+            sync out fault bookingNotFound : string,
+            sync out fault bookingNotCompleted : string,
+            sync out fault duplicateRating : string
+        );
+    }
+
+    interface ratingQuery {
+        ---
+        Get a single rating by its ID.
+
+        @required ratingId the unique identifier of the rating
+        ---
+        getRatingById(
+            sync ratingId : long,
+            sync out responseDto : domain::ratingCore.RatingDto,
+            sync out fault notFound : string
+        );
+
+        ---
+        Get the rating associated with a specific booking.
+
+        @required bookingId the booking reference
+        ---
+        getRatingByBookingId(
+            sync bookingId : long,
+            sync out responseDto : domain::ratingCore.RatingDto,
+            sync out fault notFound : string
+        );
+
+        ---
+        Get all ratings for a specific vehicle.
+
+        @required vehicleId the vehicle identifier
+        ---
+        getVehicleRatings(
+            sync vehicleId : long,
+            sync out ratings : domain::ratingCore.RatingDtos
+        );
+
+        ---
+        Get all ratings for a specific provider.
+
+        @required providerId the provider identifier
+        ---
+        getProviderRatings(
+            sync providerId : long,
+            sync out ratings : domain::ratingCore.RatingDtos
+        );
+
+        ---
+        Get the average vehicle score and rating count for a specific vehicle.
+
+        @required vehicleId the vehicle identifier
+        ---
+        getAverageVehicleScore(
+            sync vehicleId : long,
+            sync out response : domain::ratingCore.AverageScoreResponse
+        );
+    }
+}

@@ -1,0 +1,93 @@
+import microservices from "IdentityAccess.services" as IdentityAccessServices
+import technology from "../technology/javaWithSpring.technology" as java
+
+@technology(java)
+IdentityAccessServices::com.winx.identity.IdentityAccess {
+    aspects {
+        java::_aspects.ApplicationName("bc01-identity-access");
+        java::_aspects.Port(8081);
+        java::_aspects.DatasourceConfiguration(
+            url = "jdbc:h2:mem:identitydb;DB_CLOSE_DELAY=-1",
+            username = "sa",
+            password = "",
+            driverClassName = "org.h2.Driver"
+        );
+        java::_aspects.HibernateConfiguration("update");
+    }
+
+    interface userAccounts {
+        endpoints { java::_protocols.rest: "/api/users"; }
+    }
+
+    interface providerAccounts {
+        endpoints { java::_protocols.rest: "/api/providers"; }
+    }
+
+    interface authValidation {
+        endpoints { java::_protocols.rest: "/api/auth"; }
+    }
+
+    operation userAccounts.register {
+        endpoints { java::_protocols.rest: "/register"; }
+        aspects { java::_aspects.PostMapping; }
+        parameters {
+            complex request { aspects { java::_aspects.Valid; java::_aspects.RequestBody; } }
+            complex response { aspects { java::_aspects.ResponseEntity; } }
+        }
+    }
+
+    operation userAccounts.login {
+        endpoints { java::_protocols.rest: "/login"; }
+        aspects { java::_aspects.PostMapping; }
+        parameters {
+            complex request { aspects { java::_aspects.Valid; java::_aspects.RequestBody; } }
+            complex response { aspects { java::_aspects.ResponseEntity; } }
+        }
+    }
+
+    operation userAccounts.getById {
+        endpoints { java::_protocols.rest: "/{id}"; }
+        aspects { java::_aspects.GetMapping; }
+        parameters {
+            primitive id { aspects { java::_aspects.PathVariable; } }
+            complex response { aspects { java::_aspects.ResponseEntity; } }
+        }
+    }
+
+    operation providerAccounts.register {
+        endpoints { java::_protocols.rest: "/register"; }
+        aspects { java::_aspects.PostMapping; }
+        parameters {
+            complex request { aspects { java::_aspects.Valid; java::_aspects.RequestBody; } }
+            complex response { aspects { java::_aspects.ResponseEntity; } }
+        }
+    }
+
+    operation providerAccounts.login {
+        endpoints { java::_protocols.rest: "/login"; }
+        aspects { java::_aspects.PostMapping; }
+        parameters {
+            complex request { aspects { java::_aspects.Valid; java::_aspects.RequestBody; } }
+            complex response { aspects { java::_aspects.ResponseEntity; } }
+        }
+    }
+
+    operation providerAccounts.getById {
+        endpoints { java::_protocols.rest: "/{id}"; }
+        aspects { java::_aspects.GetMapping; }
+        parameters {
+            primitive id { aspects { java::_aspects.PathVariable; } }
+            complex response { aspects { java::_aspects.ResponseEntity; } }
+        }
+    }
+
+    // Returns the plain ValidateTokenResponse directly (no ResponseEntity
+    // wrapper in the Java controller) so this never throws for a bad token.
+    operation authValidation.validate {
+        endpoints { java::_protocols.rest: "/validate"; }
+        aspects { java::_aspects.GetMapping; }
+        parameters {
+            primitive token { aspects { java::_aspects.RequestParam(value="token"); } }
+        }
+    }
+}

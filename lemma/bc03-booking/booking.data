@@ -1,0 +1,140 @@
+context booking {
+
+    // ── Enumerations ───────────────────────────────────────────────────────────
+
+    enum BookingStatus {
+        ACTIVE,
+        COMPLETED,
+        CANCELLED
+    }
+
+    // ── Value Objects ──────────────────────────────────────────────────────────
+
+    // Snapshot of the vehicle data relevant to a booking, captured at booking
+    // creation time so later price changes on the vehicle never retroactively
+    // affect an in-progress or historical ride. @Embeddable
+    structure VehicleSnapshot<valueObject> {
+        immutable long vehicleId,
+        immutable string type,
+        immutable double pricePerUnit,
+        immutable string billingModel
+    }
+
+    // Outcome of a completed ride; both fields stay unset until completion. @Embeddable
+    structure RideSummary<valueObject> {
+        immutable double distanceKm,
+        immutable double totalCost
+    }
+
+    // Plain value object for a geographic coordinate pair - not a JPA
+    // @Embeddable, since Booking needs two independent pairs (start/end) and
+    // stores them as four plain fields instead.
+    structure RideLocation<valueObject> {
+        immutable double latitude,
+        immutable double longitude
+    }
+
+    // Read model for vehicle search results fetched from BC-02.
+    structure VehicleDto<valueObject> {
+        immutable long vehicleId,
+        immutable long providerId,
+        immutable string type,
+        immutable string description,
+        immutable string status,
+        immutable double pricePerUnit,
+        immutable string billingModel,
+        immutable int minAge,
+        immutable int maxPersons
+    }
+
+    collection VehicleDtos { VehicleDto v }
+
+    // ── Aggregate Root ─────────────────────────────────────────────────────────
+
+    // @Entity
+    // @Table(name = "bookings")
+    structure Booking<entity, aggregate> {
+        // @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+        long id<identifier>,
+        // @Column(nullable = false)
+        immutable long userId,
+        // @Column(nullable = false)
+        immutable double startLatitude,
+        // @Column(nullable = false)
+        immutable double startLongitude,
+        double endLatitude,
+        double endLongitude,
+        // @Column(nullable = false)
+        immutable string startTime,
+        string endTime,
+        // @Embedded
+        immutable VehicleSnapshot vehicleSnapshot<part>,
+        // @Embedded
+        RideSummary rideSummary<part>,
+        // @Enumerated(EnumType.STRING) @Column(nullable = false)
+        BookingStatus status,
+
+        procedure complete(RideLocation endLocation, string endTime, double distanceKm, double totalCost),
+        procedure cancel()
+    }
+
+    collection Bookings { Booking b }
+
+    // ── DTOs ───────────────────────────────────────────────────────────────────
+
+    structure CreateBookingRequest<valueObject> {
+        immutable long userId,
+        immutable long vehicleId
+    }
+
+    structure EndBookingRequest<valueObject> {
+        immutable double endLatitude,
+        immutable double endLongitude,
+        // Optional; defaults to CARD if omitted.
+        immutable string paymentMethod
+    }
+
+    structure BookingResponse<valueObject> {
+        immutable long id,
+        immutable long userId,
+        immutable long vehicleId,
+        immutable BookingStatus status,
+        immutable string startTime,
+        immutable string endTime,
+        immutable double startLatitude,
+        immutable double startLongitude,
+        immutable double endLatitude,
+        immutable double endLongitude,
+        immutable string vehicleType,
+        immutable double pricePerUnit,
+        immutable string billingModel,
+        immutable double distanceKm,
+        immutable double totalCost,
+        immutable long paymentId,
+        immutable string paymentStatus
+    }
+
+    collection BookingResponses { BookingResponse d }
+
+    // ── Repository ─────────────────────────────────────────────────────────────
+
+    // @Repository
+    structure BookingRepository<repository> {
+        function Bookings findByUserId(long userId),
+        function Booking findByUserIdAndStatus(long userId, BookingStatus status),
+        function Bookings findByVehicleIdAndStatus(long vehicleId, BookingStatus status),
+        function Bookings findByVehicleId(long vehicleId),
+        function Booking save(Booking booking)
+    }
+
+    // ── Application Service ────────────────────────────────────────────────────
+
+    // @Service
+    // Validates the user via BC-01 (identity) and vehicle availability via
+    // BC-02 (fleet) through Feign clients guarded by circuit breakers.
+    structure BookingService<applicationService> {
+        function Booking createBooking(long userId, long vehicleId),
+        function Booking endBooking(long bookingId, double endLatitude, double endLongitude, string paymentMethod),
+        function Booking cancelBooking(long bookingId)
+    }
+}

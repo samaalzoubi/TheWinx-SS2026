@@ -1,0 +1,100 @@
+context paymentCore {
+
+    enum PaymentStatus {
+        PENDING,
+        PAID,
+        FAILED
+    }
+
+    // Money is non-negative by invariant - a ride with ~0 measured distance
+    // under per-km billing legitimately costs 0 and is still a real payment.
+    // @Embeddable
+    structure Money<valueObject> {
+        // @Column(name = "amount", nullable = false)
+        immutable double amount,
+        // @Column(name = "currency", nullable = false)
+        immutable string currency
+    }
+
+    // Opaque payment method identifier plus a masked reference for display
+    // (e.g. "****-CARD"). Not an enum in the Java model - "type" is a free-form
+    // string so new payment methods don't require a schema migration.
+    // @Embeddable
+    structure PaymentMethod<valueObject> {
+        // @Column(name = "payment_method_type", nullable = false)
+        immutable string type,
+        // @Column(name = "masked_reference")
+        immutable string maskedReference
+    }
+
+    // @Embeddable
+    structure PaymentResult<valueObject> {
+        // @Enumerated(EnumType.STRING) @Column(name = "status", nullable = false)
+        PaymentStatus status,
+        // @Column(name = "paid_at")
+        string paidAt,
+        // @Column(name = "failure_reason")
+        string failureReason
+    }
+
+    // @Entity
+    // @Table(name = "payments")
+    structure Payment<entity, aggregate> {
+        // @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+        long id<identifier>,
+        // Reference to booking in BC-03 (no FK - cross-BC reference by ID)
+        immutable long bookingId,
+        immutable long userId,
+        // @Embedded
+        immutable Money money<part>,
+        // @Embedded
+        immutable PaymentMethod paymentMethod<part>,
+        // @Embedded
+        PaymentResult result<part>,
+
+        procedure markPaid(string paidAt),
+        procedure markFailed(string reason),
+        // Resets a FAILED payment back to PENDING so the gateway can be re-invoked.
+        procedure resetForRetry()
+    }
+
+    collection Payments { Payment p }
+
+    structure CreatePaymentRequest<valueObject> {
+        immutable long bookingId,
+        immutable long userId,
+        immutable double amount,
+        immutable string currency,
+        immutable string paymentMethod,
+        immutable string maskedReference
+    }
+
+    structure PaymentResponse<valueObject> {
+        immutable long id,
+        immutable long bookingId,
+        immutable long userId,
+        immutable double amount,
+        immutable string currency,
+        immutable string paymentMethodType,
+        immutable string maskedReference,
+        immutable PaymentStatus status,
+        immutable string paidAt,
+        immutable string failureReason
+    }
+
+    // @Repository
+    structure PaymentRepository<repository> {
+        function Payment findByBookingId(long bookingId),
+        function Payment save(Payment payment)
+    }
+
+    // @Service
+    // Orchestrates payment processing against the (mock) external payment
+    // gateway. Amounts must be non-negative; status only ever moves
+    // PENDING -> PAID or PENDING -> FAILED, never backwards.
+    structure PaymentProcessingService<applicationService> {
+        function Payment initiatePayment(long bookingId, double amount, string currency, long userId,
+            string paymentMethodType, string paymentMethodMaskedRef),
+        function Payment retryPayment(long paymentId)
+    }
+}

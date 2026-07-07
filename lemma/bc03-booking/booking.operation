@@ -1,0 +1,145 @@
+import microservices from "booking.services" as bookingServices
+import technology from "../technology/javaWithSpring.technology" as java
+import technology from "../technology/map.technology" as map
+
+@technology(java)
+@technology(map)
+bookingServices::com.winx.booking.BookingCore {
+    aspects {
+        java::_aspects.ApplicationName("bc03-booking");
+
+        java::_aspects.DatasourceConfiguration(
+            url="jdbc:h2:mem:bookingdb;DB_CLOSE_DELAY=-1",
+            username="sa",
+            password="",
+            driverClassName="org.h2.Driver"
+        );
+
+        java::_aspects.HibernateConfiguration("update");
+
+        java::_aspects.Port(8083);
+    }
+
+    interface bookingLifecycle {
+        endpoints { java::_protocols.rest: "/api/bookings"; }
+        aspects { map::_aspects.InformationHolderResource; }
+    }
+
+    interface bookingQuery {
+        endpoints { java::_protocols.rest: "/api/bookings"; }
+        aspects { map::_aspects.InformationHolderResource; }
+    }
+
+    operation bookingLifecycle.createBooking {
+        aspects { java::_aspects.PostMapping; }
+        parameters {
+            complex requestDto {
+                aspects {
+                    java::_aspects.Valid;
+                    java::_aspects.RequestBody;
+                }
+            }
+            complex responseDto : java::_types.ResponseEntity;
+            primitive userNotFound {
+                aspects { java::_aspects.ResponseStatus("NOT_FOUND"); }
+            }
+            primitive vehicleNotFound {
+                aspects { java::_aspects.ResponseStatus("NOT_FOUND"); }
+            }
+            primitive vehicleUnavailable {
+                aspects { java::_aspects.ResponseStatus("CONFLICT"); }
+            }
+            primitive activeBookingExists {
+                aspects { java::_aspects.ResponseStatus("CONFLICT"); }
+            }
+            primitive restrictionViolation {
+                aspects { java::_aspects.ResponseStatus("BAD_REQUEST"); }
+            }
+        }
+    }
+
+    operation bookingLifecycle.endBooking {
+        endpoints { java::_protocols.rest: "/{bookingId}/end"; }
+        aspects { java::_aspects.PostMapping; }
+        parameters {
+            primitive bookingId {
+                aspects { java::_aspects.PathVariable; }
+            }
+            complex requestDto {
+                aspects { java::_aspects.Valid; java::_aspects.RequestBody; }
+            }
+            complex responseDto : java::_types.ResponseEntity;
+            primitive notFound {
+                aspects { java::_aspects.ResponseStatus("NOT_FOUND"); }
+            }
+            primitive invalidState {
+                aspects { java::_aspects.ResponseStatus("CONFLICT"); }
+            }
+        }
+    }
+
+    operation bookingLifecycle.cancelBooking {
+        endpoints { java::_protocols.rest: "/{bookingId}/cancel"; }
+        aspects { java::_aspects.PostMapping; }
+        parameters {
+            primitive bookingId {
+                aspects { java::_aspects.PathVariable; }
+            }
+            complex responseDto : java::_types.ResponseEntity;
+            primitive notFound {
+                aspects { java::_aspects.ResponseStatus("NOT_FOUND"); }
+            }
+            primitive invalidState {
+                aspects { java::_aspects.ResponseStatus("CONFLICT"); }
+            }
+        }
+    }
+
+    operation bookingQuery.getBooking {
+        endpoints { java::_protocols.rest: "/{bookingId}"; }
+        aspects { java::_aspects.GetMapping; }
+        parameters {
+            primitive bookingId {
+                aspects { java::_aspects.PathVariable; }
+            }
+            complex responseDto : java::_types.ResponseEntity;
+            primitive notFound {
+                aspects { java::_aspects.ResponseStatus("NOT_FOUND"); }
+            }
+        }
+    }
+
+    operation bookingQuery.getUserBookings {
+        endpoints { java::_protocols.rest: "/user/{userId}"; }
+        aspects { java::_aspects.GetMapping; }
+        parameters {
+            primitive userId {
+                aspects { java::_aspects.PathVariable; }
+            }
+        }
+    }
+
+    operation bookingQuery.getActiveBooking {
+        endpoints { java::_protocols.rest: "/user/{userId}/active"; }
+        aspects { java::_aspects.GetMapping; }
+        parameters {
+            primitive userId {
+                aspects { java::_aspects.PathVariable; }
+            }
+            complex responseDto : java::_types.ResponseEntity;
+            primitive notFound {
+                aspects { java::_aspects.ResponseStatus("NOT_FOUND"); }
+            }
+        }
+    }
+
+    operation bookingQuery.getVehicleBookings {
+        endpoints { java::_protocols.rest: "/vehicle/{vehicleId}"; }
+        aspects { java::_aspects.GetMapping; }
+        parameters {
+            primitive vehicleId {
+                aspects { java::_aspects.PathVariable; }
+            }
+        }
+    }
+}

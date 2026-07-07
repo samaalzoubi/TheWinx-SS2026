@@ -1,0 +1,81 @@
+import datatypes from "IdentityAccess.data" as Domain
+
+public functional microservice com.winx.identity.IdentityAccess {
+
+    interface userAccounts {
+        ---
+        Register a new customer/rider account.
+
+        @required request the registration data: name, email, password, phone number, and date of birth
+        ---
+        register(
+            sync request : Domain::IdentityAccess.UserRegisterRequest,
+            sync out response : Domain::IdentityAccess.UserResponse
+        );
+
+        ---
+        Authenticate a user with email and password and issue a bearer token.
+
+        @required request the email and password to authenticate
+        ---
+        login(
+            sync request : Domain::IdentityAccess.LoginRequest,
+            sync out response : Domain::IdentityAccess.UserLoginResponse
+        );
+
+        ---
+        Get a user account by id.
+
+        @required id the unique id of the user
+        ---
+        getById(
+            sync id : long,
+            sync out response : Domain::IdentityAccess.UserResponse
+        );
+    }
+
+    interface providerAccounts {
+        ---
+        Register a new fleet-provider account.
+
+        @required request the registration data: company name, contact name, email, password, and phone number
+        ---
+        register(
+            sync request : Domain::IdentityAccess.ProviderRegisterRequest,
+            sync out response : Domain::IdentityAccess.ProviderResponse
+        );
+
+        ---
+        Authenticate a provider with email and password and issue a bearer token.
+
+        @required request the email and password to authenticate
+        ---
+        login(
+            sync request : Domain::IdentityAccess.LoginRequest,
+            sync out response : Domain::IdentityAccess.ProviderLoginResponse
+        );
+
+        ---
+        Get a provider account by id.
+
+        @required id the unique id of the provider
+        ---
+        getById(
+            sync id : long,
+            sync out response : Domain::IdentityAccess.ProviderResponse
+        );
+    }
+
+    interface authValidation {
+        ---
+        Validate a bearer token and resolve the principal it belongs to. Called
+        by other bounded contexts (e.g. the API gateway) to check a token.
+
+        @param token the bearer token to validate
+        ---
+        validate(
+            sync token? : string,
+            sync out response : Domain::IdentityAccess.ValidateTokenResponse
+        );
+    }
+}

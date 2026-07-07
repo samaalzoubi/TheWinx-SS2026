@@ -1,0 +1,95 @@
+import datatypes from "booking.data" as domain
+
+public functional microservice com.winx.booking.BookingCore {
+
+    interface bookingLifecycle {
+        ---
+        Start a new booking for a user. Validates the user via BC-01 (identity)
+        and vehicle availability/restrictions via BC-02 (fleet), then marks the
+        vehicle as BOOKED on success.
+
+        @required requestDto the vehicle to book and the requesting user's id
+        ---
+        createBooking(
+            sync requestDto : domain::booking.CreateBookingRequest,
+            sync out responseDto : domain::booking.BookingResponse,
+            sync out fault userNotFound : string,
+            sync out fault vehicleNotFound : string,
+            sync out fault vehicleUnavailable : string,
+            sync out fault activeBookingExists : string,
+            sync out fault restrictionViolation : string
+        );
+
+        ---
+        Complete a ride: record end location, compute distance and total cost,
+        release the vehicle back to AVAILABLE, and trigger payment.
+
+        @required bookingId the unique identifier of the booking to end
+        @required requestDto the end location and chosen payment method
+        ---
+        endBooking(
+            sync bookingId : long,
+            sync requestDto : domain::booking.EndBookingRequest,
+            sync out responseDto : domain::booking.BookingResponse,
+            sync out fault notFound : string,
+            sync out fault invalidState : string
+        );
+
+        ---
+        Cancel an active booking and release the vehicle back to AVAILABLE.
+
+        @required bookingId the unique identifier of the booking to cancel
+        ---
+        cancelBooking(
+            sync bookingId : long,
+            sync out responseDto : domain::booking.BookingResponse,
+            sync out fault notFound : string,
+            sync out fault invalidState : string
+        );
+    }
+
+    interface bookingQuery {
+        ---
+        Retrieve a booking by its ID.
+
+        @required bookingId the unique identifier of the booking
+        ---
+        getBooking(
+            sync bookingId : long,
+            sync out responseDto : domain::booking.BookingResponse,
+            sync out fault notFound : string
+        );
+
+        ---
+        Retrieve all bookings for a given user, most recent first.
+
+        @required userId the unique identifier of the user
+        ---
+        getUserBookings(
+            sync userId : long,
+            sync out bookings : domain::booking.BookingResponses
+        );
+
+        ---
+        Retrieve the user's current active booking, if any.
+
+        @required userId the unique identifier of the user
+        ---
+        getActiveBooking(
+            sync userId : long,
+            sync out responseDto : domain::booking.BookingResponse,
+            sync out fault notFound : string
+        );
+
+        ---
+        Retrieve all bookings ever made against a given vehicle, most recent
+        first. Lets a provider see the ride/earnings history for their fleet.
+
+        @required vehicleId the unique identifier of the vehicle
+        ---
+        getVehicleBookings(
+            sync vehicleId : long,
+            sync out bookings : domain::booking.BookingResponses
+        );
+    }
+}
