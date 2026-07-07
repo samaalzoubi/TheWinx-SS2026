@@ -2,7 +2,6 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 
-<!-- Shared top navigation bar, included on every /ui page. -->
 <header class="topbar" th:fragment="topbar">
     <div class="brand">
         <a th:href="@{/ui}">Instant Mobility</a>
@@ -16,14 +15,12 @@
     </nav>
 </header>
 
-<!-- Pill tabs for quickly switching between the three fleet-browsing views. -->
 <div class="tabs" th:fragment="tabs(active)">
     <a th:href="@{/ui/browse}" th:classappend="${active == 'browse'} ? 'active' : ''">Browse all vehicles</a>
     <a th:href="@{/ui/provider/1/fleet}" th:classappend="${active == 'fleet'} ? 'active' : ''">My fleet</a>
     <a th:href="@{/ui/search}" th:classappend="${active == 'search'} ? 'active' : ''">Search near me</a>
 </div>
 
-<!-- Renders just the emoji icon for a VehicleType; caller adds the label text next to it. -->
 <span th:fragment="vehicleIcon(type)" th:switch="${type != null ? type.name() : ''}">
     <th:block th:case="'E_SCOOTER'">🛴</th:block>
     <th:block th:case="'BICYCLE'">🚲</th:block>
@@ -32,7 +29,6 @@
     <th:block th:case="*">🚘</th:block>
 </span>
 
-<!-- Compact human-readable summary of a vehicle's usage restrictions. -->
 <th:block th:fragment="restrictions(r)">
     <span th:if="${r == null or (r.minAge == null and r.maxPersons == null and r.maxDurationMinutes == null and r.maxKilometers == null)}">No restrictions</span>
     <th:block th:if="${r != null}">

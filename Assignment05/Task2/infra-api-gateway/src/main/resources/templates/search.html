@@ -28,29 +28,30 @@
 
 <div class="card" th:if="${results != null}">
     <h2>Results</h2>
-    <p class="muted" th:if="${#lists.isEmpty(results)}">No available vehicles matched your search.</p>
-    <table th:unless="${#lists.isEmpty(results)}">
-        <thead>
-        <tr><th>Type</th><th>Description</th><th>Price</th><th>Restrictions</th><th></th></tr>
-        </thead>
-        <tbody>
-        <tr th:each="v : ${results}">
-            <td th:text="${v.type()}">TYPE</td>
-            <td th:text="${v.description()}">desc</td>
-            <td th:text="${v.pricePerUnit()} + ' EUR / ' + (${v.billingModel() == 'PER_HOUR'} ? 'hour' : 'km')">price</td>
-            <td class="muted">
-                <span th:if="${v.minAge() != null}" th:text="'min age ' + ${v.minAge()} + ' '">age</span>
-                <span th:if="${v.maxPersons() != null}" th:text="'max ' + ${v.maxPersons()} + ' persons'">persons</span>
-            </td>
-            <td>
+    <div class="empty-state" th:if="${#lists.isEmpty(results)}">
+        <span class="icon">🔍</span>
+        No available vehicles matched your search.
+    </div>
+    <div class="vehicle-grid" th:unless="${#lists.isEmpty(results)}">
+        <div class="vehicle-card" th:each="v : ${results}">
+            <div class="vehicle-card-top">
+                <span class="vehicle-icon" th:text="${v.type() == 'E_SCOOTER'} ? '🛴' : (${v.type() == 'BICYCLE'} ? '🚲' : (${v.type() == 'E_BIKE'} ? '⚡' : '🚗'))">🚘</span>
+                <span class="vehicle-price"><span th:text="${v.pricePerUnit()}">0</span> €<span class="unit" th:text="'/' + (${v.billingModel() == 'PER_HOUR'} ? 'hr' : 'km')">/unit</span></span>
+            </div>
+            <p class="vehicle-type" th:text="${v.type()}">TYPE</p>
+            <p class="vehicle-desc" th:text="${v.description()}">desc</p>
+            <div class="vehicle-meta">
+                <span class="chip" th:if="${v.minAge() != null}" th:text="'Age ' + ${v.minAge()} + '+'">age</span>
+                <span class="chip" th:if="${v.maxPersons() != null}" th:text="'Max ' + ${v.maxPersons()} + ' pax'">persons</span>
+            </div>
+            <div class="vehicle-actions">
                 <form method="post" action="/bookings">
                     <input type="hidden" name="vehicleId" th:value="${v.id()}"/>
-                    <button type="submit">Book</button>
+                    <button type="submit">Book this ride</button>
                 </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+            </div>
+        </div>
+    </div>
 </div>
 </body>
 </html>
