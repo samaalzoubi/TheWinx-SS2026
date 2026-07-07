@@ -19,39 +19,36 @@
     <h2>My fleet</h2>
     <p><a class="button-like" href="/provider/vehicles/new">+ Add vehicle</a></p>
 
-    <p class="muted" th:if="${#lists.isEmpty(vehicles)}">No vehicles yet - add your first one above.</p>
+    <div class="empty-state" th:if="${#lists.isEmpty(vehicles)}">
+        <span class="icon">🚗</span>
+        No vehicles yet - add your first one above.
+    </div>
 
-    <table th:unless="${#lists.isEmpty(vehicles)}">
-        <thead>
-        <tr><th>Type</th><th>Description</th><th>Status</th><th>Price</th><th>Restrictions</th><th>Rating</th><th>Actions</th></tr>
-        </thead>
-        <tbody>
-        <tr th:each="v : ${vehicles}">
-            <td th:text="${v.type()}">TYPE</td>
-            <td th:text="${v.description()}">desc</td>
-            <td>
+    <div class="vehicle-grid" th:unless="${#lists.isEmpty(vehicles)}">
+        <div class="vehicle-card" th:each="v : ${vehicles}">
+            <div class="vehicle-card-top">
+                <span class="vehicle-icon" th:text="${v.type() == 'E_SCOOTER'} ? '🛴' : (${v.type() == 'BICYCLE'} ? '🚲' : (${v.type() == 'E_BIKE'} ? '⚡' : '🚗'))">🚘</span>
                 <span class="badge" th:classappend="${v.status() == 'AVAILABLE'} ? 'badge-completed' : 'badge-active'" th:text="${v.status()}">STATUS</span>
-            </td>
-            <td th:text="${v.pricePerUnit()} + ' EUR / ' + (${v.billingModel() == 'PER_HOUR'} ? 'hour' : 'km')">price</td>
-            <td class="muted">
-                <span th:if="${v.minAge() != null}" th:text="'min age ' + ${v.minAge()} + ' '">age</span>
-                <span th:if="${v.maxPersons() != null}" th:text="'max ' + ${v.maxPersons()} + ' persons '">persons</span>
-                <span th:if="${v.maxDurationMinutes() != null}" th:text="${v.maxDurationMinutes()} + ' min max'">duration</span>
-            </td>
-            <td>
-                <span th:with="avg=${averages.get(v.id())}"
-                      th:text="${avg != null and avg.averageScore() != null} ? (${avg.averageScore()} + '/5 (' + ${avg.count()} + ')') : '-'">rating</span>
-            </td>
-            <td>
-                <a class="button-like" th:href="@{/provider/vehicles/{id}/edit(id=${v.id()})}">Edit</a>
-                <form class="inline" method="post" th:action="@{/provider/vehicles/{id}/delete(id=${v.id()})}"
+            </div>
+            <p class="vehicle-type" th:text="${v.type()}">TYPE</p>
+            <p class="vehicle-desc" th:text="${v.description()}">desc</p>
+            <div class="vehicle-meta">
+                <span class="chip" th:text="${v.pricePerUnit()} + ' € / ' + (${v.billingModel() == 'PER_HOUR'} ? 'hr' : 'km')">price</span>
+                <span class="chip" th:if="${v.minAge() != null}" th:text="'Age ' + ${v.minAge()} + '+'">age</span>
+                <span class="chip" th:if="${v.maxPersons() != null}" th:text="'Max ' + ${v.maxPersons()} + ' pax'">persons</span>
+                <span class="chip" th:with="avg=${averages.get(v.id())}"
+                      th:if="${avg != null and avg.averageScore() != null}"
+                      th:text="'⭐ ' + ${avg.averageScore()} + '/5 (' + ${avg.count()} + ')'">rating</span>
+            </div>
+            <div class="vehicle-actions vehicle-actions-row">
+                <a class="btn ghost" th:href="@{/provider/vehicles/{id}/edit(id=${v.id()})}">Edit</a>
+                <form method="post" th:action="@{/provider/vehicles/{id}/delete(id=${v.id()})}"
                       onsubmit="return confirm('Delete this vehicle?');">
                     <button type="submit" class="danger">Delete</button>
                 </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+            </div>
+        </div>
+    </div>
 </div>
 </body>
 </html>
