@@ -85,7 +85,7 @@
                 <td th:text="${payment.id}"></td>
                 <td th:text="${payment.bookingId}"></td>
                 <td th:text="|${payment.money.amount} ${payment.money.currency}|"></td>
-                <td>💳 <span th:text="${payment.paymentMethod.type}"></span></td>
+                <td th:text="${payment.paymentMethod.type == 'PAYPAL' ? '🅿️' : '💳'} + ' ' + ${payment.paymentMethod.type}"></td>
                 <td><code th:text="${payment.paymentMethod.maskedReference}"></code></td>
                 <td>
                     <span class="badge" th:classappend="${'badge-' + payment.result.status.name().toLowerCase()}"
