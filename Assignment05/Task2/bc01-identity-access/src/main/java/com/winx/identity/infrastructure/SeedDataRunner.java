@@ -35,6 +35,11 @@ public class SeedDataRunner implements CommandLineRunner {
                 "+492222222", LocalDate.of(1990, 3, 25));
         log.info("Seeded user 'Rowena Pagayanan' with id={}", rowena.getId());
 
+        UserAccount priyanka = registrationService.registerUser(
+                "Priyanka Gupta", "priyanka@instant-mobility.example", "password123",
+                "+495555555", LocalDate.of(1998, 11, 8));
+        log.info("Seeded user 'Priyanka Gupta' with id={}", priyanka.getId());
+
         ProviderAccount samaProvider = registrationService.registerProvider(
                 "Sama Mobility", "Sama Alzoubi", "sama@providers.instant-mobility.example",
                 "password123", "+493333333");
