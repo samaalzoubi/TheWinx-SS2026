@@ -1,14 +1,15 @@
 package com.winx.identity.infrastructure;
 
-import com.winx.identity.domain.ProviderAccount;
-import com.winx.identity.domain.UserAccount;
-import com.winx.identity.domain.service.RegistrationService;
+import java.time.LocalDate;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
+import com.winx.identity.domain.ProviderAccount;
+import com.winx.identity.domain.UserAccount;
+import com.winx.identity.domain.service.RegistrationService;
 
 // we seed a few accounts on startup so the service isn't empty when demoing or running integration tests
 @Component
