@@ -70,8 +70,8 @@ public class AuthController {
     }
 
     @GetMapping("/login")
-    public String loginForm(@RequestParam(required = false) boolean registered, Model model) {
-        if (registered) {
+    public String loginForm(@RequestParam(required = false) String registered, Model model) {
+        if (registered != null) {
             model.addAttribute("info", "Account created - you can log in now.");
         }
         return "login";
