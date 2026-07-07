@@ -18,14 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-/**
- * Server-rendered UI on top of the same domain services used by the REST
- * API - kept deliberately simple for demo purposes. The browse-all page
- * additionally reads straight from {@link RatingRepository} since it needs
- * an unfiltered "list everything" view that the query service does not
- * otherwise expose; this is UI-layer-only wiring and does not change the
- * REST contract or domain services.
- */
+// we let the browse-all page read straight from RatingRepository since it needs an unfiltered list the query service doesn't expose
 @Controller
 @RequestMapping("/ui")
 public class RatingUiController {

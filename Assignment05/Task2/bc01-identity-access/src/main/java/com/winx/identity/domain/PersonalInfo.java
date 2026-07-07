@@ -5,10 +5,7 @@ import jakarta.persistence.Embeddable;
 
 import java.time.LocalDate;
 
-/**
- * Value Object holding the personal details of a {@link UserAccount}.
- * Immutable by convention: no setters are exposed after construction.
- */
+// we keep this immutable by convention - no setters exposed after construction
 @Embeddable
 public class PersonalInfo {
 
@@ -21,7 +18,7 @@ public class PersonalInfo {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    /** Required by Hibernate. */
+    // required by Hibernate
     protected PersonalInfo() {
     }
 

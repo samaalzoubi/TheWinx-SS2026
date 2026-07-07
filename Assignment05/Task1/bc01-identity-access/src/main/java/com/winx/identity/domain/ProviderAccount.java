@@ -12,10 +12,6 @@ import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 
-/**
- * Aggregate root: a fleet-provider account in the Identity & Access
- * bounded context.
- */
 @Entity
 @Table(name = "provider_accounts")
 public class ProviderAccount {
@@ -43,7 +39,7 @@ public class ProviderAccount {
     @Column(name = "status", nullable = false)
     private AccountStatus status;
 
-    /** Required by Hibernate. */
+    // required by Hibernate
     protected ProviderAccount() {
     }
 

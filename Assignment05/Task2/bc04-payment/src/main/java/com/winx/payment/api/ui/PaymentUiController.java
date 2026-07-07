@@ -19,13 +19,7 @@ import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- * Server-rendered UI on top of the same PaymentProcessingService/PaymentRepository
- * used by the REST API (PaymentController). None of the /api/payments contracts are
- * touched here - this controller only adds human-friendly views, including a
- * standalone "Create Test Payment" page so bc04 can be exercised without going
- * through bc03-booking's flow first.
- */
+// we added a standalone "Create Test Payment" page here so bc04 can be exercised without going through bc03-booking's flow first
 @Controller
 @RequestMapping("/ui")
 public class PaymentUiController {
@@ -110,12 +104,6 @@ public class PaymentUiController {
         return "redirect:/ui";
     }
 
-    /**
-     * Standalone "Create Test Payment" flow. Goes through the exact same
-     * PaymentProcessingService.initiatePayment(...) call as PaymentController's
-     * POST /api/payments - same validation, same mock gateway, same persistence -
-     * so a real PAID/FAILED payment is created without needing bc03-booking.
-     */
     @PostMapping("/payments/new")
     public String createNew(@RequestParam Long bookingId,
                              @RequestParam Long userId,

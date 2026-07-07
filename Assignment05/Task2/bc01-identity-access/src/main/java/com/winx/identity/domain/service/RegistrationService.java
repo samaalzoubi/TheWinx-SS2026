@@ -13,11 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 
-/**
- * Domain service responsible for enforcing registration invariants
- * (email format + uniqueness) for both Users and Providers, and for
- * persisting the resulting aggregates.
- */
 @Service
 public class RegistrationService {
 

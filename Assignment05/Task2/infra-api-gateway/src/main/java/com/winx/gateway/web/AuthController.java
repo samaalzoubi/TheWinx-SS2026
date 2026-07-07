@@ -9,11 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-/**
- * Both actors from the domain model (User, Provider) authenticate through
- * here. Session holds {@code role} ("USER" or "PROVIDER"), {@code principalId}
- * and {@code principalName} so the rest of the portal can branch on it.
- */
+// we store role/principalId/principalName in the session so the rest of the portal can branch on whether it's a user or provider
 @Controller
 public class AuthController {
 

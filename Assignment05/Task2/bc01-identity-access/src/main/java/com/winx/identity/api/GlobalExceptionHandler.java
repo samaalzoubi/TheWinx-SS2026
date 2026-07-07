@@ -11,10 +11,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.NoSuchElementException;
 
-/**
- * Centralized error mapping so the API always returns a consistent
- * {"error": "human readable message"} body.
- */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

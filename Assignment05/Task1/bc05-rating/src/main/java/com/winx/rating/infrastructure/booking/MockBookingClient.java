@@ -9,12 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Hardcoded in-memory stand-in for a real Booking client, so BC-05 can be
- * demoed and tested completely standalone. Seeded with a handful of example
- * bookings covering both the "allowed" (COMPLETED) and "rejected"
- * (not yet COMPLETED) rating scenarios.
- */
+// we hardcode a couple of bookings here so BC-05 can be demoed and tested standalone, covering both an allowed and a rejected rating scenario
 @Component
 public class MockBookingClient implements BookingClient {
 

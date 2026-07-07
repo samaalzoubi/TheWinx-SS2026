@@ -15,12 +15,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 
-/**
- * UI-only view across the ENTIRE fleet (every provider), used to exercise
- * the relaxed GET /api/vehicles (no providerId) path interactively. This
- * reads straight from the repository/domain services in-process - it never
- * calls the REST layer of this same service over HTTP.
- */
+// we go straight through the repository/services here instead of calling our own REST endpoints over HTTP
 @Controller
 public class BrowseUiController {
 
@@ -60,7 +55,7 @@ public class BrowseUiController {
         VehicleStatus next = vehicle.getStatus() == VehicleStatus.AVAILABLE
                 ? VehicleStatus.BOOKED
                 : VehicleStatus.AVAILABLE;
-        // Same domain service call the PATCH /api/vehicles/{id}/status endpoint uses.
+        // we call the same service method the PATCH status endpoint uses so behavior doesn't drift
         availabilityService.updateStatus(id, next);
 
         UriComponentsBuilder redirect = UriComponentsBuilder.fromPath("/ui/browse");

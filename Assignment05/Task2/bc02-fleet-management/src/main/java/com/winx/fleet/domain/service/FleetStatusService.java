@@ -12,10 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-/**
- * Domain service providing the fleet status/overview view for a provider
- * (requirement R15) and location tracking updates.
- */
 @Service
 public class FleetStatusService {
 

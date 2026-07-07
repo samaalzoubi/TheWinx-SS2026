@@ -12,10 +12,6 @@ import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 
-/**
- * Aggregate root: a customer/rider account in the Identity & Access
- * bounded context.
- */
 @Entity
 @Table(name = "user_accounts")
 public class UserAccount {
@@ -40,7 +36,7 @@ public class UserAccount {
     @Column(name = "status", nullable = false)
     private AccountStatus status;
 
-    /** Required by Hibernate. */
+    // required by Hibernate
     protected UserAccount() {
     }
 

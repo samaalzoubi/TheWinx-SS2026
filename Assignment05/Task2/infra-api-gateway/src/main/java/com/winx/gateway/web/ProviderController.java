@@ -17,14 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * Everything a Provider needs, in one place: fleet overview (R15), vehicle
- * CRUD (R12), pricing (R13) and restrictions (R14) - all against the real
- * Fleet Management API - plus the ratings their fleet/company has received
- * and their earnings, both composed here in the portal from Booking/Payment/
- * Rating data (none of those bounded contexts know about "Provider" beyond
- * the plain providerId/vehicleId references they already store).
- */
+// we compose ratings and earnings here from Booking/Payment/Rating data since none of those bounded contexts know about "Provider" beyond the providerId/vehicleId they already store
 @Controller
 @RequestMapping("/provider")
 public class ProviderController {
@@ -71,7 +64,6 @@ public class ProviderController {
         try {
             overallRatingCount = ratingClient.getByProvider(providerId).size();
         } catch (FeignException ignored) {
-            // Rating service unreachable: just omit the count, fleet data still renders
         }
 
         long availableCount = vehicles.stream().filter(v -> "AVAILABLE".equals(v.status())).count();
@@ -86,7 +78,6 @@ public class ProviderController {
         return "provider-dashboard";
     }
 
-    /** Full list of ratings for this provider's fleet - the count was already shown on the dashboard, this is the detail behind it. */
     @GetMapping("/ratings")
     public String ratings(HttpSession session, Model model) {
         Long providerId = SessionUtil.requireRole(session, "PROVIDER");
@@ -106,14 +97,7 @@ public class ProviderController {
         return "provider-ratings";
     }
 
-    /**
-     * Earnings composed live from three services: this provider's vehicles
-     * (Fleet), the bookings made against each vehicle (Booking, via the new
-     * read-only /api/bookings/vehicle/{id} endpoint), and the payment for
-     * each completed one (Payment, via the same read the rider dashboard
-     * and bc03's own booking detail page already use). Each hop degrades
-     * gracefully on its own if a service is down.
-     */
+    // we added the read-only /api/bookings/vehicle/{id} endpoint just for this - earnings are composed live from Fleet/Booking/Payment since none of them track provider earnings themselves
     @GetMapping("/earnings")
     public String earnings(HttpSession session, Model model) {
         Long providerId = SessionUtil.requireRole(session, "PROVIDER");
@@ -136,7 +120,7 @@ public class ProviderController {
             try {
                 bookings = bookingClient.byVehicle(vehicle.id());
             } catch (FeignException e) {
-                continue; // Booking unreachable for this vehicle - skip, don't fail the whole page
+                continue; // we skip this vehicle if Booking is unreachable instead of failing the whole earnings page
             }
             for (BookingClient.BookingResponse booking : bookings) {
                 if (!"COMPLETED".equals(booking.status())) {
@@ -146,7 +130,7 @@ public class ProviderController {
                 try {
                     payment = paymentClient.getByBooking(booking.id());
                 } catch (FeignException ignored) {
-                    // Payment unreachable or not recorded - row still shows the ride, payment column is "unknown"
+                    // we treat unreachable and not-recorded the same here - the row still shows the ride, payment just reads "unknown"
                 }
                 rows.add(new EarningsRow(vehicle, booking, payment));
             }
@@ -232,7 +216,7 @@ public class ProviderController {
             fleetClient.update(id, new FleetClient.UpdateVehicleRequest(description, pricePerUnit, billingModel,
                     maxDurationMinutes, maxKilometers, minAge, maxPersons));
         } catch (FeignException ignored) {
-            // dashboard re-render is enough feedback for this demo scope
+            // we skip error feedback here and just re-render the dashboard - enough for this demo's scope
         }
         return "redirect:/provider/dashboard";
     }
