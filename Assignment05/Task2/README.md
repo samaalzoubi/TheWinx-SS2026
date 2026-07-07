@@ -74,10 +74,11 @@ Open **http://localhost:8080** — the login page has one-click buttons that fil
 
 | Role | Email | Password |
 |---|---|---|
-| User | `alice@example.com` | `password123` |
-| User | `bob@example.com` | `password123` |
-| Provider | `petra@greenwheels.example` | `password123` |
-| Provider | `sam@urbanride.example` | `password123` |
+| User | `marianne@instant-mobility.example` | `password123` |
+| User | `rowena@instant-mobility.example` | `password123` |
+| User | `priyanka@instant-mobility.example` | `password123` |
+| Provider | `sama@providers.instant-mobility.example` | `password123` |
+| Provider | `mae@providers.instant-mobility.example` | `password123` |
 
 ## URL reference
 
