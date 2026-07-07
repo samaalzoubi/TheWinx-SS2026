@@ -6,16 +6,15 @@ public functional microservice com.winx.fleet.FleetManagement {
         ---
         Register a new vehicle in the fleet.
 
-        @required requestDto the vehicle details including type, pricing, and specifications
+        @required requestDto the vehicle details including type, pricing, restrictions, and location
         ---
         registerVehicle(
             sync requestDto : domain::fleetManagement.CreateVehicleRequest,
-            sync out responseDto : domain::fleetManagement.VehicleResponse,
-            sync out fault invalidVehicle : string
+            sync out responseDto : domain::fleetManagement.VehicleResponse
         );
 
         ---
-        Update vehicle details.
+        Update a vehicle's description, pricing, and usage restrictions.
 
         @required vehicleId the unique identifier of the vehicle to update
         @required requestDto the updated vehicle fields
@@ -28,22 +27,18 @@ public functional microservice com.winx.fleet.FleetManagement {
         );
 
         ---
-        Remove a vehicle from the fleet.
+        Remove a vehicle from the fleet. Rejected while the vehicle is BOOKED.
 
         @required vehicleId the unique identifier of the vehicle to delete
         ---
         deleteVehicle(
             sync vehicleId : long,
-            sync out fault notFound : string
+            sync out fault notFound : string,
+            sync out fault invalidState : string
         );
     }
 
     interface vehicleQuery {
-        ---
-        Retrieve all registered vehicles.
-        ---
-        getAllVehicles(sync out vehicles : domain::fleetManagement.VehicleResponses);
-
         ---
         Retrieve a single vehicle by its ID.
 
@@ -56,14 +51,25 @@ public functional microservice com.winx.fleet.FleetManagement {
         );
 
         ---
-        Find available vehicles near a given geographic position, with optional type and capacity filters.
+        List vehicles, optionally filtered by owning provider.
+
+        @param providerId optional provider filter
+        ---
+        getVehicles(
+            sync providerId? : long,
+            sync out vehicles : domain::fleetManagement.VehicleResponses
+        );
+
+        ---
+        Find available vehicles near a given geographic position, with optional type, price, age, and duration filters.
 
         @required lat the latitude of the search center point
         @required lon the longitude of the search center point
         @required radiusKm the search radius in kilometers
         @param vehicleType optional vehicle type filter (E_SCOOTER, BICYCLE, E_BIKE, E_CAR)
-        @param maxPrice optional maximum price per unit in EUR
-        @param minPersons optional minimum passenger capacity required
+        @param maxPrice optional maximum price per unit
+        @param minAge optional minimum required rider age
+        @param maxDurationMinutes optional maximum rental duration in minutes
         ---
         findAvailableNear(
             sync lat : double,
@@ -71,7 +77,8 @@ public functional microservice com.winx.fleet.FleetManagement {
             sync radiusKm : double,
             sync vehicleType? : string,
             sync maxPrice? : double,
-            sync minPersons? : int,
+            sync minAge? : int,
+            sync maxDurationMinutes? : int,
             sync out vehicles : domain::fleetManagement.VehicleResponses
         );
     }
@@ -91,7 +98,7 @@ public functional microservice com.winx.fleet.FleetManagement {
         );
 
         ---
-        Change the operational status of a vehicle (e.g., AVAILABLE, BOOKED, MAINTENANCE).
+        Change the operational status of a vehicle (AVAILABLE or BOOKED).
 
         @required vehicleId the unique identifier of the vehicle
         @required requestDto the new status value to apply

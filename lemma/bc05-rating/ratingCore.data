@@ -3,26 +3,20 @@ context ratingCore {
     // ── Value Objects ──────────────────────────────────────────────────────────
 
     // @Embeddable
-    structure Score<valueObject> {
-        // @Column(nullable = false)
-        immutable int value
-    }
-
-    // @Embeddable
     structure Review<valueObject> {
-        // @Embedded @AttributeOverride(name = "value", column = @Column(name = "vehicle_score"))
-        immutable Score vehicleScore,
-        // @Embedded @AttributeOverride(name = "value", column = @Column(name = "provider_score"))
-        immutable Score providerScore,
-        // @Column(length = 1000)
+        // @Column(name = "vehicle_score", nullable = false)
+        immutable int vehicleScore,
+        // @Column(name = "provider_score", nullable = false)
+        immutable int providerScore,
+        // @Column(name = "comment")
         immutable string comment
     }
 
     // @Embeddable
     structure RatingTarget<valueObject> {
-        // @Column(nullable = false)
+        // @Column(name = "vehicle_id", nullable = false)
         immutable long vehicleId,
-        // @Column(nullable = false)
+        // @Column(name = "provider_id", nullable = false)
         immutable long providerId,
         // @Column(name = "booking_id", nullable = false, unique = true)
         immutable long bookingId
@@ -32,28 +26,29 @@ context ratingCore {
 
     // @Entity
     // @Table(name = "ratings", uniqueConstraints = @UniqueConstraint(columnNames = "booking_id"))
+    // Immutable once created - no update path.
     structure Rating<entity, aggregate> {
         // @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        immutable long ratingId<identifier>,
-        // @Column(nullable = false)
+        long id<identifier>,
+        // @Column(name = "user_id", nullable = false)
         immutable long userId,
-        // @Column(nullable = false)
+        // @Column(name = "created_at", nullable = false)
         immutable string createdAt,
         // @Embedded
-        immutable Review review<part>,
+        immutable RatingTarget ratingTarget<part>,
         // @Embedded
-        immutable RatingTarget target<part>
+        immutable Review review<part>
     }
 
     collection Ratings { Rating r }
 
     // ── DTOs ───────────────────────────────────────────────────────────────────
 
-    structure SubmitRatingRequest<valueObject> {
+    // vehicleId and providerId are resolved server-side from the referenced
+    // booking (via BC-03/BC-02), not supplied by the client.
+    structure CreateRatingRequest<valueObject> {
         immutable long bookingId,
         immutable long userId,
-        immutable long vehicleId,
-        immutable long providerId,
         // @Min(1) @Max(5)
         immutable int vehicleScore,
         // @Min(1) @Max(5)
@@ -61,10 +56,10 @@ context ratingCore {
         immutable string comment
     }
 
-    structure RatingResponse<valueObject> {
-        immutable long ratingId,
-        immutable long bookingId,
+    structure RatingDto<valueObject> {
+        immutable long id,
         immutable long userId,
+        immutable long bookingId,
         immutable long vehicleId,
         immutable long providerId,
         immutable int vehicleScore,
@@ -73,37 +68,42 @@ context ratingCore {
         immutable string createdAt
     }
 
-    collection RatingResponses { RatingResponse r }
+    collection RatingDtos { RatingDto r }
+
+    structure AverageScoreResponse<valueObject> {
+        immutable long vehicleId,
+        immutable double averageScore,
+        immutable int count
+    }
 
     // ── Repository ─────────────────────────────────────────────────────────────
 
     // @Repository
     structure RatingRepository<repository> {
-        function Rating findById(long ratingId),
-        function Ratings findAll,
-        function Ratings findByTarget_VehicleId(long vehicleId),
-        function Ratings findByTarget_ProviderId(long providerId),
-        function Rating findByTarget_BookingId(long bookingId),
-        function boolean existsByBookingId(long bookingId),
+        function Rating findByRatingTarget_BookingId(long bookingId),
+        function Ratings findByRatingTarget_VehicleId(long vehicleId),
+        function Ratings findByRatingTarget_ProviderId(long providerId),
+        function boolean existsByRatingTarget_BookingId(long bookingId),
         function Rating save(Rating rating)
     }
 
     // ── Application Services ───────────────────────────────────────────────────
 
     // @Service
+    // Looks up the referenced booking via BC-03 (Feign, circuit-breaker
+    // guarded) to resolve vehicleId/providerId and to confirm it is COMPLETED.
     structure RatingSubmissionService<applicationService> {
-        function Rating submitRating(long bookingId, long userId, long vehicleId,
-            long providerId, int vehicleScore, int providerScore, string comment)
+        function Rating submitRating(long bookingId, long userId,
+            int vehicleScore, int providerScore, string comment)
     }
 
     // @Service
+    // Only vehicle scores are averaged - there is no provider-level average.
     structure RatingQueryService<applicationService> {
-        function Rating getById(long ratingId),
-        function Ratings getAll,
-        function Rating getByBookingId(long bookingId),
+        function Rating getById(long id),
         function Ratings getVehicleRatings(long vehicleId),
         function Ratings getProviderRatings(long providerId),
-        function double getAverageVehicleScore(long vehicleId),
-        function double getAverageProviderScore(long providerId)
+        function Rating getRatingForBooking(long bookingId),
+        function double getAverageScore(long vehicleId)
     }
 }

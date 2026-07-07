@@ -1,36 +1,127 @@
 import microservices from "paymentCore.services" as paymentCoreServices
-import technology from "../technology/docker.technology" as Docker
 import technology from "../technology/javaWithSpring.technology" as java
-import nodes from "../eureka-server/eurekaServer.operation" as eurekaOps
-import nodes from "../infra-config-server/configServer.operation" as configOps
+import technology from "../technology/map.technology" as map
 
-@technology(Docker)
 @technology(java)
-container PaymentCoreContainer deployment technology Docker::_deployment.Docker
-    deploys paymentCoreServices::com.winx.payment.PaymentCore
-    depends on nodes eurekaOps::ServiceDiscovery, configOps::ConfigServer {
-
+@technology(map)
+paymentCoreServices::com.winx.payment.PaymentCore {
     aspects {
-        Docker::_aspects.Dockerfile('FROM eclipse-temurin:21-jre COPY bc04-payment-0.1.0-SNAPSHOT.jar app.jar EXPOSE 8084 ENTRYPOINT ["java", "-jar", "app.jar"]');
+        java::_aspects.ApplicationName("bc04-payment");
 
-        Docker::_aspects.ComposePart('bc04-payment:
-    build: ./bc04-payment
-    image: thewinx/bc04-payment
-    depends_on:
-      - infra-eureka-server
-    environment:
-      - "SPRING_APPLICATION_NAME=bc04-payment"
-      - "SERVER_PORT=8084"
-      - "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://infra-eureka-server:8761/eureka"
-    ports:
-      - "8084:8084"');
+        java::_aspects.DatasourceConfiguration(
+            url="jdbc:h2:mem:paymentdb;DB_CLOSE_DELAY=-1",
+            username="sa",
+            password="",
+            driverClassName="org.h2.Driver"
+        );
+
+        java::_aspects.HibernateConfiguration("update");
+
+        java::_aspects.Port(8084);
     }
 
-    paymentCoreServices::com.winx.payment.PaymentCore {
-        basic endpoints {
-            java::_protocols.rest: "http://localhost:8084";
-            java::_protocols.soap: "http://localhost:8084";
-            java::_protocols.amqp: "amqp://localhost:5672";
+    interface paymentInformationHolder {
+        endpoints {
+            java::_protocols.rest: "/api/payments";
+        }
+
+        aspects {
+            map::_aspects.InformationHolderResource;
+        }
+    }
+
+    operation paymentInformationHolder.createPayment {
+        aspects {
+            java::_aspects.PostMapping;
+        }
+
+        parameters {
+            complex requestDto {
+                aspects {
+                    java::_aspects.Valid;
+                    java::_aspects.RequestBody;
+                }
+            }
+
+            complex responseDto : java::_types.ResponseEntity;
+        }
+    }
+
+    operation paymentInformationHolder.getPaymentById {
+        endpoints {
+            java::_protocols.rest: "/{paymentId}";
+        }
+
+        aspects {
+            java::_aspects.GetMapping;
+        }
+
+        parameters {
+            primitive paymentId {
+                aspects {
+                    java::_aspects.PathVariable;
+                }
+            }
+
+            primitive paymentNotFound {
+                aspects {
+                    java::_aspects.ResponseStatus("NOT_FOUND");
+                }
+            }
+        }
+    }
+
+    operation paymentInformationHolder.getPaymentByBookingId {
+        endpoints {
+            java::_protocols.rest: "/booking/{bookingId}";
+        }
+
+        aspects {
+            java::_aspects.GetMapping;
+        }
+
+        parameters {
+            primitive bookingId {
+                aspects {
+                    java::_aspects.PathVariable;
+                }
+            }
+
+            primitive paymentNotFound {
+                aspects {
+                    java::_aspects.ResponseStatus("NOT_FOUND");
+                }
+            }
+        }
+    }
+
+    operation paymentInformationHolder.retryPayment {
+        endpoints {
+            java::_protocols.rest: "/{paymentId}/retry";
+        }
+
+        aspects {
+            java::_aspects.PostMapping;
+        }
+
+        parameters {
+            primitive paymentId {
+                aspects {
+                    java::_aspects.PathVariable;
+                }
+            }
+
+            primitive paymentNotFound {
+                aspects {
+                    java::_aspects.ResponseStatus("NOT_FOUND");
+                }
+            }
+
+            primitive invalidState {
+                aspects {
+                    java::_aspects.ResponseStatus("CONFLICT");
+                }
+            }
         }
     }
 }

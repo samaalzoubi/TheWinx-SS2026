@@ -1,172 +1,174 @@
 context IdentityAccess {
 
     enum AccountStatus {
+        PENDING,
         ACTIVE,
-        INACTIVE,
-        LOCKED
+        DEACTIVATED
     }
 
-    collection Permissions { string }
-    collection RoleNames { string }
-
-    // @Table(name = "roles")
-    structure Role<entity> {
-        // @GeneratedValue(strategy = GenerationType.IDENTITY)
-        long id<identifier>,
-        // @Column(nullable = false, unique = true, length = 50)
-        string name,
-        // @ElementCollection(fetch = FetchType.EAGER)
-        Permissions permissions
+    // @Embeddable
+    structure PersonalInfo<valueObject> {
+        // @Column(name = "name", nullable = false)
+        immutable string name,
+        // @Column(name = "date_of_birth")
+        immutable date dateOfBirth,
+        // @Column(name = "phone_number")
+        immutable string phoneNumber
     }
 
-    collection Roles { Role r }
+    // @Embeddable
+    structure CompanyInfo<valueObject> {
+        // @Column(name = "company_name", nullable = false)
+        immutable string companyName,
+        // @Column(name = "contact_name")
+        immutable string contactName
+    }
 
+    // @Entity
     // @Table(name = "user_accounts")
     structure UserAccount<aggregate, entity> {
-        // @GeneratedValue(strategy = GenerationType.IDENTITY)
+        // @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
         long id<identifier>,
-        // @Column(nullable = false, unique = true, length = 60)
-        string username,
-        // @Column(nullable = false, unique = true, length = 120)
+        // @Embedded
+        PersonalInfo personalInfo<part>,
+        // @Column(name = "email", unique = true, nullable = false)
         string email,
-        // @Column(nullable = false)
+        // @Column(name = "password_hash", nullable = false)
         string passwordHash,
-        // @Column
-        string firstName,
-        // @Column
-        string lastName,
-        // @Column
-        string phoneNumber,
-        // @Column
-        date dateOfBirth,
-        // @Enumerated(EnumType.STRING) @Column(nullable = false, length = 20)
+        // @Column(name = "registered_at", nullable = false)
+        string registeredAt,
+        // @Enumerated(EnumType.STRING) @Column(name = "status", nullable = false)
         AccountStatus status,
-        // @ManyToMany(fetch = FetchType.EAGER)
-        Roles roles<part>,
 
-        procedure updateProfile(string username, string email),
-        procedure assignRole(Role role),
-        procedure revokeRole(Role role)
+        procedure deactivate()
+    }
+
+    // @Entity
+    // @Table(name = "provider_accounts")
+    structure ProviderAccount<aggregate, entity> {
+        // @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+        long id<identifier>,
+        // @Embedded
+        CompanyInfo companyInfo<part>,
+        // @Column(name = "email", unique = true, nullable = false)
+        string email,
+        // @Column(name = "password_hash", nullable = false)
+        string passwordHash,
+        // @Column(name = "phone_number")
+        string phoneNumber,
+        // @Column(name = "registered_at", nullable = false)
+        string registeredAt,
+        // @Enumerated(EnumType.STRING) @Column(name = "status", nullable = false)
+        AccountStatus status,
+
+        procedure deactivate()
+    }
+
+    // Opaque bearer token issued on successful authentication. Not a JPA
+    // entity - active tokens are kept in an in-memory store for the
+    // lifetime of the AuthenticationService (see comment there).
+    structure AuthToken<valueObject> {
+        immutable string value,
+        immutable string expiresAt,
+
+        function boolean isExpired()
+    }
+
+    // Identifies which account (USER or PROVIDER) a validated token belongs to.
+    structure PrincipalRef<valueObject> {
+        immutable long id,
+        immutable string type
     }
 
     structure UserAccountRepository<repository> {
-        function UserAccount findByUsername(string username),
-        function UserAccount findByEmail(string email)
+        function UserAccount findByEmail(string email),
+        function boolean existsByEmail(string email)
     }
 
-    structure RoleRepository<repository> {
-        function Role findByName(string name)
+    structure ProviderAccountRepository<repository> {
+        function ProviderAccount findByEmail(string email),
+        function boolean existsByEmail(string email)
     }
 
-    structure IdentityAccessService<applicationService> {
-        function UserAccount register(string username, string email, string plainPassword,
-            string firstName, string lastName, string phoneNumber, date dateOfBirth),
-        function UserAccount updateUser(long userId, string username, string email),
-        function UserAccount deactivateUser(long userId),
-        function UserAccount assignRole(long userId, string roleName),
-        function AuthResponse authenticate(string username, string plainPassword),
-        function boolean hasPermission(long userId, string permission)
+    // @Service
+    structure RegistrationService<applicationService> {
+        function UserAccount registerUser(string name, string email, string plainPassword,
+            string phoneNumber, date dateOfBirth),
+        function ProviderAccount registerProvider(string companyName, string contactName,
+            string email, string plainPassword, string phoneNumber)
     }
 
-    // Returned by GET /api/auth/validate — used by BC-03 to resolve the requesting user
-    structure PrincipalDto<valueObject> {
-        immutable long id,
-        immutable string username,
-        immutable date dateOfBirth,
-        immutable Permissions permissions
+    // @Service
+    // authenticateUser/authenticateProvider each also issue and return a new
+    // AuthToken alongside the account (see AuthenticatedUser/AuthenticatedProvider
+    // in the Java source) - simplified here to the account each call resolves.
+    structure AuthenticationService<applicationService> {
+        function UserAccount authenticateUser(string email, string plainPassword),
+        function ProviderAccount authenticateProvider(string email, string plainPassword),
+        function PrincipalRef validateToken(string token)
     }
 
-    structure RegisterUserRequest<valueObject> {
-        immutable string username,
+    structure UserRegisterRequest<valueObject> {
+        immutable string name,
         immutable string email,
         immutable string password,
-        immutable string firstName,
-        immutable string lastName,
         immutable string phoneNumber,
         immutable date dateOfBirth
     }
 
-    structure UpdateUserRequest<valueObject> {
-        immutable string username,
-        immutable string email
+    structure ProviderRegisterRequest<valueObject> {
+        immutable string companyName,
+        immutable string contactName,
+        immutable string email,
+        immutable string password,
+        immutable string phoneNumber
     }
 
-    structure RoleAssignmentRequest<valueObject> {
-        immutable string roleName
-    }
-
-    structure AuthRequest<valueObject> {
-        immutable string username,
+    // Shared login request shape for both Users and Providers.
+    structure LoginRequest<valueObject> {
+        immutable string email,
         immutable string password
-    }
-
-    structure AuthResponse<valueObject> {
-        immutable long userId,
-        immutable string username,
-        immutable Permissions permissions,
-        immutable string tokenType
     }
 
     structure UserResponse<valueObject> {
         immutable long id,
-        immutable string username,
+        immutable string name,
         immutable string email,
-        immutable string firstName,
-        immutable string lastName,
         immutable string phoneNumber,
         immutable date dateOfBirth,
-        immutable AccountStatus status,
-        immutable RoleNames roles
+        immutable string registeredAt
     }
 
-    collection UserResponses { UserResponse u }
-
-    structure PermissionCheckResponse<valueObject> {
-        immutable long userId,
-        immutable string permission,
-        immutable boolean granted
-    }
-
-    structure BookingIdentityCheckResponse<valueObject> {
-        immutable boolean verified,
-        immutable string reason
-    }
-
-    structure PaymentEligibilityResponse<valueObject> {
-        immutable long userId,
-        immutable boolean eligible,
-        immutable string status
-    }
-
-    structure ProviderAccessResponse<valueObject> {
-        immutable long userId,
-        immutable boolean canAccess,
-        immutable string status
-    }
-
-    structure VehicleInfo<valueObject> {
+    structure ProviderResponse<valueObject> {
         immutable long id,
-        immutable string type,
-        immutable string description,
-        immutable string status,
-        immutable double pricePerUnit,
-        immutable string billingModel,
-        immutable int maxPersons
+        immutable string companyName,
+        immutable string contactName,
+        immutable string email,
+        immutable string phoneNumber,
+        immutable string registeredAt
     }
 
-    collection VehicleInfos { VehicleInfo v }
-
-    structure BookingInfo<valueObject> {
-        immutable long id,
-        immutable long vehicleId,
-        immutable string username,
-        immutable string status
+    structure UserLoginResponse<valueObject> {
+        immutable string token,
+        immutable string expiresAt,
+        immutable long userId,
+        immutable string name,
+        immutable string email
     }
 
-    collection BookingInfos { BookingInfo b }
+    structure ProviderLoginResponse<valueObject> {
+        immutable string token,
+        immutable string expiresAt,
+        immutable long providerId,
+        immutable string companyName,
+        immutable string email
+    }
 
-    structure VehicleBookingRequest<valueObject> {
-        immutable long vehicleId,
-        immutable string username
+    // Returned by GET /api/auth/validate - used by other bounded contexts
+    // (e.g. the API gateway) to resolve the principal behind a bearer token.
+    structure ValidateTokenResponse<valueObject> {
+        immutable boolean valid,
+        immutable long principalId,
+        immutable string principalType
     }
 }

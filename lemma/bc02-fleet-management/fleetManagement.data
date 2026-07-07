@@ -11,43 +11,57 @@ context fleetManagement {
 
     enum VehicleStatus {
         AVAILABLE,
-        BOOKED,
-        MAINTENANCE,
-        UNAVAILABLE
+        BOOKED
     }
 
     enum BillingModel {
         PER_HOUR,
-        PER_KILOMETER,
-        PER_DAY
+        PER_KILOMETER
+    }
+
+    // ── Value Objects ──────────────────────────────────────────────────────────
+
+    // @Embeddable
+    structure VehicleLocation<valueObject> {
+        immutable double latitude,
+        immutable double longitude
+    }
+
+    // @Embeddable
+    structure PricingPolicy<valueObject> {
+        immutable double pricePerUnit,
+        // @Enumerated(EnumType.STRING)
+        immutable BillingModel billingModel
+    }
+
+    // @Embeddable
+    structure UsageRestrictions<valueObject> {
+        immutable int maxDurationMinutes,
+        immutable int maxKilometers,
+        immutable int minAge,
+        immutable int maxPersons
     }
 
     // ── Aggregate Root ─────────────────────────────────────────────────────────
 
     // @Entity
     // @Table(name = "vehicles")
-    structure Vehicle<entity> {
+    structure Vehicle<entity, aggregate> {
         // @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        immutable long vehicleId<identifier>,
+        long id<identifier>,
         // @Column(nullable = false)
         long providerId,
-        // @Column(nullable = false)
-        string name,
-        // @Enumerated(EnumType.STRING)
+        // @Enumerated(EnumType.STRING) @Column(nullable = false)
         VehicleType type,
         string description,
-        // @Enumerated(EnumType.STRING)
+        // @Enumerated(EnumType.STRING) @Column(nullable = false)
         VehicleStatus status,
-        double currentLatitude,
-        double currentLongitude,
-        // @Column(precision = 10, scale = 2)
-        double pricePerUnit,
-        // @Enumerated(EnumType.STRING)
-        BillingModel billingModel,
-        int maxDurationMinutes,
-        int maxKilometers,
-        int minAge,
-        int maxPersons
+        // @Embedded
+        VehicleLocation location<part>,
+        // @Embedded
+        PricingPolicy pricingPolicy<part>,
+        // @Embedded
+        UsageRestrictions usageRestrictions<part>
     }
 
     collection Vehicles { Vehicle v }
@@ -56,7 +70,6 @@ context fleetManagement {
 
     structure CreateVehicleRequest<valueObject> {
         immutable long providerId,
-        immutable string name,
         immutable VehicleType type,
         immutable string description,
         immutable double pricePerUnit,
@@ -64,13 +77,15 @@ context fleetManagement {
         immutable int maxDurationMinutes,
         immutable int maxKilometers,
         immutable int minAge,
-        immutable int maxPersons
+        immutable int maxPersons,
+        immutable double latitude,
+        immutable double longitude
     }
 
     structure UpdateVehicleRequest<valueObject> {
-        immutable string name,
         immutable string description,
         immutable double pricePerUnit,
+        immutable BillingModel billingModel,
         immutable int maxDurationMinutes,
         immutable int maxKilometers,
         immutable int minAge,
@@ -87,16 +102,17 @@ context fleetManagement {
     }
 
     structure VehicleResponse<valueObject> {
-        immutable long vehicleId,
+        immutable long id,
         immutable long providerId,
-        immutable string name,
         immutable VehicleType type,
         immutable string description,
         immutable VehicleStatus status,
-        immutable double currentLatitude,
-        immutable double currentLongitude,
+        immutable double latitude,
+        immutable double longitude,
         immutable double pricePerUnit,
         immutable BillingModel billingModel,
+        immutable int maxDurationMinutes,
+        immutable int maxKilometers,
         immutable int minAge,
         immutable int maxPersons
     }
@@ -107,33 +123,33 @@ context fleetManagement {
 
     // @Repository
     structure VehicleRepository<repository> {
-        function Vehicles findAll,
-        function Vehicle findById(long id),
         function Vehicles findByProviderId(long providerId),
-        function Vehicles findAvailableNear(double lat, double lon, double radiusKm),
-        function Vehicle save(Vehicle vehicle),
-        function boolean existsById(long id)
+        function Vehicles findByStatus(VehicleStatus status)
     }
 
     // ── Application Services ───────────────────────────────────────────────────
 
     // @Service
     structure VehicleRegistrationService<applicationService> {
-        function Vehicle createVehicle(CreateVehicleRequest request),
-        function boolean deleteVehicle(long id)
+        function Vehicle createVehicle(long providerId, VehicleType type, string description,
+            PricingPolicy pricingPolicy, UsageRestrictions usageRestrictions, VehicleLocation location),
+        function Vehicle updateVehicle(long id, string description, PricingPolicy pricingPolicy,
+            UsageRestrictions usageRestrictions),
+        procedure deleteVehicle(long id)
     }
 
     // @Service
+    // findAvailableNear is computed in-memory (Haversine distance over all
+    // vehicles), not a repository query.
     structure VehicleAvailabilityService<applicationService> {
-        function Vehicles getAllVehicles,
-        function Vehicle findById(long id),
-        function Vehicles findAvailableNear(double lat, double lon, double radiusKm),
-        function Vehicles searchVehicles(string type, int minPersons)
+        function Vehicles findAvailableNear(double latitude, double longitude, double radiusKm,
+            VehicleType type, double maxPrice, int minAge, int maxDurationMinutes),
+        function Vehicle updateStatus(long vehicleId, VehicleStatus newStatus)
     }
 
     // @Service
     structure FleetStatusService<applicationService> {
-        function Vehicle updateLocation(long id, double lat, double lon),
-        function Vehicle updateStatus(long id, VehicleStatus status)
+        function Vehicles getFleetOverview(long providerId),
+        function Vehicle updateLocation(long vehicleId, double latitude, double longitude)
     }
 }

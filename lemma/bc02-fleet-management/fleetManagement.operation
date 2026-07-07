@@ -1,24 +1,168 @@
 import microservices from "fleetManagement.services" as fleetServices
-import technology from "../technology/docker.technology" as Docker
 import technology from "../technology/javaWithSpring.technology" as java
-import nodes from "../eureka-server/eurekaServer.operation" as eurekaOps
-import nodes from "../infra-config-server/configServer.operation" as configOps
+import technology from "../technology/map.technology" as map
 
-@technology(Docker)
 @technology(java)
-container FleetManagementContainer deployment technology Docker::_deployment.Docker
-    deploys fleetServices::com.winx.fleet.FleetManagement
-    depends on nodes eurekaOps::ServiceDiscovery, configOps::ConfigServer {
-
+@technology(map)
+fleetServices::com.winx.fleet.FleetManagement {
     aspects {
-        Docker::_aspects.Dockerfile('FROM eclipse-temurin:21-jre COPY bc02-fleet-management-0.1.0-SNAPSHOT.jar app.jar EXPOSE 8082 ENTRYPOINT ["java", "-jar", "app.jar"]');
+        java::_aspects.ApplicationName("bc02-fleet-management");
+
+        java::_aspects.DatasourceConfiguration(
+            url="jdbc:h2:mem:fleetdb;DB_CLOSE_DELAY=-1",
+            username="sa",
+            password="",
+            driverClassName="org.h2.Driver"
+        );
+
+        java::_aspects.HibernateConfiguration("update");
+
+        java::_aspects.Port(8082);
     }
 
-    fleetServices::com.winx.fleet.FleetManagement {
-        basic endpoints {
-            java::_protocols.rest: "http://localhost:8082";
-            java::_protocols.soap: "http://localhost:8082";
-            java::_protocols.amqp: "localhost:5672";
+    interface vehicleRegistration {
+        endpoints { java::_protocols.rest: "/api/vehicles"; }
+        aspects { map::_aspects.InformationHolderResource; }
+    }
+
+    interface vehicleQuery {
+        endpoints { java::_protocols.rest: "/api/vehicles"; }
+        aspects { map::_aspects.InformationHolderResource; }
+    }
+
+    interface fleetStatus {
+        endpoints { java::_protocols.rest: "/api/vehicles"; }
+        aspects { map::_aspects.InformationHolderResource; }
+    }
+
+    operation vehicleRegistration.registerVehicle {
+        aspects { java::_aspects.PostMapping; }
+        parameters {
+            complex requestDto {
+                aspects {
+                    java::_aspects.Valid;
+                    java::_aspects.RequestBody;
+                }
+            }
+            complex responseDto : java::_types.ResponseEntity;
+        }
+    }
+
+    operation vehicleRegistration.updateVehicle {
+        endpoints { java::_protocols.rest: "/{vehicleId}"; }
+        aspects { java::_aspects.PutMapping; }
+        parameters {
+            primitive vehicleId {
+                aspects { java::_aspects.PathVariable; }
+            }
+            complex requestDto {
+                aspects { java::_aspects.RequestBody; }
+            }
+            complex responseDto : java::_types.ResponseEntity;
+            primitive notFound {
+                aspects { java::_aspects.ResponseStatus("NOT_FOUND"); }
+            }
+        }
+    }
+
+    operation vehicleRegistration.deleteVehicle {
+        endpoints { java::_protocols.rest: "/{vehicleId}"; }
+        aspects { java::_aspects.DeleteMapping; }
+        parameters {
+            primitive vehicleId {
+                aspects { java::_aspects.PathVariable; }
+            }
+            primitive notFound {
+                aspects { java::_aspects.ResponseStatus("NOT_FOUND"); }
+            }
+            primitive invalidState {
+                aspects { java::_aspects.ResponseStatus("CONFLICT"); }
+            }
+        }
+    }
+
+    operation vehicleQuery.getVehicleById {
+        endpoints { java::_protocols.rest: "/{vehicleId}"; }
+        aspects { java::_aspects.GetMapping; }
+        parameters {
+            primitive vehicleId {
+                aspects { java::_aspects.PathVariable; }
+            }
+            complex responseDto : java::_types.ResponseEntity;
+            primitive notFound {
+                aspects { java::_aspects.ResponseStatus("NOT_FOUND"); }
+            }
+        }
+    }
+
+    operation vehicleQuery.getVehicles {
+        aspects { java::_aspects.GetMapping; }
+        parameters {
+            primitive providerId {
+                aspects { java::_aspects.RequestParam; }
+            }
+        }
+    }
+
+    operation vehicleQuery.findAvailableNear {
+        endpoints { java::_protocols.rest: "/search"; }
+        aspects { java::_aspects.GetMapping; }
+        parameters {
+            primitive lat {
+                aspects { java::_aspects.RequestParam; }
+            }
+            primitive lon {
+                aspects { java::_aspects.RequestParam; }
+            }
+            primitive radiusKm {
+                aspects { java::_aspects.RequestParam; }
+            }
+            primitive vehicleType {
+                aspects { java::_aspects.RequestParam; }
+            }
+            primitive maxPrice {
+                aspects { java::_aspects.RequestParam; }
+            }
+            primitive minAge {
+                aspects { java::_aspects.RequestParam; }
+            }
+            primitive maxDurationMinutes {
+                aspects { java::_aspects.RequestParam; }
+            }
+        }
+    }
+
+    operation fleetStatus.updateLocation {
+        endpoints { java::_protocols.rest: "/{vehicleId}/location"; }
+        aspects { java::_aspects.PatchMapping; }
+        parameters {
+            primitive vehicleId {
+                aspects { java::_aspects.PathVariable; }
+            }
+            complex requestDto {
+                aspects { java::_aspects.Valid; java::_aspects.RequestBody; }
+            }
+            complex responseDto : java::_types.ResponseEntity;
+            primitive notFound {
+                aspects { java::_aspects.ResponseStatus("NOT_FOUND"); }
+            }
+        }
+    }
+
+    operation fleetStatus.updateStatus {
+        endpoints { java::_protocols.rest: "/{vehicleId}/status"; }
+        aspects { java::_aspects.PatchMapping; }
+        parameters {
+            primitive vehicleId {
+                aspects { java::_aspects.PathVariable; }
+            }
+            complex requestDto {
+                aspects { java::_aspects.Valid; java::_aspects.RequestBody; }
+            }
+            complex responseDto : java::_types.ResponseEntity;
+            primitive notFound {
+                aspects { java::_aspects.ResponseStatus("NOT_FOUND"); }
+            }
         }
     }
 }

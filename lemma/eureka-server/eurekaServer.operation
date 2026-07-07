@@ -14,7 +14,7 @@ ServiceDiscovery is Eureka::_infrastructure.Eureka {
             RUN mvn -f ${BASE}/pom.xml package -DskipTests
 
             FROM eclipse-temurin:21-jre-alpine
-            COPY --from=build /usr/src/app/target/infra-eureka-server-0.1.0-SNAPSHOT.jar /app/app.jar
+            COPY --from=build /usr/src/app/target/infra-eureka-server-0.0.1-SNAPSHOT.jar /app/app.jar
 
             EXPOSE 8761
             ENTRYPOINT ["java", "-jar", "/app/app.jar"]
@@ -48,9 +48,9 @@ ServiceDiscovery is Eureka::_infrastructure.Eureka {
         hostname="infra-eureka-server"
         port=8761
         imageType="jre"
-        mavenGroupId="com.thewinx"
+        mavenGroupId="com.winx"
         mavenArtifactId="infra-eureka-server"
-        mavenVersion="0.1.0-SNAPSHOT"
+        mavenVersion="0.0.1-SNAPSHOT"
         mavenName="Eureka Server"
         programmingLanguage="Java"
     }

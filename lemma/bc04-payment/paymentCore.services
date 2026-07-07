@@ -4,19 +4,13 @@ public functional microservice com.winx.payment.PaymentCore {
     interface paymentInformationHolder {
         ---
         Create and process a payment after a booking has been completed.
+        Runs against a mock payment gateway that decides PAID or FAILED.
 
         @required requestDto the payment request sent by the Booking microservice
         ---
         createPayment(
-            sync requestDto : domain::paymentCore.PaymentRequest,
-            sync out responseDto : domain::paymentCore.Payment
-        );
-
-        ---
-        Get all payments stored by the Payment microservice.
-        ---
-        getPayments(
-            sync out responseDto : domain::paymentCore.Payments
+            sync requestDto : domain::paymentCore.CreatePaymentRequest,
+            sync out responseDto : domain::paymentCore.PaymentResponse
         );
 
         ---
@@ -26,7 +20,7 @@ public functional microservice com.winx.payment.PaymentCore {
         ---
         getPaymentById(
             sync paymentId : long,
-            sync out responseDto : domain::paymentCore.Payment,
+            sync out responseDto : domain::paymentCore.PaymentResponse,
             sync out fault paymentNotFound : string
         );
 
@@ -37,29 +31,20 @@ public functional microservice com.winx.payment.PaymentCore {
         ---
         getPaymentByBookingId(
             sync bookingId : long,
-            sync out responseDto : domain::paymentCore.Payment,
+            sync out responseDto : domain::paymentCore.PaymentResponse,
             sync out fault paymentNotFound : string
         );
 
         ---
-        Get all payments for a specific user.
+        Retry a FAILED payment by re-invoking the payment gateway.
 
-        @required userId the unique identifier of the user
+        @required paymentId the unique id of the payment to retry
         ---
-        getPaymentsByUser(
-            sync userId : long,
-            sync out responseDto : domain::paymentCore.Payments
-        );
-
-        ---
-        Cancel a payment associated with a booking and mark it as REFUNDED.
-
-        @required bookingId the booking id whose payment should be refunded
-        ---
-        cancelPayment(
-            sync bookingId : long,
-            sync out responseDto : domain::paymentCore.Payment,
-            sync out fault paymentNotFound : string
+        retryPayment(
+            sync paymentId : long,
+            sync out responseDto : domain::paymentCore.PaymentResponse,
+            sync out fault paymentNotFound : string,
+            sync out fault invalidState : string
         );
     }
 }

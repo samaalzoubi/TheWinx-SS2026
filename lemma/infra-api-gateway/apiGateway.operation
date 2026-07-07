@@ -8,7 +8,7 @@ ApiGateway is Eureka::_infrastructure.Eureka {
     aspects {
         Docker::_aspects.Dockerfile('
             FROM eclipse-temurin:21-jre
-            COPY infra-api-gateway-0.1.0-SNAPSHOT.jar app.jar
+            COPY infra-api-gateway-0.0.1-SNAPSHOT.jar app.jar
             EXPOSE 8080
             ENTRYPOINT ["java", "-jar", "app.jar"]
         ');
@@ -35,7 +35,7 @@ ApiGateway is Eureka::_infrastructure.Eureka {
         imageType="jre"
         mavenGroupId="com.winx"
         mavenArtifactId="infra-api-gateway"
-        mavenVersion="0.1.0-SNAPSHOT"
+        mavenVersion="0.0.1-SNAPSHOT"
         mavenName="API Gateway"
         programmingLanguage="Java"
     }

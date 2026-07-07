@@ -1,170 +1,45 @@
 import microservices from "IdentityAccess.services" as IdentityAccessServices
-import technology from "../technology/Java.technology" as java
+import technology from "../technology/docker.technology" as Docker
+import technology from "../technology/javaWithSpring.technology" as ProtocolTechnology
+import nodes from "../eureka-server/eurekaServer.operation" as Eureka
+import nodes from "../infra-config-server/configServer.operation" as ConfigServer
 
-@technology(java)
-IdentityAccessServices::com.thewinx.identityaccess.IdentityAccess {
+@technology(Docker)
+@technology(ProtocolTechnology)
+container IdentityAccessContainer deployment technology Docker::_deployment.Docker
+    deploys IdentityAccessServices::com.winx.identity.IdentityAccess
+    depends on nodes Eureka::ServiceDiscovery, ConfigServer::ConfigServer {
+
     aspects {
-        java::_aspects.ApplicationName("bc01-identity-access");
-        java::_aspects.Port(8081);
-        java::_aspects.DatasourceConfiguration(
-            url = "jdbc:h2:mem:identity",
-            username = "sa",
-            password = "",
-            driverClassName = "org.h2.Driver"
-        );
-        java::_aspects.HibernateConfiguration("create-drop");
+        Docker::_aspects.Dockerfile('
+            FROM maven:3.9-eclipse-temurin-21 AS build
+            ARG BASE=/usr/src/app
+            COPY pom.xml ${BASE}/
+            COPY src ${BASE}/src
+            RUN --mount=type=cache,target=/root/.m2 mvn -f ${BASE}/pom.xml package -DskipTests
+
+            FROM eclipse-temurin:21-jre-alpine
+            COPY --from=build /usr/src/app/target/bc01-identity-access-0.0.1-SNAPSHOT.jar /app/app.jar
+
+            EXPOSE 8081
+            ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+        ');
+
+        Docker::_aspects.ComposePart('
+            bc01-identity-access:
+                build: bc01-identity-access
+                ports:
+                  - "8081:8081"
+                depends_on:
+                  - infra-eureka-server
+                  - infra-config-server
+                environment:
+                  - "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://infra-eureka-server:8761/eureka"
+                  - "SPRING_CONFIG_IMPORT=optional:configserver:http://infra-config-server:8888"
+        ');
     }
 
-    interface identityManagement {
-        endpoints { java::_protocols.rest: "/api/v1/identity"; }
-    }
-
-    interface authValidation {
-        endpoints { java::_protocols.rest: "/api/auth"; }
-    }
-
-    interface fleetGateway {
-        endpoints { java::_protocols.rest: "/api/v1/identity/fleet"; }
-    }
-
-    interface adjacentContextContracts {
-        endpoints { java::_protocols.rest: "/api/contracts/v1"; }
-    }
-
-    operation identityManagement.register {
-        endpoints { java::_protocols.rest: "/users"; }
-        aspects { java::_aspects.PostMapping; }
-        parameters {
-            complex request { aspects { java::_aspects.Valid; java::_aspects.RequestBody; } }
-            complex response { aspects { java::_aspects.ResponseEntity; } }
-        }
-    }
-
-    operation identityManagement.listUsers {
-        aspects { java::_aspects.GetMapping; }
-    }
-
-    operation identityManagement.getUser {
-        endpoints { java::_protocols.rest: "/users/{userId}"; }
-        aspects { java::_aspects.GetMapping; }
-        parameters {
-            primitive userId { aspects { java::_aspects.PathVariable; } }
-        }
-    }
-
-    operation identityManagement.updateUser {
-        aspects { java::_aspects.PutMapping; }
-        parameters {
-            primitive userId { aspects { java::_aspects.PathVariable; } }
-            complex request { aspects { java::_aspects.Valid; java::_aspects.RequestBody; } }
-            complex response { aspects { java::_aspects.ResponseEntity; } }
-        }
-    }
-
-    operation identityManagement.deactivateUser {
-        aspects { java::_aspects.DeleteMapping; }
-        parameters {
-            primitive userId { aspects { java::_aspects.PathVariable; } }
-            complex response { aspects { java::_aspects.ResponseEntity; } }
-        }
-    }
-
-    operation identityManagement.assignRole {
-        endpoints { java::_protocols.rest: "/users/{userId}/roles"; }
-        aspects { java::_aspects.PostMapping; }
-        parameters {
-            primitive userId { aspects { java::_aspects.PathVariable; } }
-            complex request { aspects { java::_aspects.Valid; java::_aspects.RequestBody; } }
-            complex response { aspects { java::_aspects.ResponseEntity; } }
-        }
-    }
-
-    operation identityManagement.revokeRole {
-        aspects { java::_aspects.DeleteMapping; }
-        parameters {
-            primitive userId { aspects { java::_aspects.PathVariable; } }
-            complex request { aspects { java::_aspects.Valid; java::_aspects.RequestBody; } }
-            complex response { aspects { java::_aspects.ResponseEntity; } }
-        }
-    }
-
-    operation identityManagement.authenticate {
-        endpoints { java::_protocols.rest: "/auth/login"; }
-        aspects { java::_aspects.PostMapping; }
-        parameters {
-            complex request { aspects { java::_aspects.Valid; java::_aspects.RequestBody; } }
-            complex response { aspects { java::_aspects.ResponseEntity; } }
-        }
-    }
-
-    operation identityManagement.checkPermission {
-        endpoints { java::_protocols.rest: "/permissions/check"; }
-        aspects { java::_aspects.GetMapping; }
-        parameters {
-            primitive userId { aspects { java::_aspects.RequestParam(value="userId"); } }
-            primitive permission { aspects { java::_aspects.RequestParam(value="permission"); } }
-        }
-    }
-
-    operation authValidation.validate {
-        endpoints { java::_protocols.rest: "/validate"; }
-        aspects { java::_aspects.GetMapping; }
-        parameters {
-            primitive username { aspects { java::_aspects.RequestParam(value="username"); } }
-            complex response { aspects { java::_aspects.ResponseEntity; } }
-        }
-    }
-
-    operation fleetGateway.listVehicles {
-        endpoints { java::_protocols.rest: "/vehicles"; }
-        aspects { java::_aspects.GetMapping; }
-    }
-
-    operation fleetGateway.listBookings {
-        endpoints { java::_protocols.rest: "/bookings"; }
-        aspects { java::_aspects.GetMapping; }
-        parameters {
-            primitive username { aspects { java::_aspects.RequestParam(value="username"); } }
-        }
-    }
-
-    operation fleetGateway.createBooking {
-        aspects { java::_aspects.PostMapping; }
-        parameters {
-            complex request { aspects { java::_aspects.Valid; java::_aspects.RequestBody; } }
-            complex response { aspects { java::_aspects.ResponseEntity; } }
-        }
-    }
-
-    operation fleetGateway.cancelBooking {
-        endpoints { java::_protocols.rest: "/bookings/{bookingId}/cancel"; }
-        aspects { java::_aspects.PostMapping; }
-        parameters {
-            primitive bookingId { aspects { java::_aspects.PathVariable; } }
-        }
-    }
-
-    operation adjacentContextContracts.bookingIdentityCheck {
-        endpoints { java::_protocols.rest: "/booking/identity-check"; }
-        aspects { java::_aspects.GetMapping; }
-        parameters {
-            primitive username { aspects { java::_aspects.RequestParam(value="username"); } }
-        }
-    }
-
-    operation adjacentContextContracts.paymentEligibility {
-        endpoints { java::_protocols.rest: "/payment/eligibility"; }
-        aspects { java::_aspects.GetMapping; }
-        parameters {
-            primitive userId { aspects { java::_aspects.RequestParam(value="userId"); } }
-        }
-    }
-
-    operation adjacentContextContracts.providerAccess {
-        endpoints { java::_protocols.rest: "/provider/access"; }
-        aspects { java::_aspects.GetMapping; }
-        parameters {
-            primitive userId { aspects { java::_aspects.RequestParam(value="userId"); } }
-        }
+    IdentityAccessServices::com.winx.identity.IdentityAccess {
+        basic endpoints { ProtocolTechnology::_protocols.rest: "http://localhost:8081"; }
     }
 }

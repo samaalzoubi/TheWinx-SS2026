@@ -1,184 +1,81 @@
 import datatypes from "IdentityAccess.data" as Domain
 
-public functional microservice com.thewinx.identityaccess.IdentityAccess {
+public functional microservice com.winx.identity.IdentityAccess {
 
-    interface identityManagement {
+    interface userAccounts {
         ---
-        Register a new user account.
+        Register a new customer/rider account.
 
-        @required request the registration data: username, email, password, and personal details
+        @required request the registration data: name, email, password, phone number, and date of birth
         ---
         register(
-            sync request : Domain::IdentityAccess.RegisterUserRequest,
+            sync request : Domain::IdentityAccess.UserRegisterRequest,
             sync out response : Domain::IdentityAccess.UserResponse
         );
 
         ---
-        List all user accounts.
+        Authenticate a user with email and password and issue a bearer token.
+
+        @required request the email and password to authenticate
         ---
-        listUsers(
-            sync out response : Domain::IdentityAccess.UserResponses
+        login(
+            sync request : Domain::IdentityAccess.LoginRequest,
+            sync out response : Domain::IdentityAccess.UserLoginResponse
         );
 
         ---
-        Get a specific user account by id.
+        Get a user account by id.
 
-        @required userId the unique id of the user
+        @required id the unique id of the user
         ---
-        getUser(
-            sync userId : long,
+        getById(
+            sync id : long,
             sync out response : Domain::IdentityAccess.UserResponse
         );
+    }
 
+    interface providerAccounts {
         ---
-        Update a user's username and email.
+        Register a new fleet-provider account.
 
-        @required userId the unique id of the user
-        @required request the updated username and email
+        @required request the registration data: company name, contact name, email, password, and phone number
         ---
-        updateUser(
-            sync userId : long,
-            sync request : Domain::IdentityAccess.UpdateUserRequest,
-            sync out response : Domain::IdentityAccess.UserResponse
+        register(
+            sync request : Domain::IdentityAccess.ProviderRegisterRequest,
+            sync out response : Domain::IdentityAccess.ProviderResponse
         );
 
         ---
-        Deactivate a user account.
+        Authenticate a provider with email and password and issue a bearer token.
 
-        @required userId the unique id of the user
+        @required request the email and password to authenticate
         ---
-        deactivateUser(
-            sync userId : long,
-            sync out response : Domain::IdentityAccess.UserResponse
+        login(
+            sync request : Domain::IdentityAccess.LoginRequest,
+            sync out response : Domain::IdentityAccess.ProviderLoginResponse
         );
 
         ---
-        Assign a role to a user.
+        Get a provider account by id.
 
-        @required userId the unique id of the user
-        @required request the name of the role to assign
+        @required id the unique id of the provider
         ---
-        assignRole(
-            sync userId : long,
-            sync request : Domain::IdentityAccess.RoleAssignmentRequest,
-            sync out response : Domain::IdentityAccess.UserResponse
-        );
-
-        ---
-        Revoke a role from a user.
-
-        @required userId the unique id of the user
-        @required request the name of the role to revoke
-        ---
-        revokeRole(
-            sync userId : long,
-            sync request : Domain::IdentityAccess.RoleAssignmentRequest,
-            sync out response : Domain::IdentityAccess.UserResponse
-        );
-
-        ---
-        Authenticate a user with username and password.
-
-        @required request the username and password to authenticate
-        ---
-        authenticate(
-            sync request : Domain::IdentityAccess.AuthRequest,
-            sync out response : Domain::IdentityAccess.AuthResponse
-        );
-
-        ---
-        Check whether a user holds a specific permission.
-
-        @required userId the unique id of the user
-        @required permission the permission to check
-        ---
-        checkPermission(
-            sync userId : long,
-            sync permission : string,
-            sync out response : Domain::IdentityAccess.PermissionCheckResponse
+        getById(
+            sync id : long,
+            sync out response : Domain::IdentityAccess.ProviderResponse
         );
     }
 
     interface authValidation {
         ---
-        Validate a username and return the principal. Called by BC-03 Booking via Feign.
+        Validate a bearer token and resolve the principal it belongs to. Called
+        by other bounded contexts (e.g. the API gateway) to check a token.
 
-        @required username the username whose identity to confirm
+        @param token the bearer token to validate
         ---
         validate(
-            sync username : string,
-            sync out response : Domain::IdentityAccess.PrincipalDto
-        );
-    }
-
-    interface fleetGateway {
-        ---
-        List all vehicles, fetched live from the BC-02 Fleet service via FleetClient.
-        ---
-        listVehicles(
-            sync out response : Domain::IdentityAccess.VehicleInfos
-        );
-
-        ---
-        List bookings, optionally filtered by username.
-
-        @param username optional username filter
-        ---
-        listBookings(
-            sync username? : string,
-            sync out response : Domain::IdentityAccess.BookingInfos
-        );
-
-        ---
-        Create a new vehicle booking.
-
-        @required request the vehicle, username, and booking details
-        ---
-        createBooking(
-            sync request : Domain::IdentityAccess.VehicleBookingRequest,
-            sync out response : Domain::IdentityAccess.BookingInfo
-        );
-
-        ---
-        Cancel an existing booking.
-
-        @required bookingId the unique id of the booking to cancel
-        ---
-        cancelBooking(
-            sync bookingId : long,
-            sync out response : Domain::IdentityAccess.BookingInfo
-        );
-    }
-
-    interface adjacentContextContracts {
-        ---
-        Mock check of booking-side identity verification for BC-03 Booking.
-
-        @required username the username to verify
-        ---
-        bookingIdentityCheck(
-            sync username : string,
-            sync out response : Domain::IdentityAccess.BookingIdentityCheckResponse
-        );
-
-        ---
-        Mock check of payment eligibility for BC-04 Payment.
-
-        @required userId the unique id of the user
-        ---
-        paymentEligibility(
-            sync userId : long,
-            sync out response : Domain::IdentityAccess.PaymentEligibilityResponse
-        );
-
-        ---
-        Mock check of provider portal access for BC-02 Fleet.
-
-        @required userId the unique id of the user
-        ---
-        providerAccess(
-            sync userId : long,
-            sync out response : Domain::IdentityAccess.ProviderAccessResponse
+            sync token? : string,
+            sync out response : Domain::IdentityAccess.ValidateTokenResponse
         );
     }
 }
