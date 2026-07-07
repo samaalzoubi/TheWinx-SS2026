@@ -26,22 +26,22 @@ public class SeedDataRunner implements CommandLineRunner {
     @Override
     public void run(String... args) {
         UserAccount marianne = registrationService.registerUser(
-                "Marianne Chen", "marianne@instant-mobility.example", "password123",
+                "Marianne Nosseir", "marianne@instant-mobility.example", "password123",
                 "+491111111", LocalDate.of(1994, 7, 19));
-        log.info("Seeded user 'Marianne Chen' with id={}", marianne.getId());
+        log.info("Seeded user 'Marianne Nosseir' with id={}", marianne.getId());
 
         UserAccount rowena = registrationService.registerUser(
-                "Rowena Smith", "rowena@instant-mobility.example", "password123",
+                "Rowena Pagayanan", "rowena@instant-mobility.example", "password123",
                 "+492222222", LocalDate.of(1990, 3, 25));
-        log.info("Seeded user 'Rowena Smith' with id={}", rowena.getId());
+        log.info("Seeded user 'Rowena Pagayanan' with id={}", rowena.getId());
 
         ProviderAccount samaProvider = registrationService.registerProvider(
-                "Sama Rides", "Sama Operator", "sama@providers.instant-mobility.example",
+                "Sama Mobility", "Sama Alzoubi", "sama@providers.instant-mobility.example",
                 "password123", "+493333333");
-        log.info("Seeded provider 'Sama Rides' with id={}", samaProvider.getId());
+        log.info("Seeded provider 'Sama Mobility' with id={}", samaProvider.getId());
 
         ProviderAccount maeProvider = registrationService.registerProvider(
-                "Mae Urban Mobility", "Mae Manager", "mae@providers.instant-mobility.example",
+                "Mae Urban Mobility", "Mae Eskandari Borujerdi", "mae@providers.instant-mobility.example",
                 "password123", "+494444444");
         log.info("Seeded provider 'Mae Urban Mobility' with id={}", maeProvider.getId());
     }

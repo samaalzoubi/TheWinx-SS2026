@@ -1,11 +1,11 @@
 package com.winx.booking.infrastructure;
 
-import org.springframework.stereotype.Component;
-
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+import org.springframework.stereotype.Component;
 
 /**
  * In-memory stand-in for the Identity &amp; Access bounded context. Seeded
@@ -18,9 +18,9 @@ public class MockUserClient implements UserClient {
     private final Map<Long, UserView> users = new HashMap<>();
 
     public MockUserClient() {
-        users.put(1L, new UserView(1L, "Marianne Chen", LocalDate.of(1994, 7, 19)));
-        users.put(2L, new UserView(2L, "Rowena Smith", LocalDate.of(1990, 3, 25))); // mature user with riding experience
-        users.put(3L, new UserView(3L, "Priyanka Patel", LocalDate.of(1998, 11, 8)));
+        users.put(1L, new UserView(1L, "Marianne Nosseir", LocalDate.of(1994, 7, 19)));
+        users.put(2L, new UserView(2L, "Rowena Pagayanan", LocalDate.of(1990, 3, 25))); // mature user with riding experience
+        users.put(3L, new UserView(3L, "Priyanka Gupta", LocalDate.of(1998, 11, 8)));
     }
 
     @Override
