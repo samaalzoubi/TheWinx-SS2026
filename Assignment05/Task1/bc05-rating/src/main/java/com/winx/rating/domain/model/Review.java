@@ -3,12 +3,7 @@ package com.winx.rating.domain.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
-/**
- * The actual feedback content: numeric scores (1-5) for the vehicle and its
- * provider, plus an optional free-text comment. Score range validation is
- * enforced in the service layer so a domain-specific exception (with the
- * correct HTTP status) can be raised.
- */
+// we don't validate the score range here - that happens in the service layer so we can raise a proper domain exception with the right HTTP status
 @Embeddable
 public class Review {
 
@@ -22,7 +17,6 @@ public class Review {
     private String comment;
 
     protected Review() {
-        // JPA
     }
 
     public Review(Integer vehicleScore, Integer providerScore, String comment) {

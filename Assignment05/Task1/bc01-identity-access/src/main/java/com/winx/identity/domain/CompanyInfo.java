@@ -3,10 +3,7 @@ package com.winx.identity.domain;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
-/**
- * Value Object holding the company details of a {@link ProviderAccount}.
- * Immutable by convention: no setters are exposed after construction.
- */
+// we keep this immutable by convention - no setters exposed after construction
 @Embeddable
 public class CompanyInfo {
 
@@ -16,7 +13,7 @@ public class CompanyInfo {
     @Column(name = "contact_name")
     private String contactName;
 
-    /** Required by Hibernate. */
+    // required by Hibernate
     protected CompanyInfo() {
     }
 

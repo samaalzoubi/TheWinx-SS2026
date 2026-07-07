@@ -17,11 +17,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/**
- * Domain service that answers "which vehicles are available near me"
- * queries and performs simple status transitions on behalf of the
- * Booking bounded context.
- */
 @Service
 public class VehicleAvailabilityService {
 
@@ -75,9 +70,7 @@ public class VehicleAvailabilityService {
         return vehicleMaxDuration == null || vehicleMaxDuration >= requestedMaxDuration;
     }
 
-    /**
-     * Haversine great-circle distance between two lat/lon points, in kilometers.
-     */
+    // we use the Haversine formula here for straight-line distance between two points, in km
     private double distanceKm(double lat1, double lon1, double lat2, double lon2) {
         double dLat = Math.toRadians(lat2 - lat1);
         double dLon = Math.toRadians(lon2 - lon1);

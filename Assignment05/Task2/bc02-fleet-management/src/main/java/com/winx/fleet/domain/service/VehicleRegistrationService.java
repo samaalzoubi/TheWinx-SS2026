@@ -16,11 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Domain service responsible for the lifecycle of a Vehicle aggregate:
- * creation, mutable-field updates and deletion, enforcing the fleet
- * invariants along the way.
- */
 @Service
 public class VehicleRegistrationService {
 

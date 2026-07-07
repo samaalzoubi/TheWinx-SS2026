@@ -15,11 +15,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.Random;
 
-/**
- * Seeds a handful of sample vehicles for two fake providerIds (1 and 2 - the
- * same ids used by the Identity & Access context's sample providers) so the
- * fleet dashboard and search UI have data to show out of the box.
- */
+// we reuse providerIds 1 and 2 here to match Identity & Access's sample providers, so demos line up across contexts
 @Component
 public class FleetSeedDataLoader implements CommandLineRunner {
 
@@ -70,7 +66,7 @@ public class FleetSeedDataLoader implements CommandLineRunner {
     }
 
     private double randomOffset(double base) {
-        double offset = (random.nextDouble() - 0.5) * 0.02; // roughly +/-1km
+        double offset = (random.nextDouble() - 0.5) * 0.02; // we picked 0.02 so offsets land within roughly a km of the center
         return base + offset;
     }
 }

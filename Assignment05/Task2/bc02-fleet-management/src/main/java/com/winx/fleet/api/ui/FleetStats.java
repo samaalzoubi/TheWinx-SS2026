@@ -8,12 +8,7 @@ import java.math.RoundingMode;
 import java.util.List;
 import java.util.OptionalDouble;
 
-/**
- * Small read-only aggregate that feeds the stat tiles on the UI pages
- * (home, browse). This is purely a view-layer convenience computed from
- * whatever vehicle list the calling UI controller already fetched - it is
- * not part of the domain model.
- */
+// we keep this out of the domain model, it's just a view-layer helper crunching whatever list the UI controller already fetched
 public final class FleetStats {
 
     private final long total;

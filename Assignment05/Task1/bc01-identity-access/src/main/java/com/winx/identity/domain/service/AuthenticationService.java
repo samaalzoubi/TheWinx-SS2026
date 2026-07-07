@@ -17,14 +17,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Domain service handling authentication of Users and Providers, and
- * issuance/validation of opaque bearer tokens.
- *
- * Active tokens are kept in a simple in-memory map for the lifetime of the
- * JVM - building full JWT/session infrastructure is out of scope for this
- * lab. This makes the service effectively a singleton "token store".
- */
+// we kept tokens in a plain in-memory map since real JWT/session infra was out of scope for this lab
 @Service
 public class AuthenticationService {
 
@@ -43,9 +36,6 @@ public class AuthenticationService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    /**
-     * Authenticates a User account by email/password and issues a new token.
-     */
     public AuthenticatedUser authenticateUser(String email, String rawPassword) {
         UserAccount account = userAccountRepository.findByEmail(email)
                 .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
@@ -56,9 +46,6 @@ public class AuthenticationService {
         return new AuthenticatedUser(token, account);
     }
 
-    /**
-     * Authenticates a Provider account by email/password and issues a new token.
-     */
     public AuthenticatedProvider authenticateProvider(String email, String rawPassword) {
         ProviderAccount account = providerAccountRepository.findByEmail(email)
                 .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
@@ -69,11 +56,7 @@ public class AuthenticationService {
         return new AuthenticatedProvider(token, account);
     }
 
-    /**
-     * Validates an opaque token. Returns an empty Optional if the token is
-     * null/blank/unknown/expired - never throws, since this endpoint is
-     * meant to be called by other services as a simple check.
-     */
+    // we return empty instead of throwing here since other services call this as a simple check
     public Optional<PrincipalRef> validateToken(String token) {
         if (token == null || token.isBlank()) {
             return Optional.empty();

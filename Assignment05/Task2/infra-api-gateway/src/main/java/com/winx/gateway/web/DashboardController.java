@@ -55,7 +55,6 @@ public class DashboardController {
         return "dashboard";
     }
 
-    /** Full detail for a single one of the current user's own bookings. */
     @GetMapping("/bookings/{id}")
     public String bookingDetail(HttpSession session, @PathVariable Long id, Model model) {
         Long userId = SessionUtil.requireRole(session, "USER");
@@ -88,16 +87,14 @@ public class DashboardController {
             try {
                 payment = paymentClient.getByBooking(booking.id());
             } catch (FeignException.NotFound ignored) {
-                // no payment recorded yet - fine, just show nothing for it
+                // we treat 404 here as no payment yet, not an error - the row just shows nothing for it
             } catch (FeignException e) {
-                // Payment service unreachable: degrade gracefully, dashboard still renders
             }
             try {
                 rating = ratingClient.getByBooking(booking.id());
             } catch (FeignException.NotFound ignored) {
-                // not rated yet - the template offers a "Rate this ride" link
+                // we leave rating null on 404 since the template already shows a "Rate this ride" link for that case
             } catch (FeignException e) {
-                // Rating service unreachable: degrade gracefully
             }
         }
 

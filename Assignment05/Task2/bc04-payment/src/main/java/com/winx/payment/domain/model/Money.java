@@ -15,7 +15,7 @@ public class Money {
     private String currency;
 
     protected Money() {
-        // JPA
+        // we keep this no-arg ctor around only because JPA needs one to instantiate the entity via reflection
     }
 
     public Money(BigDecimal amount, String currency) {

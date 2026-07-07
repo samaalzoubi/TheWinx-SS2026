@@ -9,10 +9,6 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
-/**
- * Seeds a couple of sample payments on startup so the UI/API have data to
- * demo immediately, including one FAILED payment to show off the retry flow.
- */
 @Component
 public class PaymentSeedData implements CommandLineRunner {
 

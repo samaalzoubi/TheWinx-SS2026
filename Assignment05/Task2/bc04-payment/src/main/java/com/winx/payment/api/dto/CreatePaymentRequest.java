@@ -9,9 +9,7 @@ import java.math.BigDecimal;
 public record CreatePaymentRequest(
         @NotNull Long bookingId,
         @NotNull Long userId,
-        // Zero is a valid charge (e.g. a ride with ~0 measured distance under
-        // per-km billing) - only a negative amount is ever invalid. Matches
-        // the Money value object's documented "non-negative" invariant.
+        // we used @PositiveOrZero here since a ~0km ride under per-km billing is a legit zero-cost charge, matching Money's non-negative invariant
         @NotNull @PositiveOrZero BigDecimal amount,
         @NotBlank String currency,
         @NotBlank String paymentMethod,

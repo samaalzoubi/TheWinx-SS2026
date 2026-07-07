@@ -5,10 +5,6 @@ import jakarta.persistence.Embeddable;
 
 import java.util.Objects;
 
-/**
- * Immutable reference triplet identifying what/why is being rated:
- * the vehicle, its provider, and the completed booking that authorizes the rating.
- */
 @Embeddable
 public class RatingTarget {
 
@@ -22,7 +18,6 @@ public class RatingTarget {
     private Long bookingId;
 
     protected RatingTarget() {
-        // JPA
     }
 
     public RatingTarget(Long vehicleId, Long providerId, Long bookingId) {

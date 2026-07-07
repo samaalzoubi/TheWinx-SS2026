@@ -4,11 +4,7 @@ import com.winx.fleet.domain.model.BillingModel;
 
 import java.math.BigDecimal;
 
-/**
- * Partial update of the mutable fields of a vehicle. Any field left null is
- * left unchanged. providerId and type are immutable and not part of this
- * contract.
- */
+// we treat null fields as "leave unchanged" and left providerId/type out since they're immutable
 public record UpdateVehicleRequest(
         String description,
         BigDecimal pricePerUnit,

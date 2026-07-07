@@ -10,11 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
-/**
- * Populates the in-memory H2 database with a handful of sample accounts on
- * startup, so the service is not empty when demoing or integration-testing
- * against it.
- */
+// we seed a few accounts on startup so the service isn't empty when demoing or running integration tests
 @Component
 public class SeedDataRunner implements CommandLineRunner {
 

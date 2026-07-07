@@ -9,11 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
-/**
- * Meant to be called by other bounded contexts to check a bearer token.
- * Always returns 200 - valid:false for any bad/missing/expired token,
- * never throws.
- */
+// this gets called by other bounded contexts to check tokens, so we always return 200/valid:false instead of throwing on bad input
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
