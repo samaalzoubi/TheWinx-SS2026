@@ -39,7 +39,7 @@
             <dt>Booking ID</dt><dd th:text="${payment.bookingId}"></dd>
             <dt>User ID</dt><dd th:text="${payment.userId}"></dd>
             <dt>Amount</dt><dd th:text="|${payment.money.amount} ${payment.money.currency}|"></dd>
-            <dt>Payment Method</dt><dd>💳 <span th:text="${payment.paymentMethod.type}"></span></dd>
+            <dt>Payment Method</dt><dd th:text="${payment.paymentMethod.type == 'PAYPAL' ? '🅿️' : '💳'} + ' ' + ${payment.paymentMethod.type}"></dd>
             <dt>Masked Reference</dt><dd><code th:text="${payment.paymentMethod.maskedReference}"></code></dd>
             <dt>Status</dt>
             <dd><span class="badge" th:classappend="${'badge-' + payment.result.status.name().toLowerCase()}"
