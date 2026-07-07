@@ -1,16 +1,32 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: head(title='Welcome')}"></head>
-<body>
+<body class="landing-page">
 <div th:replace="~{fragments/layout :: nav}"></div>
-<div class="card">
-    <h2>Search, book, ride, pay and rate - all in one place.</h2>
-    <p>The Instant Mobility Platform aggregates e-scooters, bikes and cars from multiple providers into a single app.</p>
-    <p>
-        <a class="button-like" href="/register">Create an account</a>
-        &nbsp;
-        <a class="button-like" href="/login">Log in</a>
-    </p>
+
+<div class="landing-container">
+  <!-- Background decoration -->
+  <div class="landing-bg-decoration landing-bg-decoration-1"></div>
+  <div class="landing-bg-decoration landing-bg-decoration-2"></div>
+
+  <!-- Main hero section -->
+  <section class="landing-hero">
+    <div class="landing-hero-content">
+      <h1 class="landing-headline">Search, book, ride, pay and rate</h1>
+      <p class="landing-subheading">The Instant Mobility Platform aggregates e-scooters, bikes and cars from multiple providers into a single app.</p>
+      
+      <div class="landing-cta-buttons">
+        <a href="/register" class="landing-btn landing-btn-primary">Create an account</a>
+        <a href="/login" class="landing-btn landing-btn-secondary">Log in</a>
+      </div>
+    </div>
+
+    <!-- Illustration on the right -->
+    <div class="landing-illustration">
+      <div class="floating-emoji">🚗</div>
+    </div>
+  </section>
 </div>
+
 </body>
 </html>
