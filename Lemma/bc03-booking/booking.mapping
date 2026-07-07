@@ -87,7 +87,7 @@ bookingServices::com.winx.booking.BookingCore {
     }
 
     interface bookingLifecycle {
-        endpoints { java::_protocols.rest: "/api/v1/bookings"; }
+        endpoints { java::_protocols.rest: "/api/bookings"; }
         aspects { map::_aspects.InformationHolderResource; }
     }
 
@@ -125,7 +125,7 @@ bookingServices::com.winx.booking.BookingCore {
     }
 
     operation bookingLifecycle.cancelBooking {
-        endpoints { java::_protocols.rest: "/api/v1/bookings/{bookingId}/cancel"; }
+        endpoints { java::_protocols.rest: "/api/bookings/{bookingId}/cancel"; }
         aspects { java::_aspects.PostMapping; }
         parameters {
             primitive bookingId {
@@ -142,7 +142,7 @@ bookingServices::com.winx.booking.BookingCore {
     }
 
     operation bookingLifecycle.endBooking {
-        endpoints { java::_protocols.rest: "/api/v1/bookings/{bookingId}/end"; }
+        endpoints { java::_protocols.rest: "/api/bookings/{bookingId}/end"; }
         aspects { java::_aspects.PostMapping; }
         parameters {
             primitive bookingId {
@@ -162,7 +162,7 @@ bookingServices::com.winx.booking.BookingCore {
     }
 
     operation bookingQuery.getBookingById {
-        endpoints { java::_protocols.rest: "/api/v1/bookings/{bookingId}"; }
+        endpoints { java::_protocols.rest: "/api/bookings/{bookingId}"; }
         aspects { java::_aspects.GetMapping; }
         parameters {
             primitive bookingId {
@@ -176,7 +176,7 @@ bookingServices::com.winx.booking.BookingCore {
     }
 
     operation bookingQuery.getBookingsByUser {
-        endpoints { java::_protocols.rest: "/api/v1/bookings/user/{userId}"; }
+        endpoints { java::_protocols.rest: "/api/bookings/user/{userId}"; }
         aspects { java::_aspects.GetMapping; }
         parameters {
             primitive userId {
@@ -186,7 +186,7 @@ bookingServices::com.winx.booking.BookingCore {
     }
 
     operation vehicleSearch.searchVehicles {
-        endpoints { java::_protocols.rest: "/api/v1/vehicles/search"; }
+        endpoints { java::_protocols.rest: "/api/vehicles/search"; }
         aspects { java::_aspects.GetMapping; }
         parameters {
             primitive lat {
