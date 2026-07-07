@@ -8,11 +8,6 @@ import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-/**
- * Computes the cost of a completed ride based on the vehicle's billing
- * model captured in its {@link VehicleSnapshot}, and the geographic
- * distance travelled (Haversine formula).
- */
 @Service
 public class CostCalculationService {
 

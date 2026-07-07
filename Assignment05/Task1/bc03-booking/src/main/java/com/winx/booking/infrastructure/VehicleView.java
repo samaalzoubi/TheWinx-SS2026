@@ -2,10 +2,6 @@ package com.winx.booking.infrastructure;
 
 import java.math.BigDecimal;
 
-/**
- * Read-only projection of vehicle data as seen from the Booking context.
- * Sourced from the Fleet Management bounded context (mocked for now).
- */
 public record VehicleView(
         Long id,
         Long providerId,

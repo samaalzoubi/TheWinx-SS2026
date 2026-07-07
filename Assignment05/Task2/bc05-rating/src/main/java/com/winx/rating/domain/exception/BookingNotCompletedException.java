@@ -1,6 +1,6 @@
 package com.winx.rating.domain.exception;
 
-/** Thrown when a rating is attempted for a booking that is not yet COMPLETED. Maps to HTTP 409. */
+// we map this to 409, thrown when a rating is attempted for a booking that isn't COMPLETED yet
 public class BookingNotCompletedException extends RuntimeException {
 
     public BookingNotCompletedException(Long bookingId, String actualStatus) {

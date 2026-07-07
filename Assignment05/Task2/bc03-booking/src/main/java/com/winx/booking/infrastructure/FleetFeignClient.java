@@ -9,13 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-/**
- * Feign client for the Fleet Management bounded context (bc02), resolved via
- * Eureka service discovery (no hardcoded host/port).
- * <p>
- * Reuses the existing {@link VehicleView} record as the response type since
- * its field names/order already match bc02's JSON payload exactly.
- */
+// we reuse our existing VehicleView record as the response type here since its fields already match bc02's JSON payload exactly
 @FeignClient(name = "bc02-fleet-management")
 public interface FleetFeignClient {
 

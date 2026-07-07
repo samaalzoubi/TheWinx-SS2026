@@ -9,13 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
-/**
- * Real HTTP-backed {@link PaymentClient} that calls the Payment service
- * (bc04) via Feign/Eureka, guarded by a Resilience4j circuit breaker named
- * {@code paymentClient}. Falls back to {@link MockPaymentClient} (always
- * succeeds) whenever the remote call fails technically (timeout, connection
- * refused, 5xx).
- */
+// we fall back to MockPaymentClient here whenever the real call fails technically (timeout, connection refused, 5xx)
 @Component
 @Primary
 public class ResilientPaymentClient implements PaymentClient {
@@ -39,10 +33,7 @@ public class ResilientPaymentClient implements PaymentClient {
         return new PaymentOutcome(response.id(), response.status());
     }
 
-    // Must NOT be private: resilience4j-spring invokes fallback methods via
-    // reflection on the AOP proxy itself, and a private method bypasses the
-    // proxy's target delegation, leaving injected fields null (see
-    // https://github.com/resilience4j/resilience4j/issues/1993).
+    // we kept this non-private since resilience4j-spring invokes fallbacks via reflection on the AOP proxy, a private method would bypass that and leave our injected fields null
     public PaymentOutcome chargeFallback(Long bookingId, Long userId, BigDecimal amount, String paymentMethod, Throwable t) {
         log.warn("Payment client circuit breaker fallback for booking {}: {}", bookingId, t.toString());
         return fallbackClient.charge(bookingId, userId, amount, paymentMethod);
@@ -55,13 +46,12 @@ public class ResilientPaymentClient implements PaymentClient {
             PaymentFeignClient.PaymentFeignResponse r = feignClient.getByBooking(bookingId);
             return new PaymentView(r.id(), r.status(), r.failureReason(), r.amount(), r.paidAt());
         } catch (FeignException.NotFound e) {
-            // No payment recorded yet (e.g. booking still ACTIVE) - a legitimate
-            // outcome, not a technical failure, so it must not trip the breaker.
+            // we treat this as a legitimate outcome (e.g. booking still ACTIVE), not a technical failure, so it shouldn't trip the breaker
             return null;
         }
     }
 
-    // Must NOT be private - see note on chargeFallback above.
+    // non-private for the same reflection reason as chargeFallback above
     public PaymentView findByBookingFallback(Long bookingId, Throwable t) {
         log.warn("Payment client circuit breaker fallback for booking {} lookup: {}", bookingId, t.toString());
         return fallbackClient.findByBooking(bookingId);

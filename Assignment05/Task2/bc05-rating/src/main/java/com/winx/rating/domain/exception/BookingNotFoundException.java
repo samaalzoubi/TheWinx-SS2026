@@ -1,6 +1,6 @@
 package com.winx.rating.domain.exception;
 
-/** Thrown when the referenced booking does not exist per the BookingClient. Maps to HTTP 404. */
+// we map this to 404, thrown when BookingClient says the referenced booking doesn't exist
 public class BookingNotFoundException extends RuntimeException {
 
     public BookingNotFoundException(Long bookingId) {

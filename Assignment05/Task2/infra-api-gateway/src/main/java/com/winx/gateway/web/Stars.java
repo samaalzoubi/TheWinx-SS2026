@@ -1,6 +1,5 @@
 package com.winx.gateway.web;
 
-/** Renders a 1-5 integer score as filled/empty star glyphs for templates. */
 public final class Stars {
     private Stars() {
     }

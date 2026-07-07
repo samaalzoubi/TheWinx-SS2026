@@ -16,11 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Application/domain service orchestrating the submission of a new Rating.
- * Enforces all invariants: score range, booking existence, booking
- * completion, and the one-rating-per-booking rule.
- */
 @Service
 public class RatingSubmissionService {
 

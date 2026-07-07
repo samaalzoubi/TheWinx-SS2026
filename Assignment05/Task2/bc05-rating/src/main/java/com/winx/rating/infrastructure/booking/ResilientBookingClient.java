@@ -8,26 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-/**
- * Real {@link BookingClient} implementation, replacing {@link
- * MockBookingClient} as the primary bean now that Rating is wired into the
- * microservice architecture. Combines two independently circuit-broken
- * gateways to build a complete {@link BookingView}:
- *
- * <ul>
- *   <li>{@link BookingLookupGateway} - HTTP call to bc03-booking.</li>
- *   <li>{@link FleetLookupGateway} - HTTP call to bc02-fleet-management,
- *       used to resolve {@code providerId} from {@code vehicleId} since
- *       Booking's own representation does not carry a providerId.</li>
- * </ul>
- *
- * <p>This class intentionally carries NO {@code @CircuitBreaker} annotations
- * of its own: both gateways are self-contained (they never throw to their
- * caller, and internally guard their own Feign call via a Spring-proxied
- * bean, avoiding the self-invocation trap that would otherwise make
- * Resilience4j's AOP-based aspect a no-op). This class only has to
- * interpret their results.
- */
+// we don't need our own @CircuitBreaker here, both gateways we combine are already self-contained and never throw to us
 @Component
 @Primary
 public class ResilientBookingClient implements BookingClient {
@@ -60,14 +41,7 @@ public class ResilientBookingClient implements BookingClient {
             return Optional.empty();
         }
 
-        // Unavailable: bc03-booking's circuit is open or otherwise unreachable.
-        // Degrade to the same hardcoded example data used in standalone mode
-        // rather than failing the whole rating submission outright. Booking
-        // and Fleet are independent failure domains, so still attempt to
-        // resolve a fresh providerId for the mock's vehicleId via the
-        // (separately circuit-broken) Fleet gateway, instead of trusting the
-        // mock's own baked-in providerId - this way a Fleet outage/recovery
-        // is reflected even while Booking itself is degraded.
+        // we still resolve a fresh providerId via the Fleet gateway here instead of trusting the mock's baked-in one, Booking and Fleet are independent failure domains
         log.warn("Booking service unavailable for booking {} - degrading to MockBookingClient fallback data", bookingId);
         return fallbackClient.getBooking(bookingId)
                 .map(mock -> new BookingView(mock.id(), mock.userId(), mock.vehicleId(),

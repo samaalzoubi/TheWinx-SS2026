@@ -5,25 +5,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-/**
- * Resilience4j-guarded gateway towards bc02-fleet-management. Deliberately a
- * separate Spring bean (rather than a private method on {@code
- * ResilientBookingClient}) so that the {@link CircuitBreaker} annotation is
- * applied through the Spring AOP proxy: calls arriving here always come from
- * a different bean, so the proxy - and therefore the circuit breaker - is
- * never bypassed by self-invocation.
- *
- * <p>This gateway never throws to its caller: on failure of any kind (Fleet
- * unreachable, circuit open, timeout, even a genuine 404 for an unknown
- * vehicle) it returns the {@link #PROVIDER_UNKNOWN} sentinel instead, so
- * {@code ResilientBookingClient} never needs a try/catch around this call.
- */
+// we made this its own bean for the same AOP self-invocation reason as BookingLookupGateway, and it never throws, always returns PROVIDER_UNKNOWN on failure instead
 @Component
 public class FleetLookupGateway {
 
     private static final Logger log = LoggerFactory.getLogger(FleetLookupGateway.class);
 
-    /** Sentinel returned when Fleet cannot be reached / circuit is open. */
     public static final long PROVIDER_UNKNOWN = -1L;
 
     private final FleetFeignClient fleetFeignClient;

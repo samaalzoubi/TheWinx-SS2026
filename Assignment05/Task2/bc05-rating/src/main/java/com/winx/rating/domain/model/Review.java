@@ -3,12 +3,7 @@ package com.winx.rating.domain.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
-/**
- * The actual feedback content: numeric scores (1-5) for the vehicle and its
- * provider, plus an optional free-text comment. Score range validation is
- * enforced in the service layer so a domain-specific exception (with the
- * correct HTTP status) can be raised.
- */
+// we enforce the 1-5 score range in the service layer instead of here, so we can raise a domain-specific exception with the right HTTP status
 @Embeddable
 public class Review {
 

@@ -6,10 +6,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDate;
 
-/**
- * Feign client for the Identity &amp; Access bounded context (bc01), resolved
- * via Eureka service discovery (no hardcoded host/port).
- */
 @FeignClient(name = "bc01-identity-access")
 public interface IdentityFeignClient {
 

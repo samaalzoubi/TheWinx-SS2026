@@ -5,11 +5,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * In-memory stand-in for the Payment bounded context. Always succeeds, to
- * keep the standalone booking demo flow simple; real payment failure
- * handling is exercised inside the actual Payment service itself.
- */
+// we made this always succeed to keep the standalone demo flow simple, real failure handling lives in the actual Payment service
 @Component
 public class MockPaymentClient implements PaymentClient {
 
@@ -23,8 +19,7 @@ public class MockPaymentClient implements PaymentClient {
 
     @Override
     public PaymentView findByBooking(Long bookingId) {
-        // This mock never persists anything it "charges", so it has nothing
-        // truthful to report back for a lookup - unknown is the honest answer.
+        // we never persist what we "charge" here, so null (unknown) is the only honest answer for a lookup
         return null;
     }
 }

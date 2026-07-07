@@ -32,7 +32,7 @@ public class SearchBookController {
         if (SessionUtil.requireRole(session, "USER") == null) {
             return "redirect:/login";
         }
-        // Default to Dortmund city centre so the form has sensible pre-filled values for the demo
+        // we default to Dortmund city centre so the form has sensible pre-filled values for the demo
         double searchLat = lat != null ? lat : 51.5136;
         double searchLon = lon != null ? lon : 7.4653;
         model.addAttribute("lat", searchLat);
@@ -81,7 +81,7 @@ public class SearchBookController {
         try {
             bookingClient.end(id, new BookingClient.EndBookingRequest(endLatitude, endLongitude, paymentMethod));
         } catch (FeignException ignored) {
-            // Surfacing this on the dashboard is enough; the booking simply stays ACTIVE if it failed.
+            // we just surface this on the dashboard, the booking simply stays ACTIVE if it failed
         }
         return "redirect:/dashboard";
     }

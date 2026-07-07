@@ -10,11 +10,6 @@ import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 
-/**
- * Aggregate root for the Payment bounded context. Represents a single
- * financial transaction tied to a completed booking. bookingId/userId are
- * reference-only identifiers; this context owns no booking logic.
- */
 @Entity
 @Table(name = "payments")
 public class Payment {
@@ -41,9 +36,7 @@ public class Payment {
     }
 
     public Payment(Long bookingId, Long userId, Money money, PaymentMethod paymentMethod) {
-        // Money's invariant is non-negative, not strictly positive - a ride
-        // with ~0 measured distance under per-km billing legitimately costs
-        // 0 and is still a real payment to record, not an invalid one.
+        // we made this non-negative, not strictly positive, since a ~0km ride under per-km billing is still a real payment to record
         if (money == null || money.getAmount() == null || money.getAmount().signum() < 0) {
             throw new IllegalArgumentException("Payment amount must not be negative");
         }
@@ -72,7 +65,6 @@ public class Payment {
         this.result.markFailed(reason);
     }
 
-    /** Used when a FAILED payment is retried and the gateway is re-invoked. */
     public void resetForRetry() {
         if (result.getStatus() != PaymentStatus.FAILED) {
             throw new InvalidPaymentStateException(

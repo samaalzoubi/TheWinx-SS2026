@@ -1,10 +1,6 @@
 package com.winx.booking.domain.service;
 
-/**
- * Shared geographic distance calculation (Haversine formula). Not a Spring
- * bean - a stateless pure-math utility usable both from domain services and
- * from infrastructure mocks without introducing a dependency cycle.
- */
+// we kept this a plain static utility, not a Spring bean, so both domain services and infra mocks can use it without a dependency cycle
 public final class GeoMath {
 
     private static final double EARTH_RADIUS_KM = 6371.0;

@@ -8,17 +8,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.math.BigDecimal;
 
-/**
- * Feign client for the Payment bounded context (bc04), resolved via Eureka
- * service discovery (no hardcoded host/port).
- */
 @FeignClient(name = "bc04-payment")
 public interface PaymentFeignClient {
 
     @PostMapping("/api/payments")
     PaymentFeignResponse charge(@RequestBody PaymentFeignRequest request);
 
-    /** Already-public read endpoint on bc04, also used by the gateway's own PaymentClient. */
+    // we reuse this same already-public bc04 endpoint the gateway's own PaymentClient calls too
     @GetMapping("/api/payments/booking/{bookingId}")
     PaymentFeignResponse getByBooking(@PathVariable("bookingId") Long bookingId);
 

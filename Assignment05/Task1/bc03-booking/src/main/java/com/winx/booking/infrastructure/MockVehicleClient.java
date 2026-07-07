@@ -11,13 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/**
- * In-memory stand-in for the Fleet Management bounded context. Seeded with a
- * handful of example vehicles around Dortmund so the Booking service can be
- * exercised fully standalone. {@link #updateStatus(Long, String)} mutates
- * the in-memory map, simulating what a real HTTP call to Fleet Management
- * would do.
- */
+// updateStatus mutates our in-memory map here to simulate what a real HTTP call to Fleet Management would do
 @Component
 public class MockVehicleClient implements VehicleClient {
 

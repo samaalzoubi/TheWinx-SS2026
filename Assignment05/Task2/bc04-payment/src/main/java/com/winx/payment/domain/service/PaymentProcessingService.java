@@ -19,12 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
-/**
- * Domain service orchestrating payment processing against the (mock)
- * external payment gateway. Owns the invariant that amounts must be
- * positive and that status transitions only ever move PENDING -> PAID or
- * PENDING -> FAILED, never backwards.
- */
+// status only ever moves PENDING -> PAID or PENDING -> FAILED here, never backwards
 @Service
 public class PaymentProcessingService {
 
@@ -41,9 +36,7 @@ public class PaymentProcessingService {
     @Transactional
     public Payment initiatePayment(Long bookingId, BigDecimal amount, String currency, Long userId,
                                     String paymentMethodType, String paymentMethodMaskedRef) {
-        // Money's invariant is non-negative, not strictly positive - a ride
-        // that measured ~0 distance under per-km billing legitimately costs
-        // 0 and must still be recorded as a real (PAID) payment, not rejected.
+        // same non-negative (not strictly positive) invariant as Money - a real ~0km ride still needs a real payment record
         if (amount == null || amount.signum() < 0) {
             throw new IllegalArgumentException("Payment amount must not be negative");
         }

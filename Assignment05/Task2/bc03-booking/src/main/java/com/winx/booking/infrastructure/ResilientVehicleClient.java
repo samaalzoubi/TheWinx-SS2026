@@ -10,13 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Real HTTP-backed {@link VehicleClient} that calls the Fleet Management
- * service (bc02) via Feign/Eureka, guarded by a Resilience4j circuit breaker
- * named {@code fleetClient}. Falls back to {@link MockVehicleClient}'s
- * in-memory seed data whenever the remote call fails technically (timeout,
- * connection refused, 5xx).
- */
+// we fall back to MockVehicleClient's seed data here whenever the real call fails technically
 @Component
 @Primary
 public class ResilientVehicleClient implements VehicleClient {
@@ -37,16 +31,12 @@ public class ResilientVehicleClient implements VehicleClient {
         try {
             return Optional.of(feignClient.getVehicle(vehicleId));
         } catch (FeignException.NotFound e) {
-            // A legitimate "vehicle does not exist" - not a technical failure, so
-            // don't let it count against the circuit breaker's failure rate.
+            // a legitimate "vehicle does not exist", we don't want this counting against the breaker's failure rate
             return Optional.empty();
         }
     }
 
-    // Must NOT be private: resilience4j-spring invokes fallback methods via
-    // reflection on the AOP proxy itself, and a private method bypasses the
-    // proxy's target delegation, leaving injected fields null (see
-    // https://github.com/resilience4j/resilience4j/issues/1993).
+    // we kept this non-private since resilience4j-spring invokes fallbacks via reflection on the AOP proxy, a private method would bypass that and leave our injected fields null
     public Optional<VehicleView> getVehicleFallback(Long vehicleId, Throwable t) {
         log.warn("Fleet client circuit breaker fallback for vehicle {}: {}", vehicleId, t.toString());
         return fallbackClient.getVehicle(vehicleId);

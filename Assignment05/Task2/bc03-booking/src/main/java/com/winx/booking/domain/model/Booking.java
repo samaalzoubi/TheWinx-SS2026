@@ -12,11 +12,6 @@ import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 
-/**
- * Aggregate root of the Booking bounded context. Owns the full rental
- * lifecycle: search -> creation -> active ride -> completion (with cost
- * computation) or cancellation.
- */
 @Entity
 @Table(name = "bookings")
 public class Booking {
@@ -71,9 +66,7 @@ public class Booking {
         this.endLatitude = endLocation.latitude();
         this.endLongitude = endLocation.longitude();
         this.endTime = endTime;
-        // Hibernate maps an @Embedded value whose columns are ALL null back to a
-        // null field reference (rather than an instance with null fields), so a
-        // freshly-reloaded ACTIVE booking may have rideSummary == null here.
+        // we guard against this since Hibernate gives back a null rideSummary reference, not an empty instance, when every column is null
         if (this.rideSummary == null) {
             this.rideSummary = new RideSummary();
         }
@@ -123,7 +116,7 @@ public class Booking {
     }
 
     public RideSummary getRideSummary() {
-        // See note in complete(): a reloaded ACTIVE booking may have this null.
+        // same null-rideSummary gotcha as in complete()
         return rideSummary != null ? rideSummary : new RideSummary();
     }
 

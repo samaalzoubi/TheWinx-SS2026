@@ -1,6 +1,6 @@
 package com.winx.rating.domain.exception;
 
-/** Thrown when a Rating already exists for a given booking. Maps to HTTP 409. */
+// we map this to 409, thrown when a rating already exists for the given booking
 public class DuplicateRatingException extends RuntimeException {
 
     public DuplicateRatingException(Long bookingId) {

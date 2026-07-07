@@ -29,11 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * Application/domain service orchestrating the full booking lifecycle:
- * creation, ending a ride (with cost computation and payment trigger), and
- * cancellation.
- */
 @Service
 public class BookingService {
 

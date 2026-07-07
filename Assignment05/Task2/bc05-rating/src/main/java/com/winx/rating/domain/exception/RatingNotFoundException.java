@@ -1,6 +1,6 @@
 package com.winx.rating.domain.exception;
 
-/** Thrown when a requested Rating does not exist. Maps to HTTP 404. */
+// we map this to 404, thrown when the requested rating doesn't exist
 public class RatingNotFoundException extends RuntimeException {
 
     public RatingNotFoundException(Long ratingId) {

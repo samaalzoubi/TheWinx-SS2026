@@ -10,7 +10,7 @@ public class EndBookingRequest {
     @NotNull
     private Double endLongitude;
 
-    /** Optional; defaults to CARD if omitted, so existing callers keep working unchanged. */
+    // we default this to CARD when omitted so existing callers keep working unchanged
     private String paymentMethod;
 
     public EndBookingRequest() {

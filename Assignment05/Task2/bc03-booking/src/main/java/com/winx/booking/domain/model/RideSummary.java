@@ -5,10 +5,7 @@ import jakarta.persistence.Embeddable;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-/**
- * Outcome of a completed ride. Both fields remain {@code null} until the
- * ride is completed.
- */
+// both fields stay null until the ride actually completes
 @Embeddable
 public class RideSummary {
 

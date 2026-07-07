@@ -10,11 +10,7 @@ import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 
-/**
- * Aggregate root of the Rating bounded context. A Rating is feedback a user
- * gives for a Vehicle and its Provider after a completed ride (Booking).
- * It is immutable once created: there is intentionally no setter/update path.
- */
+// we made this immutable once created, no setter/update path on purpose
 @Entity
 @Table(name = "ratings")
 public class Rating {

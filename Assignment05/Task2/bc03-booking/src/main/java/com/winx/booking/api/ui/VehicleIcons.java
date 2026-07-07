@@ -1,15 +1,6 @@
 package com.winx.booking.api.ui;
 
-/**
- * UI-only helper mapping a vehicle type string to a display emoji icon.
- * Not a domain concept - purely presentational, used from Thymeleaf
- * templates via a static call (e.g. {@code T(...).iconFor(v.type)}).
- * <p>
- * Handles both the canonical Fleet (bc02) type names (E_SCOOTER, BICYCLE,
- * E_BIKE, E_CAR) and the shorter names used by this service's standalone
- * mock vehicle data (SCOOTER, BIKE, CAR), so the icon shows up correctly
- * whether bc02 is running or not.
- */
+// we match on substrings here so both bc02's real type names and our own shorter mock names map to an icon
 public final class VehicleIcons {
 
     private VehicleIcons() {

@@ -1,6 +1,6 @@
 package com.winx.rating.domain.exception;
 
-/** Thrown when a vehicle or provider score is outside the allowed 1-5 range. Maps to HTTP 400. */
+// we map this to 400, thrown when a vehicle or provider score falls outside 1-5
 public class InvalidScoreException extends RuntimeException {
 
     public InvalidScoreException(String message) {

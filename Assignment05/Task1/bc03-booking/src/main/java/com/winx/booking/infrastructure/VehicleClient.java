@@ -3,12 +3,7 @@ package com.winx.booking.infrastructure;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Gateway to the Fleet Management bounded context. Implemented today by
- * {@link MockVehicleClient} with hardcoded example data so that this
- * service runs fully standalone; a later integration phase can add a real
- * HTTP-based implementation without touching any calling code.
- */
+// same reasoning as PaymentClient/UserClient here
 public interface VehicleClient {
 
     Optional<VehicleView> getVehicle(Long vehicleId);

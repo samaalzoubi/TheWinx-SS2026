@@ -8,12 +8,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.Period;
 
-/**
- * Validates that a user is allowed to book a given vehicle. For Task 1,
- * only the minimum-age restriction is modelled - maxPersons/
- * maxDurationMinutes/maxKilometers describe ride parameters that are not
- * part of the booking creation inputs in this iteration.
- */
+// we only check minimum age here, maxPersons/maxDurationMinutes/maxKilometers aren't part of the booking creation inputs in this iteration
 @Service
 public class RestrictionValidator {
 

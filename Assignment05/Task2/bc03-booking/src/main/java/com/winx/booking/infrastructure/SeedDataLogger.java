@@ -5,12 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-/**
- * Logs the mock users/vehicles seeded in {@link MockUserClient} and
- * {@link MockVehicleClient} on startup, so a human tester knows what ids to
- * type into the UI or curl commands. No bookings are pre-created - a clean
- * start makes the demo flow clearer.
- */
+// we log the seed data on startup so testers know what ids to type into the UI or curl commands
 @Component
 public class SeedDataLogger implements CommandLineRunner {
 

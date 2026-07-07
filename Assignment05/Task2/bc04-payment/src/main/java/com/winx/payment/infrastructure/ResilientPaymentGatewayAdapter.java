@@ -10,15 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
-/**
- * Wraps the (mock) external payment gateway call in a Resilience4j circuit
- * breaker ("paymentGateway", tuned in application.yml / the config server's
- * bc04-payment.yml). This is the one circuit breaker the Payment context
- * owns, per the team's Assignment 05 plan - Payment has no other bounded
- * context to call into, so it protects its own external-gateway boundary
- * instead. Marked {@code @Primary} so {@link com.winx.payment.domain.service.PaymentProcessingService}
- * transparently gets the protected version instead of {@link MockPaymentGatewayAdapter} directly.
- */
+// this is the one circuit breaker Payment owns, since it has no other bounded context to call into, just its own gateway boundary
 @Component
 @Primary
 public class ResilientPaymentGatewayAdapter implements PaymentGatewayAdapter {

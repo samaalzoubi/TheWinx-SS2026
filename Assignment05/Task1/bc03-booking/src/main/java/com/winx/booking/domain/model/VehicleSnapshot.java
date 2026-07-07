@@ -5,11 +5,7 @@ import jakarta.persistence.Embeddable;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-/**
- * Snapshot of the vehicle data relevant to a booking, captured at booking
- * creation time so that later price changes on the vehicle never
- * retroactively affect an in-progress or historical ride.
- */
+// we snapshot the vehicle at booking time so a later price change never retroactively affects an in-progress or past ride
 @Embeddable
 public class VehicleSnapshot {
 

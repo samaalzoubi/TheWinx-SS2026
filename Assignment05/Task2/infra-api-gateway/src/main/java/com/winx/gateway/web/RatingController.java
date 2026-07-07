@@ -45,7 +45,7 @@ public class RatingController {
         try {
             ratingClient.submit(new RatingClient.SubmitRatingRequest(bookingId, userId, vehicleScore, providerScore, comment));
         } catch (FeignException ignored) {
-            // dashboard will just keep showing "Rate this ride" if it failed; acceptable for this demo scope
+            // we just let the dashboard keep showing "Rate this ride" if this fails, good enough for this demo's scope
         }
         return "redirect:/dashboard";
     }

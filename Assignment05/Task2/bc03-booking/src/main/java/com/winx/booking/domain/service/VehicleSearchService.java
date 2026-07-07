@@ -6,10 +6,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
- * Domain service used to search for available vehicles near a location.
- * Delegates to the {@link VehicleClient} gateway (mocked for now).
- */
 @Service
 public class VehicleSearchService {
 

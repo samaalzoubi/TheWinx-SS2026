@@ -23,10 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Rudimentary server-rendered UI for the booking flow: search & book, and
- * view / manage a user's bookings.
- */
 @Controller
 @RequestMapping("/ui")
 public class BookingUiController {
@@ -56,11 +52,7 @@ public class BookingUiController {
         return "home";
     }
 
-    /**
-     * Convenience redirect so the "My bookings" nav/home form can be a plain
-     * GET with a userId field, without needing to know the path-variable
-     * route shape. Not part of the REST API - UI sugar only.
-     */
+    // we added this so the nav form can just post a userId field instead of knowing the path-variable route shape
     @GetMapping("/my-bookings")
     public String myBookingsLookup(@RequestParam(required = false) Long userId) {
         return "redirect:/ui/my-bookings/" + (userId != null ? userId : 1L);
@@ -135,13 +127,7 @@ public class BookingUiController {
         return "redirect:/ui/my-bookings/" + userId;
     }
 
-    /**
-     * Admin-style view across every booking in the system, regardless of
-     * user. Read-only: reuses {@link BookingRepository#findAll()}, the same
-     * repository already injected into the REST {@code BookingController}.
-     * Status filter tabs re-filter the already-fetched list in memory, no
-     * new repository queries or REST endpoints are introduced.
-     */
+    // we filter the status tabs in memory off one findAll() instead of adding new repository queries for each tab
     @GetMapping("/all")
     public String allBookings(@RequestParam(required = false) String status, Model model) {
         List<Booking> all = bookingRepository.findAll().stream()
@@ -162,10 +148,7 @@ public class BookingUiController {
                 ? all
                 : all.stream().filter(b -> b.getStatus().name().equals(filter)).toList();
 
-        // Live payment lookup per completed booking, via the same resilient
-        // PaymentClient the booking service already uses to charge - guarded
-        // by its own circuit breaker, so a slow/down bc04 degrades to "unknown"
-        // per row rather than breaking this page.
+        // we reuse the same resilient PaymentClient the booking service charges through, so a down bc04 just shows "unknown" here instead of breaking the page
         Map<Long, PaymentView> paymentsByBooking = new HashMap<>();
         for (Booking b : filtered) {
             if (b.getStatus() == BookingStatus.COMPLETED) {
@@ -184,13 +167,7 @@ public class BookingUiController {
         return "all-bookings";
     }
 
-    /**
-     * Full detail view of a single booking (all fields, GPS coordinates,
-     * ride summary). Read-only via {@link BookingRepository#findById}, plus
-     * a live, resilience-guarded payment lookup via {@link PaymentClient}
-     * (the same client {@link BookingService} uses to charge on ride end -
-     * this just adds the read side of that already-existing gateway).
-     */
+    // we add the read side of the same PaymentClient gateway here, we're not introducing a new one
     @GetMapping("/bookings/{id}")
     public String bookingDetail(@PathVariable Long id, Model model) {
         bookingRepository.findById(id).ifPresentOrElse(

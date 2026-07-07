@@ -23,12 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDate;
 import java.util.List;
 
-/**
- * Rudimentary Thymeleaf-based UI so the Identity & Access functionality can
- * be exercised manually in a browser, without needing a REST client.
- * Delegates all business logic to the same domain services used by the
- * JSON REST API.
- */
 @Controller
 public class UiController {
 

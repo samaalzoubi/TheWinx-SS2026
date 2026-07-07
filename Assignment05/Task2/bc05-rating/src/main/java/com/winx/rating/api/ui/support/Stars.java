@@ -1,13 +1,6 @@
 package com.winx.rating.api.ui.support;
 
-/**
- * Tiny Thymeleaf-friendly helper turning a 1-5 integer score into a
- * "★★★☆☆" style string. Invoked from templates via the SpringEL
- * {@code T(...)} static-method syntax, e.g.
- * {@code ${T(com.winx.rating.api.ui.support.Stars).render(rating.review.vehicleScore)}}.
- *
- * UI-layer only - never referenced from the domain or REST API.
- */
+// templates call this via SpringEL's T(...) static-method syntax, it's UI-only, never referenced from domain or REST code
 public final class Stars {
 
     private static final int MAX = 5;

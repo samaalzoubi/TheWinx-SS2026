@@ -76,12 +76,7 @@ public class BookingController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    /**
-     * Read-only, additive endpoint: all bookings ever made against a given
-     * vehicle. Lets a Provider (via the Fleet context, which owns the
-     * vehicleId) see the ride/earnings history for their own fleet, without
-     * Booking exposing anything it doesn't already store per-booking.
-     */
+    // we added this so a provider can see ride/earnings history for their fleet without Booking exposing anything new
     @GetMapping("/vehicle/{vehicleId}")
     public ResponseEntity<List<BookingResponse>> getVehicleBookings(@PathVariable Long vehicleId) {
         List<BookingResponse> bookings = bookingRepository.findByVehicleId(vehicleId).stream()
