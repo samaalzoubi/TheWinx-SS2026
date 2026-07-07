@@ -9,7 +9,7 @@
 <header th:replace="~{fragments/header :: topbar}"></header>
 <main class="container">
     <h1>Search &amp; book a vehicle</h1>
-    <p class="subtitle">Search the Fleet service for available vehicles near a location, then book one for a user.</p>
+    <p class="subtitle">Pick a location and (optionally) a vehicle type to find available vehicles nearby, then book one for a user.</p>
 
     <p th:if="${message}" class="alert alert-success" th:text="${message}"></p>
     <p th:if="${error}" class="alert alert-error" th:text="${error}"></p>
@@ -23,25 +23,33 @@
                     <input id="userId" type="number" name="userId" th:value="${userId}" required="required"/>
                 </div>
                 <div>
+                    <label for="location">Location</label>
+                    <select id="location" name="location">
+                        <option value="">- choose a location -</option>
+                        <option th:each="loc : ${locations}"
+                                th:value="${loc.key()}"
+                                th:text="${loc.displayName()}"
+                                th:selected="${loc.key() == selectedLocation}">Place</option>
+                    </select>
+                </div>
+            </div>
+            <div class="field-row">
+                <div>
                     <label for="type">Vehicle type (optional)</label>
-                    <input id="type" type="text" name="type" th:value="${type}" placeholder="e.g. SCOOTER, BIKE, CAR"/>
+                    <select id="type" name="type">
+                        <option value="" th:selected="${type == null or type == ''}">All types</option>
+                        <option value="E_SCOOTER" th:selected="${type == 'E_SCOOTER'}">E-Scooter</option>
+                        <option value="BICYCLE" th:selected="${type == 'BICYCLE'}">Bicycle</option>
+                        <option value="E_BIKE" th:selected="${type == 'E_BIKE'}">E-Bike</option>
+                        <option value="CAR" th:selected="${type == 'CAR'}">Car</option>
+                    </select>
                 </div>
-            </div>
-            <div class="field-row">
-                <div>
-                    <label for="lat">Latitude</label>
-                    <input id="lat" type="text" name="lat" th:value="${lat}"/>
-                </div>
-                <div>
-                    <label for="lon">Longitude</label>
-                    <input id="lon" type="text" name="lon" th:value="${lon}"/>
-                </div>
-            </div>
-            <div class="field-row">
                 <div>
                     <label for="radiusKm">Radius (km)</label>
                     <input id="radiusKm" type="text" name="radiusKm" th:value="${radiusKm}"/>
                 </div>
+            </div>
+            <div class="field-row">
                 <div>
                     <label for="maxPrice">Max price per unit (optional)</label>
                     <input id="maxPrice" type="text" name="maxPrice" th:value="${maxPrice}"/>
@@ -91,7 +99,7 @@
         </div>
         <div class="empty-state" th:if="${vehicles == null}">
             <span class="icon">🔍</span>
-            Enter a location above and search to see available vehicles.
+            Choose a location above and search to see available vehicles.
         </div>
     </div>
 </main>

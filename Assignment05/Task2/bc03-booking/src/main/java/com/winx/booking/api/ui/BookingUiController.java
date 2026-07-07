@@ -52,7 +52,6 @@ public class BookingUiController {
         return "home";
     }
 
-    // we added this so the nav form can just post a userId field instead of knowing the path-variable route shape
     @GetMapping("/my-bookings")
     public String myBookingsLookup(@RequestParam(required = false) Long userId) {
         return "redirect:/ui/my-bookings/" + (userId != null ? userId : 1L);
@@ -60,21 +59,25 @@ public class BookingUiController {
 
     @GetMapping("/search-book")
     public String searchForm(@RequestParam(required = false) Long userId,
-                              @RequestParam(required = false) Double lat,
-                              @RequestParam(required = false) Double lon,
+                              @RequestParam(required = false) String location,
                               @RequestParam(required = false) Double radiusKm,
                               @RequestParam(required = false) String type,
                               @RequestParam(required = false) Double maxPrice,
                               Model model) {
+        double resolvedRadius = radiusKm != null ? radiusKm : 10.0;
+        String resolvedType = (type != null && !type.isBlank()) ? type : null;
+
         model.addAttribute("userId", userId);
-        model.addAttribute("lat", lat != null ? lat : 51.5136);
-        model.addAttribute("lon", lon != null ? lon : 7.4653);
-        model.addAttribute("radiusKm", radiusKm != null ? radiusKm : 10.0);
+        model.addAttribute("locations", DemoLocations.all());
+        model.addAttribute("selectedLocation", location);
+        model.addAttribute("radiusKm", resolvedRadius);
         model.addAttribute("type", type);
         model.addAttribute("maxPrice", maxPrice);
 
-        if (lat != null && lon != null && radiusKm != null) {
-            List<VehicleView> vehicles = vehicleSearchService.findAvailableNear(lat, lon, radiusKm, type, maxPrice);
+        DemoLocations.Location loc = DemoLocations.find(location);
+        if (loc != null) {
+            List<VehicleView> vehicles = vehicleSearchService.findAvailableNear(
+                    loc.latitude(), loc.longitude(), resolvedRadius, resolvedType, maxPrice);
             model.addAttribute("vehicles", vehicles);
         }
         return "search-book";
@@ -127,7 +130,6 @@ public class BookingUiController {
         return "redirect:/ui/my-bookings/" + userId;
     }
 
-    // we filter the status tabs in memory off one findAll() instead of adding new repository queries for each tab
     @GetMapping("/all")
     public String allBookings(@RequestParam(required = false) String status, Model model) {
         List<Booking> all = bookingRepository.findAll().stream()
@@ -167,7 +169,6 @@ public class BookingUiController {
         return "all-bookings";
     }
 
-    // we add the read side of the same PaymentClient gateway here, we're not introducing a new one
     @GetMapping("/bookings/{id}")
     public String bookingDetail(@PathVariable Long id, Model model) {
         bookingRepository.findById(id).ifPresentOrElse(
