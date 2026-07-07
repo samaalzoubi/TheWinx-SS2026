@@ -6,6 +6,14 @@ bounded context authenticates against it, but it has no outbound dependencies of
 so for Task 1 we run it as a fully self-contained Spring Boot service with its own
 in-memory H2 database.
 
+## Current status
+
+This Task 1 module is a fully self-contained identity service. It runs on its own embedded
+Spring Boot application, uses a local in-memory H2 database, and does not depend on Eureka,
+Spring Cloud Config, or the API gateway. The service already provides user and provider
+registration, login, token validation, Swagger UI, a browser-based UI, and the H2 console
+through the standard startup flow.
+
 Port: **8081**. Swagger UI: `/swagger-ui.html`. Server-rendered UI: `/ui`. H2 console: `/h2-console`.
 
 ## How we covered the DDD design (Assignment 04)
@@ -13,18 +21,18 @@ Port: **8081**. Swagger UI: `/swagger-ui.html`. Server-rendered UI: `/ui`. H2 co
 We gave this context two aggregate roots instead of one, because Users and Providers are
 genuinely different kinds of accounts with different attributes and no shared lifecycle:
 
-| Building block | Class | Notes |
-|---|---|---|
-| Aggregate Root / Entity | `UserAccount` | `id`, `personalInfo`, `email`, `passwordHash`, `registeredAt`, `status`. `deactivate()` is the only real behavior we put on the aggregate. |
-| Aggregate Root / Entity | `ProviderAccount` | Same shape, but we gave it `companyInfo` instead of `personalInfo`, plus its own `phoneNumber`. |
-| Value Object | `PersonalInfo` | `name`, `dateOfBirth`, `phoneNumber`. Embedded and immutable. |
-| Value Object | `CompanyInfo` | `companyName`, `contactName`. Embedded and immutable. |
-| Value Object | `AuthToken` | Opaque bearer token (`value`, `expiresAt`) we issue on successful login. |
-| Value Object | `PrincipalRef` | `(id, type)` pair identifying which kind of account a validated token belongs to. |
-| Enum | `AccountStatus` | `PENDING`, `ACTIVE`, `DEACTIVATED`. |
-| Domain Service | `RegistrationService` | Enforces email uniqueness across both account types and hashes passwords before persisting. |
-| Domain Service | `AuthenticationService` | Authenticates by email/password, issues and validates `AuthToken`s. |
-| Repository | `UserAccountRepository`, `ProviderAccountRepository` | Thin `JpaRepository` extensions plus `findByEmail`/`existsByEmail`. |
+| Building block          | Class                                                | Notes                                                                                                                                      |
+| ----------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Aggregate Root / Entity | `UserAccount`                                        | `id`, `personalInfo`, `email`, `passwordHash`, `registeredAt`, `status`. `deactivate()` is the only real behavior we put on the aggregate. |
+| Aggregate Root / Entity | `ProviderAccount`                                    | Same shape, but we gave it `companyInfo` instead of `personalInfo`, plus its own `phoneNumber`.                                            |
+| Value Object            | `PersonalInfo`                                       | `name`, `dateOfBirth`, `phoneNumber`. Embedded and immutable.                                                                              |
+| Value Object            | `CompanyInfo`                                        | `companyName`, `contactName`. Embedded and immutable.                                                                                      |
+| Value Object            | `AuthToken`                                          | Opaque bearer token (`value`, `expiresAt`) we issue on successful login.                                                                   |
+| Value Object            | `PrincipalRef`                                       | `(id, type)` pair identifying which kind of account a validated token belongs to.                                                          |
+| Enum                    | `AccountStatus`                                      | `PENDING`, `ACTIVE`, `DEACTIVATED`.                                                                                                        |
+| Domain Service          | `RegistrationService`                                | Enforces email uniqueness across both account types and hashes passwords before persisting.                                                |
+| Domain Service          | `AuthenticationService`                              | Authenticates by email/password, issues and validates `AuthToken`s.                                                                        |
+| Repository              | `UserAccountRepository`, `ProviderAccountRepository` | Thin `JpaRepository` extensions plus `findByEmail`/`existsByEmail`.                                                                        |
 
 Where we simplified the Assignment 04 design on purpose: we had sketched `Email` and
 `Password` as their own dedicated Value Object classes with `validate()`/`matches()`
@@ -43,12 +51,15 @@ outbound dependencies, which is exactly why we could run it in complete isolatio
 
 ## Requirements we covered (Assignment 02)
 
-| Req | Description | Covered by |
-|---|---|---|
-| R01 | User registration | `POST /api/users/register` calling `RegistrationService.registerUser` |
-| R02 | User login | `POST /api/users/login` calling `AuthenticationService.authenticateUser` |
-| R03 | Provider registration | `POST /api/providers/register` calling `RegistrationService.registerProvider` |
-| R04 | Provider login | `POST /api/providers/login` calling `AuthenticationService.authenticateProvider` |
+| Req | Description           | Covered by                                                                       |
+| --- | --------------------- | -------------------------------------------------------------------------------- |
+| R01 | User registration     | `POST /api/users/register` calling `RegistrationService.registerUser`            |
+| R02 | User login            | `POST /api/users/login` calling `AuthenticationService.authenticateUser`         |
+| R03 | Provider registration | `POST /api/providers/register` calling `RegistrationService.registerProvider`    |
+| R04 | Provider login        | `POST /api/providers/login` calling `AuthenticationService.authenticateProvider` |
+| R05 | User lookup           | `GET /api/users/{id}` returning the stored user account                          |
+| R06 | Provider lookup       | `GET /api/providers/{id}` returning the stored provider account                  |
+| R07 | Token validation      | `GET /api/auth/validate?token=...` returning whether the supplied token is valid |
 
 Everything else (vehicle management, booking, payment, rating) is out of scope for this
 context by design; it only ever hands out and validates identity.
@@ -56,10 +67,12 @@ context by design; it only ever hands out and validates identity.
 ## File-by-file
 
 ### `IdentityAccessApplication.java`
+
 Our Spring Boot entry point. No extra annotations beyond `@SpringBootApplication`, since
 Task 1 doesn't register with Eureka or import config from a Config Server.
 
 ### `domain/`, the model
+
 - **`UserAccount.java`** / **`ProviderAccount.java`**: `@Entity` aggregate roots we built.
   Constructors enforce `status = ACTIVE` on creation. `deactivate()` is the only mutator
   besides JPA's own field access.
@@ -81,15 +94,18 @@ Task 1 doesn't register with Eureka or import config from a Config Server.
   `validateToken(...)` looks a token up, checks expiry, and removes it if expired.
 
 ### `repository/`
+
 - **`UserAccountRepository.java`** / **`ProviderAccountRepository.java`**: `JpaRepository<...,
-  Long>` plus `findByEmail`/`existsByEmail`.
+Long>` plus `findByEmail`/`existsByEmail`.
 
 ### `application/`, thin exception types
+
 - **`EmailAlreadyRegisteredException.java`**, **`InvalidCredentialsException.java`**,
   **`NotFoundException.java`**: mapped to HTTP 409, 401, 404 respectively by
   `api/GlobalExceptionHandler.java`.
 
 ### `api/`, the REST surface
+
 - **`UserController.java`** (`/api/users`): `POST /register`, `POST /login`, `GET /{id}`.
 - **`ProviderController.java`** (`/api/providers`): the same three operations for providers.
 - **`AuthController.java`** (`/api/auth`): `GET /validate?token=...`. Calls
@@ -103,12 +119,14 @@ Task 1 doesn't register with Eureka or import config from a Config Server.
   above (plus bean validation failures) to proper HTTP status codes.
 
 ### `api/ui/UiController.java`
+
 Our server-rendered Thymeleaf UI at `/ui` (registration forms, login, a token inspector,
 and read-only account directory/profile pages), so we can exercise the service in a browser
 without a REST client. It delegates to the exact same `RegistrationService`/
 `AuthenticationService` the REST API uses; we didn't duplicate any business logic for it.
 
 ### `infrastructure/`
+
 - **`SecurityConfig.java`**: defines the `PasswordEncoder` bean and disables Spring
   Security's default form-login/CSRF. We're not using Spring Security's own auth model
   here; authentication is entirely custom via `AuthenticationService`.
@@ -118,22 +136,26 @@ without a REST client. It delegates to the exact same `RegistrationService`/
 ## How to run
 
 From `Assignment05/Task1`:
+
 ```bash
 ./mvnw -pl bc01-identity-access spring-boot:run
 ```
+
 or start all 5 Task 1 services together via `./start.sh` (macOS/Linux) or `start.bat`
 (Windows) from the `Task1` folder.
 
 Once up:
+
 - Swagger UI: http://localhost:8081/swagger-ui.html
 - Browser UI: http://localhost:8081/ui
 - H2 console: http://localhost:8081/h2-console (JDBC URL `jdbc:h2:mem:identitydb`, user `sa`, no password)
 
 ## How to test
 
-We didn't write automated tests for this module, so we verify behavior manually.
+We verify behavior manually.
 
 Via Swagger UI (http://localhost:8081/swagger-ui.html):
+
 1. `POST /api/users/register` with a name, email, password, and dateOfBirth. We expect `201` and a `UserResponse`.
 2. `POST /api/users/register` again with the same email. We expect `409 Conflict`.
 3. `POST /api/users/login` with that email/password. We expect `200` with a `token` and `expiresAt`.

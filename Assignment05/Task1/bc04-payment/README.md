@@ -1,8 +1,8 @@
 # BC-04 Payment (Task 1, standalone)
 
 We designed this as a pure leaf context, per our Assignment 03/04 work: it consumes a
-payment request (in Task 1, posted directly by whoever calls its API, normally Booking
-after a ride completes) and produces no data any other context reads back. It owns
+payment request, posted directly by Booking
+after a ride completes, and produces no data any other context reads back. It owns
 financial transaction consistency: an amount, a payment method, and a strictly
 one-directional status machine (`PENDING` to `PAID` or `PENDING` to `FAILED`, never backwards).
 
