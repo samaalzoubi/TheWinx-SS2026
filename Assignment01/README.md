@@ -35,7 +35,7 @@ The team originally set up the repository on the department's GitLab per the sta
 
 ## Task 4: Register Team
 
-Team registration e-mail sent to `sven.joerges@fh-dortmund.de` and `philip.wizenty@fh-dortmund.de` ahead of the 27.04.26 deadline, containing:
+Team registration e-mail sent to prof `sven.joerges@fh-dortmund.de` and `philip.wizenty@fh-dortmund.de` ahead of the 27.04.26 deadline, containing:
 
 - Team name: The Winx
 - Team members and e-mail addresses
