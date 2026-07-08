@@ -11,7 +11,9 @@ the real inter-service calls in [Task 2](../Task2/).
 
 ## How to run it
 
-### macOS or Linux
+You need a JDK between 17 and 21 installed first. Check with `java -version`.
+
+### macOS or Linux, using the script
 
 ```bash
 ./start.sh          # or: ./start.sh start
@@ -21,9 +23,10 @@ the real inter-service calls in [Task 2](../Task2/).
 ```
 
 This defaults to `JAVA_HOME=/opt/homebrew/opt/openjdk@21/...`. Export your own
-`JAVA_HOME` first if your JDK lives somewhere else.
+`JAVA_HOME` first if your JDK lives somewhere else. If it refuses to run with a
+"permission denied" error, make it executable first: `chmod +x start.sh`.
 
-### Windows
+### Windows, using the script
 
 ```cmd
 start.bat
@@ -35,13 +38,24 @@ start.bat urls
 Make sure `JAVA_HOME` (or `java` on your `PATH`) points at a JDK 17 to 21 install before
 running it.
 
-### Running one service on its own
+### Running each service by hand
+
+If you would rather not use the script, or it does not work in your setup, run these
+directly instead, each in its own terminal:
 
 ```bash
-./mvnw -pl bc0X-name spring-boot:run
+./mvnw -pl bc01-identity-access spring-boot:run     # 8081
+./mvnw -pl bc02-fleet-management spring-boot:run    # 8082
+./mvnw -pl bc03-booking spring-boot:run              # 8083
+./mvnw -pl bc04-payment spring-boot:run              # 8084
+./mvnw -pl bc05-rating spring-boot:run               # 8085
 ```
 
-On Windows, use `mvnw.cmd -pl bc0X-name spring-boot:run` instead.
+On Windows, replace `./mvnw` with `mvnw.cmd` in each command. Each service is fully
+independent (its own H2 database, mock clients standing in for the other bounded
+contexts), so you only need to start the one or two you actually want to test, in any
+order. Maven compiles the module itself the first time you run it, so there is no
+separate build step to run first.
 
 ## Seeded test accounts (bc01)
 

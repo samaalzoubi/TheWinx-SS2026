@@ -55,10 +55,12 @@ whether it calls anything.
 
 ## How to run it
 
+You need a JDK between 17 and 21 installed first. Check with `java -version`.
+
 The easiest way is the provided start script. It builds everything, starts Eureka and
 Config first, waits for them to report healthy, then starts the 5 services and the portal.
 
-### macOS or Linux
+### macOS or Linux, using the script
 
 ```bash
 ./start.sh          # or: ./start.sh start
@@ -68,9 +70,10 @@ Config first, waits for them to report healthy, then starts the 5 services and t
 ```
 
 This defaults to `JAVA_HOME=/opt/homebrew/opt/openjdk@21/...`. Export your own
-`JAVA_HOME` first if your JDK lives somewhere else.
+`JAVA_HOME` first if your JDK lives somewhere else. If it refuses to run with a
+"permission denied" error, make it executable first: `chmod +x start.sh`.
 
-### Windows
+### Windows, using the script
 
 ```cmd
 start.bat
@@ -83,23 +86,37 @@ Make sure `JAVA_HOME` (or `java` on your `PATH`) points at a JDK 17 to 21 instal
 running it. `curl` needs to be available too, it ships with Windows 10 (1803 and later)
 and Windows 11 by default.
 
-### Starting things individually instead
+### Starting each service by hand
+
+If you would rather not use the script, or it does not work in your setup, build once and
+then start each module in its own terminal, in this order. Eureka and Config need to be up
+first, since every other service looks them up at boot.
 
 ```bash
 export JAVA_HOME=<path to a JDK 17-21>      # on Windows: set JAVA_HOME=<path>
 ./mvnw clean install -DskipTests            # on Windows: mvnw.cmd clean install -DskipTests
 
-./mvnw -pl infra-eureka-server spring-boot:run    # 8761
-./mvnw -pl infra-config-server spring-boot:run    # 8888
-./mvnw -pl bc01-identity-access spring-boot:run
-./mvnw -pl bc02-fleet-management spring-boot:run
-./mvnw -pl bc03-booking spring-boot:run
-./mvnw -pl bc04-payment spring-boot:run
-./mvnw -pl bc05-rating spring-boot:run
-./mvnw -pl infra-api-gateway spring-boot:run      # 8080
+./mvnw -pl infra-eureka-server spring-boot:run    # 8761, start this first
+./mvnw -pl infra-config-server spring-boot:run    # 8888, then this
 ```
 
-Substitute `mvnw.cmd` for `./mvnw` on Windows in each of the lines above.
+Wait until both report healthy, either by opening [localhost:8761](http://localhost:8761)
+and seeing the Eureka dashboard load, or by running
+`curl http://localhost:8888/actuator/health` and getting back `{"status":"UP"}`. Once
+they're up, start the rest, in any order:
+
+```bash
+./mvnw -pl bc01-identity-access spring-boot:run     # 8081
+./mvnw -pl bc02-fleet-management spring-boot:run    # 8082
+./mvnw -pl bc03-booking spring-boot:run              # 8083
+./mvnw -pl bc04-payment spring-boot:run              # 8084
+./mvnw -pl bc05-rating spring-boot:run               # 8085
+./mvnw -pl infra-api-gateway spring-boot:run         # 8080
+```
+
+Substitute `mvnw.cmd` for `./mvnw` on Windows in each of the lines above. You can check any
+service the same way, `curl http://localhost:<port>/actuator/health`, and you can watch
+them all register on the Eureka dashboard as they come up.
 
 ## Try it: register, book, pay, and rate, in the browser
 
