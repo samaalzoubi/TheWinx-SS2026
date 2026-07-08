@@ -23,8 +23,8 @@ public record RatingDto(
                 rating.getRatingTarget().getBookingId(),
                 rating.getRatingTarget().getVehicleId(),
                 rating.getRatingTarget().getProviderId(),
-                rating.getReview().getVehicleScore(),
-                rating.getReview().getProviderScore(),
+                rating.getReview().getVehicleScore().getValue(),
+                rating.getReview().getProviderScore().getValue(),
                 rating.getReview().getComment(),
                 rating.getCreatedAt()
         );

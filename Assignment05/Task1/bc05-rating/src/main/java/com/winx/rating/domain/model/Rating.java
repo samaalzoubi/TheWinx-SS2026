@@ -7,12 +7,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 import java.time.LocalDateTime;
 
 // we made Rating immutable on purpose - no setter/update path, since a rating shouldn't change after it's submitted
+// the unique constraint on booking_id backs up the one-rating-per-booking invariant at the DB level, not just the existsBy check in the service
 @Entity
-@Table(name = "ratings")
+@Table(name = "ratings", uniqueConstraints = @UniqueConstraint(columnNames = "booking_id"))
 public class Rating {
 
     @Id

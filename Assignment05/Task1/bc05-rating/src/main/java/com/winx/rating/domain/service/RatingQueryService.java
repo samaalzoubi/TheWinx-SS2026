@@ -42,7 +42,7 @@ public class RatingQueryService {
             return 0.0;
         }
         double sum = ratings.stream()
-                .mapToInt(r -> r.getReview().getVehicleScore())
+                .mapToInt(r -> r.getReview().getVehicleScore().getValue())
                 .sum();
         return sum / ratings.size();
     }

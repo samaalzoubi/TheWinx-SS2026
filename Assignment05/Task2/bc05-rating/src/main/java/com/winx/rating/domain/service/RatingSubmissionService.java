@@ -4,15 +4,16 @@ import com.winx.rating.domain.event.RatingSubmitted;
 import com.winx.rating.domain.exception.BookingNotCompletedException;
 import com.winx.rating.domain.exception.BookingNotFoundException;
 import com.winx.rating.domain.exception.DuplicateRatingException;
-import com.winx.rating.domain.exception.InvalidScoreException;
 import com.winx.rating.domain.model.Rating;
 import com.winx.rating.domain.model.RatingTarget;
 import com.winx.rating.domain.model.Review;
+import com.winx.rating.domain.model.Score;
 import com.winx.rating.domain.repository.RatingRepository;
 import com.winx.rating.infrastructure.booking.BookingClient;
 import com.winx.rating.infrastructure.booking.BookingView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,9 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class RatingSubmissionService {
 
     private static final Logger log = LoggerFactory.getLogger(RatingSubmissionService.class);
-
-    private static final int MIN_SCORE = 1;
-    private static final int MAX_SCORE = 5;
 
     private final RatingRepository ratingRepository;
     private final BookingClient bookingClient;
@@ -34,8 +32,8 @@ public class RatingSubmissionService {
 
     @Transactional
     public Rating submitRating(Long bookingId, Long userId, Integer vehicleScore, Integer providerScore, String comment) {
-        validateScore(vehicleScore, "vehicleScore");
-        validateScore(providerScore, "providerScore");
+        Score vehicleScoreVo = Score.of("vehicleScore", vehicleScore);
+        Score providerScoreVo = Score.of("providerScore", providerScore);
 
         BookingView booking = bookingClient.getBooking(bookingId)
                 .orElseThrow(() -> new BookingNotFoundException(bookingId));
@@ -49,20 +47,21 @@ public class RatingSubmissionService {
         }
 
         RatingTarget ratingTarget = new RatingTarget(booking.vehicleId(), booking.providerId(), bookingId);
-        Review review = new Review(vehicleScore, providerScore, comment);
+        Review review = new Review(vehicleScoreVo, providerScoreVo, comment);
         Rating rating = Rating.create(userId, ratingTarget, review);
 
-        Rating saved = ratingRepository.save(rating);
+        Rating saved;
+        try {
+            saved = ratingRepository.save(rating);
+        } catch (DataIntegrityViolationException e) {
+            // the existsBy check above isn't atomic, this catches the rare race where two submissions for the
+            // same booking land at once, the DB's unique constraint on booking_id is the real guarantee
+            throw new DuplicateRatingException(bookingId);
+        }
 
         RatingSubmitted event = new RatingSubmitted(saved.getId(), bookingId, vehicleScore, providerScore);
         log.info("Domain event published: {}", event);
 
         return saved;
-    }
-
-    private void validateScore(Integer score, String fieldName) {
-        if (score == null || score < MIN_SCORE || score > MAX_SCORE) {
-            throw new InvalidScoreException(fieldName + " must be between " + MIN_SCORE + " and " + MAX_SCORE + " (got " + score + ")");
-        }
     }
 }

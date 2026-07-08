@@ -49,8 +49,8 @@
                 <td th:text="${rating.ratingTarget.bookingId}"></td>
                 <td th:text="${rating.ratingTarget.vehicleId}"></td>
                 <td th:text="${rating.ratingTarget.providerId}"></td>
-                <td><span class="stars" th:text="${T(com.winx.rating.api.ui.support.Stars).render(rating.review.vehicleScore)}"></span></td>
-                <td><span class="stars" th:text="${T(com.winx.rating.api.ui.support.Stars).render(rating.review.providerScore)}"></span></td>
+                <td><span class="stars" th:text="${T(com.winx.rating.api.ui.support.Stars).render(rating.review.vehicleScore.value)}"></span></td>
+                <td><span class="stars" th:text="${T(com.winx.rating.api.ui.support.Stars).render(rating.review.providerScore.value)}"></span></td>
                 <td th:text="${rating.review.comment}"></td>
                 <td th:text="${rating.createdAt}"></td>
             </tr>

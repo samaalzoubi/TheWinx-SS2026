@@ -86,11 +86,11 @@ public class RatingUiController {
     public String allRatings(Model model) {
         List<Rating> ratings = ratingRepository.findAll();
         double avgVehicle = ratings.stream()
-                .mapToInt(r -> r.getReview().getVehicleScore())
+                .mapToInt(r -> r.getReview().getVehicleScore().getValue())
                 .average()
                 .orElse(0.0);
         double avgProvider = ratings.stream()
-                .mapToInt(r -> r.getReview().getProviderScore())
+                .mapToInt(r -> r.getReview().getProviderScore().getValue())
                 .average()
                 .orElse(0.0);
         model.addAttribute("ratings", ratings);

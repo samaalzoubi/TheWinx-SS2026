@@ -20,9 +20,9 @@
             <dt>Provider ID</dt>
             <dd th:text="${rating.ratingTarget.providerId}"></dd>
             <dt>Vehicle score</dt>
-            <dd><span class="stars" th:text="${T(com.winx.rating.api.ui.support.Stars).render(rating.review.vehicleScore)}"></span></dd>
+            <dd><span class="stars" th:text="${T(com.winx.rating.api.ui.support.Stars).render(rating.review.vehicleScore.value)}"></span></dd>
             <dt>Provider score</dt>
-            <dd><span class="stars" th:text="${T(com.winx.rating.api.ui.support.Stars).render(rating.review.providerScore)}"></span></dd>
+            <dd><span class="stars" th:text="${T(com.winx.rating.api.ui.support.Stars).render(rating.review.providerScore.value)}"></span></dd>
             <dt>Comment</dt>
             <dd th:text="${rating.review.comment ?: '-'}"></dd>
         </dl>

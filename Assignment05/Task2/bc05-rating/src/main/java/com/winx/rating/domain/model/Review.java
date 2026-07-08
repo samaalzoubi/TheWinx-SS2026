@@ -1,17 +1,20 @@
 package com.winx.rating.domain.model;
 
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
 
-// we enforce the 1-5 score range in the service layer instead of here, so we can raise a domain-specific exception with the right HTTP status
 @Embeddable
 public class Review {
 
-    @Column(name = "vehicle_score", nullable = false)
-    private Integer vehicleScore;
+    @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "vehicle_score", nullable = false))
+    private Score vehicleScore;
 
-    @Column(name = "provider_score", nullable = false)
-    private Integer providerScore;
+    @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "provider_score", nullable = false))
+    private Score providerScore;
 
     @Column(name = "comment")
     private String comment;
@@ -20,17 +23,17 @@ public class Review {
         // JPA
     }
 
-    public Review(Integer vehicleScore, Integer providerScore, String comment) {
+    public Review(Score vehicleScore, Score providerScore, String comment) {
         this.vehicleScore = vehicleScore;
         this.providerScore = providerScore;
         this.comment = comment;
     }
 
-    public Integer getVehicleScore() {
+    public Score getVehicleScore() {
         return vehicleScore;
     }
 
-    public Integer getProviderScore() {
+    public Score getProviderScore() {
         return providerScore;
     }
 
