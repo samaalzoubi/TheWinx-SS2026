@@ -2,12 +2,19 @@ context ratingCore {
 
     // ── Value Objects ──────────────────────────────────────────────────────────
 
+    // Wraps a 1-5 rating value; validated on construction via Score.of(fieldName, value)
+    // so an out-of-range score can never exist as an object.
+    // @Embeddable
+    structure Score<valueObject> {
+        immutable int value
+    }
+
     // @Embeddable
     structure Review<valueObject> {
-        // @Column(name = "vehicle_score", nullable = false)
-        immutable int vehicleScore,
-        // @Column(name = "provider_score", nullable = false)
-        immutable int providerScore,
+        // @Embedded @AttributeOverride(name = "value", column = @Column(name = "vehicle_score", nullable = false))
+        immutable Score vehicleScore,
+        // @Embedded @AttributeOverride(name = "value", column = @Column(name = "provider_score", nullable = false))
+        immutable Score providerScore,
         // @Column(name = "comment")
         immutable string comment
     }
@@ -18,7 +25,7 @@ context ratingCore {
         immutable long vehicleId,
         // @Column(name = "provider_id", nullable = false)
         immutable long providerId,
-        // @Column(name = "booking_id", nullable = false, unique = true)
+        // @Column(name = "booking_id", nullable = false)
         immutable long bookingId
     }
 

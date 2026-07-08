@@ -10,7 +10,8 @@ public functional microservice com.winx.identity.IdentityAccess {
         ---
         register(
             sync request : Domain::IdentityAccess.UserRegisterRequest,
-            sync out response : Domain::IdentityAccess.UserResponse
+            sync out response : Domain::IdentityAccess.UserResponse,
+            sync out fault emailAlreadyRegistered : string
         );
 
         ---
@@ -20,7 +21,8 @@ public functional microservice com.winx.identity.IdentityAccess {
         ---
         login(
             sync request : Domain::IdentityAccess.LoginRequest,
-            sync out response : Domain::IdentityAccess.UserLoginResponse
+            sync out response : Domain::IdentityAccess.UserLoginResponse,
+            sync out fault invalidCredentials : string
         );
 
         ---
@@ -30,7 +32,8 @@ public functional microservice com.winx.identity.IdentityAccess {
         ---
         getById(
             sync id : long,
-            sync out response : Domain::IdentityAccess.UserResponse
+            sync out response : Domain::IdentityAccess.UserResponse,
+            sync out fault notFound : string
         );
     }
 
@@ -42,7 +45,8 @@ public functional microservice com.winx.identity.IdentityAccess {
         ---
         register(
             sync request : Domain::IdentityAccess.ProviderRegisterRequest,
-            sync out response : Domain::IdentityAccess.ProviderResponse
+            sync out response : Domain::IdentityAccess.ProviderResponse,
+            sync out fault emailAlreadyRegistered : string
         );
 
         ---
@@ -52,7 +56,8 @@ public functional microservice com.winx.identity.IdentityAccess {
         ---
         login(
             sync request : Domain::IdentityAccess.LoginRequest,
-            sync out response : Domain::IdentityAccess.ProviderLoginResponse
+            sync out response : Domain::IdentityAccess.ProviderLoginResponse,
+            sync out fault invalidCredentials : string
         );
 
         ---
@@ -62,7 +67,8 @@ public functional microservice com.winx.identity.IdentityAccess {
         ---
         getById(
             sync id : long,
-            sync out response : Domain::IdentityAccess.ProviderResponse
+            sync out response : Domain::IdentityAccess.ProviderResponse,
+            sync out fault notFound : string
         );
     }
 
