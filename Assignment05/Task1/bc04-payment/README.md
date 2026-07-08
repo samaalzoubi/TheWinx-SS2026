@@ -24,10 +24,10 @@ Port: **8084**. Swagger UI: `/swagger-ui.html`. H2 console: `/h2-console`.
 
 ## Requirements we covered (Assignment 02)
 
-| Req | Description | Covered by |
-|---|---|---|
-| R13 | Payment processing and status handling | `POST /api/payments` calling `PaymentProcessingService.initiatePayment`, `GET /{id}` / `GET /booking/{bookingId}` for status |
-| R15 (partial) | Payment history | `GET /booking/{bookingId}` per booking (we didn't build a cross-user listing endpoint into the REST API, see the standalone UI's payment list for that) |
+| Req           | Description | Covered by |
+|---------------|---|---|
+| R07           | Payment processing and status handling | `POST /api/payments` calling `PaymentProcessingService.initiatePayment`, `GET /{id}` / `GET /booking/{bookingId}` for status |
+| | Payment history | `GET /booking/{bookingId}` per booking (we didn't build a cross-user listing endpoint into the REST API, see the standalone UI's payment list for that) |
 
 ## File-by-file
 
