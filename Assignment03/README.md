@@ -2,8 +2,8 @@ DMSA Lab Assignment 03 | Instant Mobility Platform | Team: The Winx
 
 # Lab Assignment 03 — DDD: Bounded Contexts & Context Mapping
 
-**Full deliverable:** [`DMSA_Lab_Assignment_03.pdf`](./DMSA_Lab_Assignment_03.pdf)
-**Context map diagram (source):** [`instant_mobility_context_map.svg`](./instant_mobility_context_map.svg)
+**Full deliverable:** [`DMSA - Lab Assignment 03.pdf`](./DMSA%20-%20Lab%20Assignment%2003.pdf)
+**Context map diagram (source):** added at the end of the pdf file
 
 ## Task 1: Identify Bounded Contexts
 

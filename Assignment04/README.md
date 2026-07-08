@@ -2,7 +2,7 @@ DMSA Lab Assignment 04 | Instant Mobility Platform | Team: The Winx
 
 # Lab Assignment 04 — DDD: Tactical Design, Event Storming
 
-**Full deliverable:** [`DMSA_Lab_Assignment_04.pdf`](./DMSA_Lab_Assignment_04.pdf)
+**Full deliverable:** [`DMSA - Lab Assignment 04.pdf`](./DMSA%20-%20Lab%20Assignment%2004.pdf)
 **Event storming board (rendered):** [`event_storming_instant_mobility.html`](./event_storming_instant_mobility.html)
 
 ## Task 1: Tactical Design
