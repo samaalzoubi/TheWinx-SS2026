@@ -26,7 +26,7 @@ anti-corruption layer; Booking is.
 
 ## Requirements we covered (Assignment 02)
 
-Same as Task 1: R13 (payment processing/status), R15 (partial, per-booking payment history).
+Same as Task 1: R07 (payment processing/status), and per-booking payment history.
 
 ## File-by-file
 
