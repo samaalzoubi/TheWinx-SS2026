@@ -9,7 +9,7 @@
 <th:block th:replace="~{fragments/header :: header}"></th:block>
 <main class="narrow">
   <h1>&#128273; Token Inspector</h1>
-  <p class="subtitle">Paste a bearer token issued by <code>/ui/login</code> (or <code>/api/users/login</code> / <code>/api/providers/login</code>) to check whether it is currently valid - this calls the very same <code>AuthenticationService.validateToken(...)</code> logic used by <code>GET /api/auth/validate</code>.</p>
+  <p class="subtitle">Paste a token from a recent login to check whether it's still valid.</p>
 
   <div class="card">
     <form th:action="@{/token-inspector}" method="get">

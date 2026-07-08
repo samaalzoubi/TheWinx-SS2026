@@ -9,7 +9,7 @@
 <div th:replace="~{fragments/header :: topbar}"></div>
 <main class="container">
     <h1>Search available vehicles near me</h1>
-    <p class="subtitle">Finds AVAILABLE vehicles within a radius of a point - the same nearby-availability query bc03-booking uses.</p>
+    <p class="subtitle">Find available vehicles near a location.</p>
 
     <div th:replace="~{fragments/header :: tabs(active='search')}"></div>
 
@@ -46,7 +46,7 @@
             <label>Max price (optional)
                 <input type="number" step="0.01" name="maxPrice" th:value="${maxPrice}"/>
             </label>
-            <p class="help">Tip: try lat 51.5136, lon 7.4653, radius 5 - that's Dortmund, where the seed data lives.</p>
+            <p class="help">Tip: try lat 51.5136, lon 7.4653, radius 5 for Dortmund.</p>
             <button type="submit" class="btn">Search</button>
         </form>
     </div>

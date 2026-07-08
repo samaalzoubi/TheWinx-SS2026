@@ -20,8 +20,7 @@
     </div>
 
     <div class="card">
-        <h2>REST API surface</h2>
-        <p class="muted">This UI is a thin layer over the same REST API used by other services and the gateway:</p>
+        <h2>API endpoints</h2>
         <ul>
             <li><code>POST /api/ratings</code></li>
             <li><code>GET /api/ratings/{id}</code></li>
@@ -30,7 +29,7 @@
             <li><code>GET /api/ratings/provider/{providerId}</code></li>
             <li><code>GET /api/ratings/vehicle/{vehicleId}/average</code></li>
         </ul>
-        <p class="help">Example bookings available in the mock BookingClient: 5001 &amp; 5002 (COMPLETED &ndash; rating allowed), 5003 (ACTIVE &ndash; rejected with 409). These are also used as the standalone circuit-breaker fallback when bc03-booking is unavailable.</p>
+        <p class="help">Demo bookings: 5001 and 5002 are completed and ready to rate, 5003 is still active and will be rejected.</p>
     </div>
 </main>
 </body>

@@ -21,11 +21,7 @@
 <main class="narrow">
     <p><a th:href="@{/ui}">&larr; back to all payments</a></p>
     <h1>Create Test Payment</h1>
-    <p class="subtitle">
-        This runs through the exact same business logic as <code>POST /api/payments</code> (the endpoint
-        bc03-booking calls automatically) - so you can exercise bc04 completely standalone, without ever
-        creating a booking first.
-    </p>
+    <p class="subtitle">Create a payment directly, without going through a booking first.</p>
 
     <div class="card">
         <form th:action="@{/ui/payments/new}" method="post">
@@ -53,11 +49,9 @@
             <label>Masked Reference
                 <input type="text" name="maskedReference" placeholder="****4242"/>
                 <div class="help">
-                    Optional (defaults to <code>****</code>). The mock gateway inspects this value: include
-                    <code>fail</code> anywhere in it (e.g. <code>FAIL-TEST</code>) to simulate a
-                    <strong>declined card</strong> → status FAILED. Include <code>gateway-down</code> to
-                    simulate the gateway being unreachable (triggers the circuit breaker fallback) → also
-                    FAILED. Anything else results in a <strong>PAID</strong> payment.
+                    Optional (defaults to <code>****</code>). Include <code>fail</code> anywhere in it
+                    (e.g. <code>FAIL-TEST</code>) for a <strong>declined card</strong>, or
+                    <code>gateway-down</code> to simulate an outage. Anything else pays successfully.
                 </div>
             </label>
             <button type="submit" class="btn accent">Create Payment</button>

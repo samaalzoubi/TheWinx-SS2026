@@ -20,7 +20,7 @@
 
 <main class="container">
     <h1>Payments</h1>
-    <p class="subtitle">Every payment processed by this service - seeded demo data plus anything you create below for standalone testing.</p>
+    <p class="subtitle">All payments on record, including the demo data and anything you create below.</p>
 
     <div class="alert alert-success" th:if="${message}" th:text="${message}"></div>
 
@@ -107,7 +107,7 @@
 
     <div class="card">
         <h2>Test bc04 standalone</h2>
-        <p class="subtitle">No need to go through bc03-booking - create a payment directly against the real <code>POST /api/payments</code> business logic.</p>
+        <p class="subtitle">Create a payment directly, no booking required.</p>
         <a class="btn accent" th:href="@{/ui/payments/new}">+ Create Test Payment</a>
     </div>
 </main>

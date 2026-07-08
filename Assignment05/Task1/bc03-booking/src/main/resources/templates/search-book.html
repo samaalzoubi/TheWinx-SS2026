@@ -9,7 +9,7 @@
 <header th:replace="~{fragments/header :: topbar}"></header>
 <main class="container">
     <h1>Search &amp; book a vehicle</h1>
-    <p class="subtitle">Pick a location and (optionally) a vehicle type to find available vehicles nearby, then book one for a user.</p>
+    <p class="subtitle">Pick a location to find nearby vehicles and book one.</p>
 
     <p th:if="${message}" class="alert alert-success" th:text="${message}"></p>
     <p th:if="${error}" class="alert alert-error" th:text="${error}"></p>

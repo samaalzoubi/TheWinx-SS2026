@@ -9,7 +9,7 @@
 <th:block th:replace="~{fragments/header :: header}"></th:block>
 <main>
   <h1>Directory</h1>
-  <p class="subtitle">Read-only view of every account currently stored in the H2 database, queried directly from the JPA repositories.</p>
+  <p class="subtitle">Every account currently registered.</p>
 
   <div class="card">
     <h2>&#128100; Users <span class="badge badge-info" th:text="${#lists.size(users)} + ' total'">0 total</span></h2>

@@ -9,7 +9,7 @@
 <div th:replace="~{fragments/header :: topbar}"></div>
 <main class="container">
     <h1>Browse all vehicles</h1>
-    <p class="subtitle">Every vehicle across every provider in the fleet - the full inventory, for exploring and testing the API surface end to end.</p>
+    <p class="subtitle">Every vehicle from every provider.</p>
 
     <div th:replace="~{fragments/header :: tabs(active='browse')}"></div>
 
@@ -105,7 +105,7 @@
             No vehicles match these filters.
         </div>
 
-        <p class="muted">"Toggle status" is a manual testing affordance - it flips a vehicle between AVAILABLE and BOOKED via the same status endpoint bc03-booking uses in real integrations.</p>
+        <p class="muted">Use "Toggle status" to flip a vehicle between available and booked.</p>
     </div>
 </main>
 </body>
